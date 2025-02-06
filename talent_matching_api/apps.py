@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class CoreConfig(AppConfig):
+class TalentMatchingApiConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'core'
+    name = 'talent_matching_api'

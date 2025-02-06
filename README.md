@@ -30,8 +30,8 @@ Disarankan untuk menggunakan virtual environment agar paket Python terisolasi.
 
 ```bash
 python -m venv env
-source venv/bin/activate  # Untuk Linux/Mac
-venv\Scripts\activate     # Untuk Windows
+source venv/bin/activate        # Untuk Linux/Mac
+source venv\Scripts\activate    # Untuk Windows
 ```
 
 ### 3. Instal Dependensi
@@ -51,9 +51,7 @@ Pastikan sudah ada database di Neo4j dan aktifkan database tersebut.
 Ubah isi di bagian file talent_matching/settings.py sesuai database yang telah dibuat:
 
 ```bash
-NEO4J_URI = "bolt://localhost:7687"
-NEO4J_USER = "neo4j"
-NEO4J_PASSWORD = "your_database_password"
+config.DATABASE_URL = 'bolt://<username>:<password>@localhost:7687'
 ```
 
 ### 6. Jalankan Server

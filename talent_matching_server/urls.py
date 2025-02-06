@@ -1,5 +1,5 @@
 """
-URL configuration for talent_matching project.
+URL configuration for talent_matching_server project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/5.1/topics/http/urls/
@@ -15,11 +15,10 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
-from core.views import PersonAPI
+from django.urls import path, include
+from talent_matching_api import urls as talent_matching_urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/person/', PersonAPI.as_view(), name='person_api')
+    path('api/', include(talent_matching_urls))
 ]
-
