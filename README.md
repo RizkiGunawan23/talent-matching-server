@@ -20,7 +20,7 @@ Ikuti langkah-langkah di bawah untuk menjalankan proyek ini di lingkungan pengem
 Clone repository ke komputer lokal Anda:
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/RizkiGunawan23/talent-matching-server.git
 cd talent-matching-server
 ```
 
@@ -31,7 +31,7 @@ Disarankan untuk menggunakan virtual environment agar paket Python terisolasi.
 ```bash
 python -m venv env
 source venv/bin/activate        # Untuk Linux/Mac
-source venv\Scripts\activate    # Untuk Windows
+source venv/Scripts/activate    # Untuk Windows
 ```
 
 ### 3. Instal Dependensi
