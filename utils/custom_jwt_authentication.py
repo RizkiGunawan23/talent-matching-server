@@ -1,6 +1,6 @@
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.exceptions import AuthenticationFailed
-from talent_matching_api.models import User
+from core.models import User
 
 
 class Neo4jJWTAuthentication(JWTAuthentication):

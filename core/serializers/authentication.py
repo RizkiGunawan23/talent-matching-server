@@ -30,6 +30,13 @@ class SignUpSerializer(serializers.Serializer):
             'blank': 'Nama harus diisi.',
         }
     )
+    role = serializers.ChoiceField(
+        choices=['user', 'admin'],
+        default='user',
+        error_messages={
+            'invalid_choice': "Role harus berisi 'user' atau 'admin'."
+        }
+    )
 
     def validate_email(self, value):
         try:
@@ -42,7 +49,8 @@ class SignUpSerializer(serializers.Serializer):
         user = User(
             email=validated_data['email'],
             password=make_password(validated_data['password']),
-            name=validated_data['name']
+            name=validated_data['name'],
+            role=validated_data['role']
         )
         user.save()
         return user

@@ -3,4 +3,4 @@ from django.apps import AppConfig
 
 class TalentMatchingApiConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'talent_matching_api'
+    name = 'core'

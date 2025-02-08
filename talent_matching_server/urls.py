@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from talent_matching_api import urls as talent_matching_urls
+from core import urls as talent_matching_urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
