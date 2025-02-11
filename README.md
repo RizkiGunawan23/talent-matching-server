@@ -9,6 +9,7 @@ Pastikan Anda sudah menginstal software berikut sebelum memulai:
 - **Python**: Versi 3.10 atau lebih baru
 - **Pip**: Untuk mengelola dependensi Python
 - **Neo4j**: Untuk penyimpanan data berbasis graf
+- **Redis**: Untuk cache proses scraping
 - **Apache Jena Fuseki**: Untuk query data berbasis ontologi
 
 ## Instalasi
@@ -46,7 +47,15 @@ pip install -r requirements.txt
 
 Pastikan sudah ada database di Neo4j dan aktifkan database tersebut.
 
-### 5. Konfigurasi Koneksi Neo4j
+### 5. Aktifkan Service Redis
+
+Pastikan sudah ada redis terinstal dan aktifkan service-nya.
+
+```bash
+redis-server
+```
+
+### 6. Konfigurasi Koneksi Neo4j
 
 Ubah isi di bagian file talent_matching/settings.py sesuai database yang telah dibuat:
 
@@ -60,5 +69,6 @@ Migrate dan jalankan server:
 
 ```bash
 python manage.py migrate
+celery -A talent_matching_server worker --pool=solo --loglevel=info
 python manage.py runserver
 ```

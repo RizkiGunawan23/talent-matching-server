@@ -5,7 +5,7 @@ from .views.authentication import (
     SignOutView,
     ForgetPasswordView,
 )
-from .views.job import JobRecommendationView, JobScrapingView
+from .views.job import JobRecommendationView, JobScrapingView, JobScrapingTaskStatusView
 from .views.profile import ProfileView
 from rest_framework_simplejwt.views import TokenRefreshView
 
@@ -20,6 +20,8 @@ urlpatterns = [
     path('jobs/recommendation/', JobRecommendationView.as_view(),
          name='job-recommendation'),
     path('jobs/scraping/', JobScrapingView.as_view(), name='job-scraping'),
+    path('jobs/scraping/status/<str:task_id>/',
+         JobScrapingTaskStatusView.as_view(), name='job-scraping-status'),
 
     path('profile/update/', ProfileView.as_view(), name='profile-update'),
 ]
