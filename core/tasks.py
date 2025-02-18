@@ -21,7 +21,7 @@ def get_jobs_data(html_content) -> list:
     soup = BeautifulSoup(html_content, 'html.parser')
 
     job_articles = soup.find_all(
-        'article', class_=lambda c: c and '_1fggenz0' in c.split())
+        'article', attrs={'data-testid': 'job-card'})
 
     jobs_data = []
     for article in job_articles:
@@ -32,9 +32,12 @@ def get_jobs_data(html_content) -> list:
             job_url = "https://id.jobstreet.com" + job_url_tag['href']
 
         img_url = None
-        img_tag = article.find('img', class_='jsvdfj0')
-        if img_tag and img_tag.has_attr('src'):
-            img_url = img_tag['src']
+        img_container = article.find(
+            'div', attrs={'data-automation': 'company-logo'})
+        if img_container:
+            img_tag = img_container.find('img')
+            if img_tag and img_tag.has_attr('src'):
+                img_url = img_tag['src']
 
         title_text = None
         title_tag = article.find('a', attrs={'data-automation': 'jobTitle'})
@@ -61,33 +64,31 @@ def get_jobs_data(html_content) -> list:
             category_text = subcat_tag.get_text(strip=True)
 
         job_type = None
-        p_tags = article.find('p', class_='_1fggenz0')
-        p_text = p_tags.get_text(strip=True).lower()
-        keywords = ["full time", "paruh waktu", "kontrak"]
-        for keyword in keywords:
-            if keyword in p_text:
-                job_type = keyword.lower() if keyword != "full time" else "Purnawaktu"
+        all_div_tags = article.findAll('div')
+        for div_tag in all_div_tags:
+            children = [
+                child for child in div_tag.children if hasattr(child, 'name')]
+            if len(children) == 1 and children[0].name == 'p':
+                p_text = children[0].get_text(strip=True).lower()
+                keywords = ["full time", "paruh waktu", "kontrak"]
+                for keyword in keywords:
+                    if keyword in p_text:
+                        job_type = keyword.capitalize() if keyword != "full time" else "Purnawaktu"
 
         salary_text = None
-        salary_tag = article.find(attrs={'data-automation': 'jobSalary'})
+        salary_tag = article.find(
+            'span', attrs={'data-automation': 'jobSalary'})
         if salary_tag:
             salary_text = salary_tag.get_text(strip=True)
 
         highlight_descriptions = []
-        highlight_description_ul_tags = article.find(
-            'ul', class_='_1fggenz0 _1fggenz3 _1feq2e75b _1feq2e7hf _1feq2e76n _1feq2e7i7')
+        highlight_description_ul_tags = article.find('ul')
         if highlight_description_ul_tags:
             highlight_description_tags = highlight_description_ul_tags.find_all(
-                'span', class_='_1fggenz0 _1feq2e74z _474bdu0 _474bdu1 _474bdu21 _18ybopc4 _474bdu7')
+                'span')
             for highlight_description_tag in highlight_description_tags:
                 highlight_descriptions.append(
                     highlight_description_tag.get_text(strip=True))
-
-        # short_description = None
-        # short_description_tag = article.find(
-        #     'span', attrs={'data-automation': 'jobShortDescription'})
-        # if short_description_tag:
-        #     short_description = short_description_tag.get_text(strip=True)
 
         job = {
             "job_url": job_url,
@@ -99,7 +100,6 @@ def get_jobs_data(html_content) -> list:
             "job_type": job_type,
             "salary": salary_text,
             "highlight_descriptions": highlight_descriptions,
-            # "short_description": short_description,
         }
         jobs_data.append(job)
 
@@ -109,7 +109,7 @@ def get_jobs_data(html_content) -> list:
 @shared_task(bind=True)
 def scrape_jobstreet_data(self):
     website_url = "https://id.jobstreet.com/id/jobs-in-information-communication-technology"
-    total_pages = 10
+    total_pages = 30
 
     scraped_data = []
     for page in range(total_pages):
@@ -117,7 +117,7 @@ def scrape_jobstreet_data(self):
 
         html_content = get_content().get(f'{current_page_url}').text
         new_data = get_jobs_data(html_content)
-        scraped_data .extend(new_data)
+        scraped_data.extend(new_data)
         progress = int(((page + 1) / total_pages) * 100)
         cache.set(
             f'scraping_progress_{self.request.id}', progress, timeout=3600)

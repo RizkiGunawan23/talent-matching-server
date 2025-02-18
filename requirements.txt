@@ -20,6 +20,7 @@ django_neomodel==0.2.0
 djangorestframework==3.15.2
 djangorestframework_simplejwt==5.4.0
 fake-useragent==2.0.3
+gunicorn==23.0.0
 h11==0.14.0
 idna==3.10
 importlib_metadata==8.6.1

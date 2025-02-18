@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 from neomodel import config
 import datetime
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -42,6 +43,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt.token_blacklist',
     'django_neomodel',
+    'neomodel',
     'core',
 ]
 
@@ -104,14 +106,26 @@ DATABASES = {
     }
 }
 
-config.DATABASE_URL = 'bolt://neo4j:12345678@localhost:7687'
 
-CELERY_BROKER_URL = 'redis://localhost:6379/0'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+NEOMODEL_NEO4J_BOLT_URL = os.getenv(
+    "NEO4J_BOLT_URL", "bolt://neo4j:12345678@neo4j:7687")
+config.DATABASE_URL = NEOMODEL_NEO4J_BOLT_URL
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": os.getenv("REDIS_URL", "redis://redis:6379/0"),
+    }
+}
+
+CELERY_BROKER_URL = os.getenv("REDIS_URL", "redis://redis:6379/0")
+CELERY_RESULT_BACKEND = os.getenv("REDIS_URL", "redis://redis:6379/0")
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
+
+CELERY_IMPORTS = ('core.tasks',)
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
