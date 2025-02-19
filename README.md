@@ -1,22 +1,72 @@
-# Talent Matching Server (API)
+# Talent Matching Server (API) 🚀
+
+![Docker](https://img.shields.io/badge/Docker-Containerization-blue)
+![Django REST Framework](https://img.shields.io/badge/DRF-Django%20REST%20Framework-red)
+![Neo4j](https://img.shields.io/badge/Neo4j-Graph%20Database-green)
+![Redis](https://img.shields.io/badge/Cache-Redis-red)
+![Celery](https://img.shields.io/badge/Celery-V5-orange)
 
 Proyek ini adalah server API untuk aplikasi Talent Matching menggunakan **Django REST Framework**, dirancang untuk berkomunikasi dengan **Neo4j** dan **Apache Jena Fuseki**.
 
-## Persyaratan
+## ✨ Fitur Utama
+
+- 🔍 **Pencocokan Kandidat** – Menganalisis data graf dari **Neo4j** untuk menemukan kandidat terbaik berdasarkan keterampilan dan pengalaman.
+- 📖 **Query Ontologi** – Menggunakan **Apache Jena Fuseki** untuk memahami hubungan antar data dalam ontologi pekerjaan.
+- 🛠️ **Scraping Lowongan Pekerjaan** – Mengambil data pekerjaan dari berbagai sumber dengan **BeautifulSoup**.
+- 🚀 **RESTful API** – Backend berbasis **Django REST Framework** untuk akses data yang cepat dan aman.
+- ⚡ **Caching & Queue Processing** – **Redis** digunakan untuk caching hasil pencarian dan antrean tugas scraping dengan **Celery**.
+- 📦 **Docker Support** – Dapat dijalankan dengan mudah menggunakan Docker Compose.
+
+## 📂 Struktur Proyek
+
+```
+talent-matching-server/
+│── core/
+    │── serializers/
+        │── ....
+    │── views/
+        │── ....
+    │── admin.py
+    │── apps.py
+    │── models.py
+    │── tasks.py
+    │── tests.py
+    │── urls.py
+│── talent_matching_server/
+    │── asgi.py
+    │── celery.py
+    │── settings.py
+    │── urls.py
+    │── wsgi.py
+│── utils/
+    │── custom_jwt_authentication.py
+    │── exception_handler.py
+│── .env.example
+│── .gitignore
+│── docker-compose-dev.yml
+│── docker-compose-prod.yml
+│── Dockerfile
+│── manage.py
+│── README.md
+│── requirements.txt
+```
+
+## 🛠️ Persyaratan
 
 Pastikan Anda sudah menginstal software berikut sebelum memulai:
 
+- **Docker**: Untuk menjalankan aplikasi di atas container docker
 - **Python**: Versi 3.10 atau lebih baru
 - **Pip**: Untuk mengelola dependensi Python
 - **Neo4j**: Untuk penyimpanan data berbasis graf
 - **Redis**: Untuk cache proses scraping
 - **Apache Jena Fuseki**: Untuk query data berbasis ontologi
 
-## Instalasi
+## 📦 Instalasi
 
 Ikuti langkah-langkah di bawah untuk menjalankan proyek ini di lingkungan pengembangan lokal Anda.
 
-### 1. Clone Repository
+### 1️⃣ Clone Repository
 
 Clone repository ke komputer lokal Anda:
 
@@ -25,50 +75,55 @@ git clone https://github.com/RizkiGunawan23/talent-matching-server.git
 cd talent-matching-server
 ```
 
-### 2. Buat dan Aktifkan Virtual Environment
+### 2️⃣ Buat dan Aktifkan Virtual Environment
 
 Disarankan untuk menggunakan virtual environment agar paket Python terisolasi.
 
 ```bash
-python -m venv env
+python -m venv venv
 source venv/bin/activate        # Untuk Linux/Mac
 source venv/Scripts/activate    # Untuk Windows
 ```
 
-### 3. Instal Dependensi
+### 3️⃣ Ubah File .env
 
-Instal semua dependensi yang terdaftar di requirements.txt:
+Ubah bagian username dan password Neo4j mengikuti variabel NEO4J_AUTH di file docker-compose.yml. Contoh:
 
 ```bash
-pip install -r requirements.txt
+NEO4J_BOLT_URL=bolt://neo4j:12345678@neo4j:7687
 ```
 
-### 4. Buat Database di Neo4j
+## 🚀 Menjalankan dengan Docker
 
-Pastikan sudah ada database di Neo4j dan aktifkan database tersebut.
+| Mode                    | Perintah                                               |
+| ----------------------- | ------------------------------------------------------ |
+| Development             | `docker-compose -f docker-compose-dev.yml watch`       |
+| Production (First Time) | `docker-compose -f docker-compose-prod.yml up --build` |
+| Production (Next Time)  | `docker-compose -f docker-compose-prod.yml up`         |
 
-### 5. Aktifkan Service Redis
+### 🛑 Perintah Tambahan:
 
-Pastikan sudah ada redis terinstal dan aktifkan service-nya.
+| Perintah                 | Deskripsi                        |
+| ------------------------ | -------------------------------- |
+| `docker-compose down`    | Hentikan & hapus container       |
+| `docker-compose down -v` | Hapus container & volume (Neo4j) |
+
+## 🛠️ Menambahkan Package Python
+
+Jika ingin menambahkan package Python baru ke proyek, ikuti langkah berikut:
+
+### 1️⃣ Install Package Baru
+
+Jalankan perintah berikut untuk menginstal package yang dibutuhkan:
 
 ```bash
-redis-server
+pip install <nama-package>
 ```
 
-### 6. Konfigurasi Koneksi Neo4j
+### 2️⃣ Perbarui requirements.txt
 
-Ubah isi di bagian file talent_matching/settings.py sesuai database yang telah dibuat:
-
-```bash
-config.DATABASE_URL = 'bolt://<username>:<password>@localhost:7687'
-```
-
-### 6. Jalankan Server
-
-Migrate dan jalankan server:
+Setelah menginstal package, pastikan daftar dependensi proyek diperbarui dengan menjalankan:
 
 ```bash
-python manage.py migrate
-celery -A talent_matching_server worker --pool=solo --loglevel=info
-python manage.py runserver
+pip freeze > requirements.txt
 ```

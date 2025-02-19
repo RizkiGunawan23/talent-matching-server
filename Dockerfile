@@ -17,4 +17,4 @@ COPY . .
 EXPOSE 8000
 
 # Perintah untuk menjalankan server Django
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "talent_matching_server.wsgi:application"]
+CMD ["gunicorn", "--reload", "--bind", "0.0.0.0:8000", "talent_matching_server.wsgi:application"]

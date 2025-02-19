@@ -13,7 +13,7 @@ class JobRecommendationView(APIView):
     permission_classes = [IsAuthenticated, IsAdminUser]
 
     def get(self, request):
-        return Response({"message": "get JobRecommendationListView"}, status=status.HTTP_200_OK)
+        return Response({"message": "get JobRecommendationListViewsssss"}, status=status.HTTP_200_OK)
 
 
 class JobDetailView(APIView):
