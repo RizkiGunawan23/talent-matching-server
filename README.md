@@ -87,7 +87,7 @@ source venv/Scripts/activate    # Untuk Windows
 
 ### 3️⃣ Ubah File .env
 
-Ubah bagian username dan password Neo4j mengikuti variabel NEO4J_AUTH di file docker-compose.yml. Contoh:
+Ubah bagian username dan password Neo4j mengikuti variabel NEO4J_AUTH di file docker-compose-dev.yml atau docker-compose-prod.yml. Contoh:
 
 ```bash
 NEO4J_BOLT_URL=bolt://neo4j:12345678@neo4j:7687
