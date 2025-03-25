@@ -28,7 +28,9 @@ services:
             - redis
             - django
         env_file: .env
-        command: celery -A talent_matching_server worker --loglevel=info
+        command: watchmedo auto-restart --recursive --pattern="*.py" -- celery -A talent_matching_server worker --loglevel=info
+        shm_size: "1gb"
+        user: root
         restart: always
         develop:
             watch:
