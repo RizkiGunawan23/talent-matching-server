@@ -6,13 +6,12 @@
 ![Redis](https://img.shields.io/badge/Cache-Redis-red)
 ![Celery](https://img.shields.io/badge/Celery-V5-orange)
 
-Proyek ini adalah server API untuk aplikasi Talent Matching menggunakan **Django REST Framework**, dirancang untuk berkomunikasi dengan **Neo4j** dan **Apache Jena Fuseki**.
+Proyek ini adalah server API untuk aplikasi Talent Matching menggunakan **Django REST Framework**, dirancang untuk berkomunikasi dengan **Neo4j**.
 
 ## ✨ Fitur Utama
 
 - 🔍 **Pencocokan Kandidat** – Menganalisis data graf dari **Neo4j** untuk menemukan kandidat terbaik berdasarkan keterampilan dan pengalaman.
-- 📖 **Query Ontologi** – Menggunakan **Apache Jena Fuseki** untuk memahami hubungan antar data dalam ontologi pekerjaan.
-- 🛠️ **Scraping Lowongan Pekerjaan** – Mengambil data pekerjaan dari berbagai sumber dengan **BeautifulSoup**.
+- 🛠️ **Scraping Lowongan Pekerjaan** – Mengambil data pekerjaan dari berbagai sumber dengan **Selenium**.
 - 🚀 **RESTful API** – Backend berbasis **Django REST Framework** untuk akses data yang cepat dan aman.
 - ⚡ **Caching & Queue Processing** – **Redis** digunakan untuk caching hasil pencarian dan antrean tugas scraping dengan **Celery**.
 - 📦 **Docker Support** – Dapat dijalankan dengan mudah menggunakan Docker Compose.
@@ -56,11 +55,10 @@ talent-matching-server/
 Pastikan Anda sudah menginstal software berikut sebelum memulai:
 
 - **Docker**: Untuk menjalankan aplikasi di atas container docker
-- **Python**: Versi 3.10 atau lebih baru
+- **Python**: Versi 3.12 atau lebih baru
 - **Pip**: Untuk mengelola dependensi Python
 - **Neo4j**: Untuk penyimpanan data berbasis graf
 - **Redis**: Untuk cache proses scraping
-- **Apache Jena Fuseki**: Untuk query data berbasis ontologi
 
 ## 📦 Instalasi
 
@@ -85,8 +83,9 @@ source venv/bin/activate        # Untuk Linux/Mac
 source venv/Scripts/activate    # Untuk Windows
 ```
 
-### 3️⃣ Ubah File .env
+### 3️⃣ Buat File .env dan Ubah Konfigurasi
 
+Copy dan paste file .env.example dan rename menjadi .env.
 Ubah bagian username dan password Neo4j mengikuti variabel NEO4J_AUTH di file docker-compose-dev.yml atau docker-compose-prod.yml. Contoh:
 
 ```bash
