@@ -8,4 +8,4 @@ class ProfileView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        return Response({"message": "get ProfileViewsssssssssssss"}, status=status.HTTP_200_OK)
+        return Response({"message": "get ProfileView"}, status=status.HTTP_200_OK)

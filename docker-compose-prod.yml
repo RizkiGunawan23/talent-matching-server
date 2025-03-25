@@ -20,6 +20,8 @@ services:
             - django
         env_file: .env
         command: celery -A talent_matching_server worker --loglevel=info
+        shm_size: "1gb"
+        user: root
         volumes:
             - .:/app
         restart: always
