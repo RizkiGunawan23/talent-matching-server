@@ -1,8 +1,9 @@
 from celery import shared_task
 from celery.utils.log import get_task_logger
+from django.core.cache import cache
 from fake_useragent import UserAgent
-from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium_stealth import stealth
 from typing import List
@@ -10,29 +11,26 @@ import json
 import logging
 import os
 import random
+import re
 import time
 import undetected_chromedriver as uc
-from django.core.cache import cache
 
 logger = get_task_logger(__name__)
 
-os.environ["XDG_CACHE_HOME"] = "/tmp"
-os.environ["XDG_CONFIG_HOME"] = "/tmp"
 
-
-def log_info(message):
+def log_info(message) -> None:
     print(message)
     # logging.info(message)
 
 
-def get_fake_user_agent():
+def get_fake_user_agent() -> str:
     ua = UserAgent()
     return ua.random
 
 
-def get_driver():
+def get_driver() -> uc.Chrome | None:
     try:
-        chrome_options = uc.ChromeOptions()
+        chrome_options: uc.ChromeOptions = uc.ChromeOptions()
         chrome_options.add_argument('--headless=new')
         chrome_options.add_argument("--disable-dev-shm-usage")
         chrome_options.add_argument("--disable-gpu")
@@ -42,7 +40,7 @@ def get_driver():
         chrome_options.add_argument(
             "--disable-blink-features=AutomationControlled")
         chrome_options.add_argument(f"user-agent={get_fake_user_agent()}")
-        driver = uc.Chrome(options=chrome_options)
+        driver: uc.Chrome = uc.Chrome(options=chrome_options)
         stealth(driver,
                 languages=["en-US", "en"],
                 vendor="Google Inc.",
@@ -56,13 +54,17 @@ def get_driver():
         log_info(f"Error in Driver: {e}")
 
 
-def close_driver(driver):
-    if driver is not None:
+def close_driver(driver) -> None:
+    if driver:
         try:
             driver.quit()
             log_info("Driver berhasil ditutup.")
         except Exception as e:
             log_info(f"Error saat menutup driver: {e}")
+
+
+def is_task_cancelled(task_id: str) -> bool:
+    return cache.get(f"scraping_cancel_{task_id}") == True
 
 
 @shared_task(bind=True)
@@ -78,12 +80,13 @@ def scrape_glints_data_detail(self):
     start_time = time.time()
     log_info("Scraping glints dimulai.")
 
+    progress_data = {}
     # Inisialisasi driver
     driver = get_driver()
     try:
         cache.set(
-            f'scraping_progress_{self.request.id}', {}, timeout=3600)
-        self.update_state(state="GETTING_AUTH_DATA")
+            f'scraping_progress_{self.request.id}', progress_data, timeout=None)
+        self.update_state(state="GETTING_AUTH_DATA", meta=progress_data)
 
         # 1. Buka halaman login Glints
         log_info("Membuka halaman login Glints.")
@@ -102,11 +105,6 @@ def scrape_glints_data_detail(self):
             login_email_button.click()
         except Exception as e:
             log_info(f"Error di login_email_button: {e}")
-            try:
-                driver.save_screenshot(
-                    "./screenshots/glints/login_email_button.png")
-            except Exception as e:
-                log_info(f"Error di login_email_button save screenshot: {e}")
 
         # 3. Isi email dan password
         log_info('Mencari login-form-email')
@@ -135,11 +133,6 @@ def scrape_glints_data_detail(self):
         except Exception as e:
             log_info(
                 f"Login gagal atau halaman tidak muncul dalam waktu yang cukup: {e}")
-            try:
-                driver.save_screenshot(
-                    "./screenshots/glints/after_login.png")
-            except Exception as e:
-                log_info(f"Error di after_login save screenshot: {e}")
 
         # 5. Simpan cookies setelah login
         log_info('Mengambil cookies')
@@ -147,6 +140,11 @@ def scrape_glints_data_detail(self):
 
         # 6. Tutup sesi browser pertama
         close_driver(driver)
+
+        if is_task_cancelled(self.request.id):
+            log_info("Task dibatalkan setelah login.")
+            close_driver(driver)
+            return
 
         # 7. Buat instance driver baru untuk scraping
         log_info('Membuat instance driver')
@@ -175,8 +173,8 @@ def scrape_glints_data_detail(self):
         driver.get("https://glints.com/id/job-category/computer-technology")
 
         cache.set(
-            f'scraping_progress_{self.request.id}', {},  timeout=3600)
-        self.update_state(state="GETTING_MAX_PAGE_NUMBER")
+            f'scraping_progress_{self.request.id}', progress_data, timeout=None)
+        self.update_state(state="GETTING_MAX_PAGE_NUMBER", meta=progress_data)
         # 12. Mencari maksimal page
         log_info('Mencari max page')
         pagination_buttons = driver.find_elements(
@@ -189,9 +187,9 @@ def scrape_glints_data_detail(self):
                 page_num = int(button.text)  # Konversi teks ke integer
                 if page_num > max_page:
                     max_page = page_num
-                progress_data = {'max_page': max_page}
+                progress_data["max_page"] = max_page
                 cache.set(
-                    f'scraping_progress_{self.request.id}', progress_data, timeout=3600)
+                    f'scraping_progress_{self.request.id}', progress_data, timeout=None)
                 self.update_state(
                     state="GETTING_MAX_PAGE_NUMBER", meta=progress_data)
             except ValueError:
@@ -199,18 +197,30 @@ def scrape_glints_data_detail(self):
 
         log_info(f"Halaman terakhir yang tersedia: {max_page}")
 
-        cache.set(
-            f'scraping_progress_{self.request.id}', {},  timeout=3600)
-        self.update_state(state="COLLECTING_JOB_URLS")
+        if is_task_cancelled(self.request.id):
+            log_info("Task dibatalkan setelah mendapatkan jumlah halaman.")
+            close_driver(driver)
+            return
 
         # 13. Looping page selanjutnya sampai akhir
+        cache.set(
+            f'scraping_progress_{self.request.id}', progress_data, timeout=None)
+        self.update_state(
+            state="COLLECTING_JOB_URLS", meta=progress_data)
         job_urls: List[str] = []
-        # for page in range(1, max_page):
-        for page in range(1, 2):
+
+        # max_page = 1  # Default jika hanya ada 1 halaman saat debugging
+        for page in range(1, max_page + 1):
             try:
+                if is_task_cancelled(self.request.id):
+                    log_info(f"Task dibatalkan saat scraping page ke-{page}.")
+                    close_driver(driver)
+                    return
+
                 log_info(f'Loop page ke-{page}')
                 # 14. Scrape link page untuk detail setiap pekerjaan
-                url = f"https://glints.com/id/job-category/computer-technology" if page == 1 else f"https://glints.com/id/job-category/computer-technology?page={page}"
+                url = f"https://glints.com/id/job-category/computer-technology"
+                url = f"{url}?page={page}" if page > 1 else url
                 log_info('Navigasi ke halaman')
                 driver.get(url)
 
@@ -234,42 +244,43 @@ def scrape_glints_data_detail(self):
                 for job_title_tag in job_title_tags:
                     try:
                         job_urls.append(job_title_tag.get_attribute("href"))
-                        progress_data = {'total_jobs': len(job_urls)}
+                        progress_data['total_jobs'] = len(job_urls)
                         cache.set(
-                            f'scraping_progress_{self.request.id}', progress_data, timeout=3600)
+                            f'scraping_progress_{self.request.id}', progress_data, timeout=None)
                         self.update_state(
                             state="COLLECTING_JOB_URLS", meta=progress_data)
                     except Exception as e:
                         log_info(f'Error di job_title_tag: {e}')
             except Exception as e:
                 log_info(f'Error di job_title_tag looping ke-{page}: {e}')
-                try:
-                    driver.save_screenshot(
-                        f"./screenshots/glints/job_url-{page}.png")
-                except Exception as e:
-                    log_info(f"Error di job_url-{page} save screenshot: {e}")
 
         job_data: List = []
         i = 0
         log_info(f'Looping job urls {len(job_urls)}')
 
         cache.set(
-            f'scraping_progress_{self.request.id}', {},  timeout=3600)
-        self.update_state(state="SCRAPING_JOB_DETAIL")
+            f'scraping_progress_{self.request.id}', progress_data, timeout=None)
+        self.update_state(state="SCRAPING_JOB_DETAIL", meta=progress_data)
 
         for job_url in job_urls:
+            # for job_url in job_urls[0:5]:
             # 15. Scrape detail pekerjaan di setiap link
             try:
+                if is_task_cancelled(self.request.id):
+                    log_info(f"Task dibatalkan saat scraping job detail.")
+                    close_driver(driver)
+                    return
+
                 log_info(f'get job detail loop {i}')
-                i += 1
                 log_info('get job detail')
                 driver.get(job_url)
+                i += 1
 
                 log_info('scroll')
                 driver.execute_script(
                     "window.scrollTo(0, document.body.scrollHeight);")
                 log_info('random sleep')
-                time.sleep(random.uniform(3, 5))
+                time.sleep(random.uniform(2, 3))
 
                 img_url = None
                 try:
@@ -296,14 +307,7 @@ def scrape_glints_data_detail(self):
                     img_url = url_dict[max(url_dict.keys())]
                 except Exception as e:
                     log_info(f'Error di img_tag: {e}')
-                    try:
-                        log_info(f'scroll ulang img_url ke-{i}')
-                        driver.execute_script(
-                            "window.scrollTo(0, 0);")
-                        driver.save_screenshot(
-                            f"./screenshots/glints/img_url-{i}.png")
-                    except Exception as e:
-                        log_info(f"Error di img_url-{i} save screenshot: {e}")
+                    img_url = "https://img.icons8.com/?size=720&id=53373&format=png&color=000000"
 
                 title = None
                 try:
@@ -322,15 +326,6 @@ def scrape_glints_data_detail(self):
                     title = title_tag.get_attribute("textContent").strip()
                 except Exception as e:
                     log_info(f'Error di job_title_tag: {e}')
-                    try:
-                        log_info(f'scroll ulang title_tag ke-{i}')
-                        driver.execute_script(
-                            "window.scrollTo(0, 0);")
-                        driver.save_screenshot(
-                            f"./screenshots/glints/title_tag-{i}.png")
-                    except Exception as e:
-                        log_info(
-                            f"Error di title_tag-{i} save screenshot: {e}")
 
                 company_name = None
                 try:
@@ -350,19 +345,67 @@ def scrape_glints_data_detail(self):
                         "textContent").strip()
                 except Exception as e:
                     log_info(f'Error di company_name_tag: {e}')
-                    try:
-                        log_info(f'scroll ulang company_name_tag ke-{i}')
-                        driver.execute_script(
-                            "window.scrollTo(0, 0);")
-                        driver.save_screenshot(
-                            f"./screenshots/glints/company_name_tag-{i}.png")
-                    except Exception as e:
-                        log_info(
-                            f"Error di company_name_tag-{i} save screenshot: {e}")
+
+                subdistrict = None
+                try:
+                    # 19. Mencari tag yang berisi informasi kecamatan/kabupaten
+                    log_info('search subdistrict tag')
+                    subdistrict_tag = WebDriverWait(driver, 15).until(
+                        EC.presence_of_element_located(
+                            (
+                                By.XPATH,
+                                "/html/body/div[2]/div/div[1]/div[2]/div[2]/div[1]/div/label[5]/a"
+                            )
+                        )
+                    )
+
+                    log_info('get subdistrict text')
+                    subdistrict = subdistrict_tag.get_attribute(
+                        "textContent").strip()
+                except Exception as e:
+                    log_info(f'Error di subdistrict_tag: {e}')
+
+                city = None
+                try:
+                    # 20. Mencari tag yang berisi informasi kota
+                    log_info('search city tag')
+                    city_tag = WebDriverWait(driver, 15).until(
+                        EC.presence_of_element_located(
+                            (
+                                By.XPATH,
+                                "/html/body/div[2]/div/div[1]/div[2]/div[2]/div[1]/div/label[4]/a"
+                            )
+                        )
+                    )
+
+                    log_info('get city text')
+                    city = city_tag.get_attribute(
+                        "textContent").strip()
+                except Exception as e:
+                    log_info(f'Error di city_tag: {e}')
+
+                province = None
+                try:
+                    # 21. Mencari tag yang berisi informasi provinsi
+                    log_info('search province tag')
+                    province_tag = WebDriverWait(driver, 15).until(
+                        EC.presence_of_element_located(
+                            (
+                                By.XPATH,
+                                "/html/body/div[2]/div/div[1]/div[2]/div[2]/div[1]/div/label[3]/a"
+                            )
+                        )
+                    )
+
+                    log_info('get province text')
+                    province = province_tag.get_attribute(
+                        "textContent").strip()
+                except Exception as e:
+                    log_info(f'Error di province_tag: {e}')
 
                 salary = None
                 try:
-                    # 19. Mencari tag yang berisi informasi gaji
+                    # 22. Mencari tag yang berisi informasi gaji
                     log_info('search salary tags')
                     salary_tag_container = WebDriverWait(driver, 15).until(
                         EC.presence_of_element_located(
@@ -376,19 +419,13 @@ def scrape_glints_data_detail(self):
                     log_info('get salary text')
                     salary = salary_tag_container.get_attribute(
                         "textContent").strip()
+
+                    if len(re.findall(r'[\d\.]+', salary)) == 0:
+                        salary = None
                 except Exception as e:
                     log_info(f'Error di salary_tag_container: {e}')
                     try:
-                        log_info(f'scroll ulang salary_tag ke-{i}')
-                        driver.execute_script(
-                            "window.scrollTo(0, 0);")
-                        driver.save_screenshot(
-                            f"./screenshots/glints/salary_tag-{i}.png")
-                    except Exception as e:
-                        log_info(
-                            f"Error di salary_tag-{i} save screenshot: {e}")
-                    try:
-                        # 19.a Mencari tag yang berisi informasi gaji dengan xpath lain
+                        # 22.a Mencari tag yang berisi informasi gaji dengan xpath lain
                         log_info('search salary tags with different xpath')
                         salary_tag_container = WebDriverWait(driver, 15).until(
                             EC.presence_of_element_located(
@@ -402,20 +439,17 @@ def scrape_glints_data_detail(self):
                         log_info('get salary text with different xpath')
                         salary = salary_tag_container.get_attribute(
                             "textContent").strip()
+
+                        if len(re.findall(r'[\d\.]+', salary)) == 0:
+                            salary = None
                     except Exception as e:
                         log_info(
                             f'Error di salary_tag_container with different xpath: {e}')
-                        try:
-                            driver.save_screenshot(
-                                f"./screenshots/glints/salary_tag_diff_xpath-{i}.png")
-                        except Exception as e:
-                            log_info(
-                                f"Error di salary_tag_diff_xpath-{i} save screenshot: {e}")
 
                 employment_type = None
                 work_setup = None
                 try:
-                    # 20. Mencari tag yang berisi informasi jenis pekerjaan dan cara kerja
+                    # 23. Mencari tag yang berisi informasi jenis pekerjaan dan cara kerja
                     log_info('search employment type and work setup tag')
                     employment_type_and_work_setup_tag = WebDriverWait(driver, 15).until(
                         EC.presence_of_element_located(
@@ -437,20 +471,10 @@ def scrape_glints_data_detail(self):
                 except Exception as e:
                     log_info(
                         f'Error di employment_type_and_work_setup_tag: {e}')
-                    try:
-                        log_info(
-                            f'scroll ulang employment_type_and_work_setup_tag ke-{i}')
-                        driver.execute_script(
-                            "window.scrollTo(0, 0);")
-                        driver.save_screenshot(
-                            f"./screenshots/glints/employment_type_and_work_setup_tag-{i}.png")
-                    except Exception as e:
-                        log_info(
-                            f"Error di employment_type_and_work_setup_tag-{i} save screenshot: {e}")
 
                 minimum_education = None
                 try:
-                    # 21. Mencari tag yang berisi informasi minimal pendidikan
+                    # 24. Mencari tag yang berisi informasi minimal pendidikan
                     log_info('search minimum education tag')
                     minimum_education_tag = WebDriverWait(driver, 15).until(
                         EC.presence_of_element_located(
@@ -466,19 +490,10 @@ def scrape_glints_data_detail(self):
                         "textContent").strip()
                 except Exception as e:
                     log_info(f'Error di minimum_education_tag: {e}')
-                    try:
-                        log_info(f'scroll ulang minimum_education ke-{i}')
-                        driver.execute_script(
-                            "window.scrollTo(0, 0);")
-                        driver.save_screenshot(
-                            f"./screenshots/glints/minimum_education-{i}.png")
-                    except Exception as e:
-                        log_info(
-                            f"Error di minimum_education-{i} save screenshot: {e}")
 
                 minimum_experience = None
                 try:
-                    # 22. Mencari tag yang berisi informasi minimal pengalaman
+                    # 25. Mencari tag yang berisi informasi minimal pengalaman
                     log_info('search minimum experience tag')
                     minimum_experience_tag = WebDriverWait(driver, 15).until(
                         EC.presence_of_element_located(
@@ -497,19 +512,10 @@ def scrape_glints_data_detail(self):
 
                 except Exception as e:
                     log_info(f'Error di minimum_experience_tag: {e}')
-                    try:
-                        log_info(f'scroll ulang minimum_experience ke-{i}')
-                        driver.execute_script(
-                            "window.scrollTo(0, 0);")
-                        driver.save_screenshot(
-                            f"./screenshots/glints/minimum_experience-{i}.png")
-                    except Exception as e:
-                        log_info(
-                            f"Error di minimum_experience-{i} save screenshot: {e}")
 
                 required_skills = None
                 try:
-                    # 23. Mencari tag yang berisi informasi skill yang dibutuhkan
+                    # 26. Mencari tag yang berisi informasi skill yang dibutuhkan
                     log_info('search required skills container')
                     required_skills_container = WebDriverWait(driver, 15).until(
                         EC.presence_of_element_located(
@@ -521,7 +527,7 @@ def scrape_glints_data_detail(self):
                     )
 
                     log_info('wait for required skills tags to load')
-                    time.sleep(random.uniform(3, 5))
+                    time.sleep(random.uniform(2, 3))
                     log_info('find required skills tags')
                     required_skills_tags = required_skills_container.find_elements(
                         By.TAG_NAME, "label"
@@ -532,19 +538,10 @@ def scrape_glints_data_detail(self):
                         "textContent").strip() for required_skill_tag in required_skills_tags]
                 except Exception as e:
                     log_info(f'Error di required_skills_tag: {e}')
-                    try:
-                        log_info(f'scroll ulang required_skills_tag ke-{i}')
-                        driver.execute_script(
-                            "window.scrollTo(0, document.body.scrollHeight/5);")
-                        driver.save_screenshot(
-                            f"./screenshots/glints/required_skills_tag-{i}.png")
-                    except Exception as e:
-                        log_info(
-                            f"Error di required_skills_tag-{i} save screenshot: {e}")
 
                 job_description = None
                 try:
-                    # 24. Mencari tag yang berisi informasi deskripsi pekerjaan
+                    # 27. Mencari tag yang berisi informasi deskripsi pekerjaan
                     log_info('search job description container')
                     job_description_container = WebDriverWait(driver, 15).until(
                         EC.presence_of_element_located(
@@ -558,23 +555,17 @@ def scrape_glints_data_detail(self):
                         "innerHTML")
                 except Exception as e:
                     log_info(f'Error di job_description_tag: {e}')
-                    try:
-                        log_info(f'scroll ulang job_description_tag ke-{i}')
-                        driver.execute_script(
-                            "window.scrollTo(0, document.body.scrollHeight/5);")
-                        driver.save_screenshot(
-                            f"./screenshots/glints/job_description_tag-{i}.png")
-                    except Exception as e:
-                        log_info(
-                            f"Error di job_description_tag-{i} save screenshot: {e}")
 
                 log_info('append new job data')
                 job_data.append(
                     {
-                        "url": job_url,
+                        "job_url": job_url,
                         "image_url": img_url,
                         "job_title": title,
                         "company_name": company_name,
+                        "subdistrict": subdistrict,
+                        "city": city,
+                        "province": province,
                         "salary": salary,
                         "employment_type": employment_type,
                         "work_setup": work_setup,
@@ -585,13 +576,10 @@ def scrape_glints_data_detail(self):
                     }
                 )
 
-                progress_data = {
-                    "max_page": max_page,
-                    "scraped_jobs": len(job_data),
-                    "total_jobs": len(job_urls),
-                }
+                progress_data["scraped_jobs"] = len(job_data)
+
                 cache.set(
-                    f'scraping_progress_{self.request.id}', progress_data, timeout=3600)
+                    f'scraping_progress_{self.request.id}', progress_data, timeout=None)
                 self.update_state(
                     state="SCRAPING_JOB_DETAIL", meta=progress_data)
 

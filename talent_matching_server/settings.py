@@ -70,7 +70,7 @@ SIMPLE_JWT = {
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'utils.custom_jwt_authentication.Neo4jJWTAuthentication',
+        'utils.custom_jwt_authentication.CookieJWTAuthentication',
     ),
     'EXCEPTION_HANDLER': 'utils.exception_handler.custom_exception_handler',
 }

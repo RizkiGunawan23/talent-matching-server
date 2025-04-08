@@ -57,8 +57,7 @@ Pastikan Anda sudah menginstal software berikut sebelum memulai:
 - **Docker**: Untuk menjalankan aplikasi di atas container docker
 - **Python**: Versi 3.12 atau lebih baru
 - **Pip**: Untuk mengelola dependensi Python
-- **Neo4j**: Untuk penyimpanan data berbasis graf
-- **Redis**: Untuk cache proses scraping
+- **Neo4j Desktop**: Untuk monitoring data graf
 
 ## 📦 Instalasi
 
@@ -96,9 +95,9 @@ NEO4J_BOLT_URL=bolt://neo4j:12345678@neo4j:7687
 
 | Mode                    | Perintah                                               |
 | ----------------------- | ------------------------------------------------------ |
-| Development             | `docker-compose -f docker-compose-dev.yml watch`       |
-| Production (First Time) | `docker-compose -f docker-compose-prod.yml up --build` |
-| Production (Next Time)  | `docker-compose -f docker-compose-prod.yml up`         |
+| Development             | `docker compose -f docker-compose-dev.yml watch`       |
+| Production (First Time) | `docker compose -f docker-compose-prod.yml up --build` |
+| Production (Next Time)  | `docker compose -f docker-compose-prod.yml up`         |
 
 ### 🛑 Perintah Tambahan:
 

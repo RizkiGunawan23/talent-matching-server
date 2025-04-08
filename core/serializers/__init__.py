@@ -1,3 +1,3 @@
 from .authentication import SignUpSerializer, SignInSerializer, CustomTokenSerializer
-from .job import JobRecommendationSerializer
+from .job import JobSerializer
 from .profile import ProfileSerializer

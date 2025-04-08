@@ -28,9 +28,12 @@ services:
             - redis
             - django
         env_file: .env
+        environment:
+            HOME: /tmp
         command: watchmedo auto-restart --recursive --pattern="*.py" -- celery -A talent_matching_server worker --loglevel=info
         shm_size: "1gb"
-        user: root
+        volumes:
+            - ./logs:/var/log/scraper
         restart: always
         develop:
             watch:
@@ -46,7 +49,10 @@ services:
         container_name: talent-matching-redis
         ports:
             - "6379:6379"
-        restart: always
+        volumes:
+            - redis_data:/data
+            - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+        command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
 
     neo4j:
         image: neo4j:5.10
@@ -64,3 +70,4 @@ services:
 volumes:
     neo4j_data:
     neo4j_logs:
+    redis_data:

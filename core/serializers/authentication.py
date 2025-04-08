@@ -1,6 +1,7 @@
-from rest_framework import serializers
 from django.contrib.auth.hashers import make_password, check_password
+from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
+from typing import Any, Dict
 from ..models import User
 
 
@@ -38,17 +39,18 @@ class SignUpSerializer(serializers.Serializer):
         }
     )
 
-    def validate_email(self, value):
-        try:
-            User.nodes.get(email=value)
-        except User.DoesNotExist:
+    def validate_email(self, value: str):
+        user: User | None = User.nodes.get_or_none(email=value)
+
+        if not user:
             return value
+
         raise serializers.ValidationError("Email already exists")
 
-    def create(self, validated_data):
-        user = User(
+    def create(self, validated_data: Dict[str, str]):
+        user: User = User(
             email=validated_data['email'],
-            password=make_password(validated_data['password']),
+            password=make_password(validated_data['password'], ),
             name=validated_data['name'],
             role=validated_data['role']
         )
@@ -74,17 +76,15 @@ class SignInSerializer(serializers.Serializer):
         }
     )
 
-    def validate(self, attrs):
+    def validate(self, attrs: Dict[str, str]):
         email = attrs['email']
         password = attrs['password']
 
-        try:
-            user = User.nodes.get(email=email)
-        except User.DoesNotExist:
-            raise serializers.ValidationError('Credentials are not valid')
+        user: User | None = User.nodes.get_or_none(email=email)
 
-        if not check_password(password, user.password):
-            raise serializers.ValidationError('Credentials are not valid')
+        if not user or not check_password(password, user.password):
+            raise serializers.ValidationError(
+                "Email atau password tidak valid")
 
         attrs['user'] = user
         return attrs
@@ -96,8 +96,8 @@ class CustomTokenSerializer(serializers.Serializer):
     user = serializers.DictField(read_only=True)
 
     @classmethod
-    def get_token(cls, user):
-        refresh = RefreshToken()
+    def get_token(cls, user: User) -> Dict[str, str | Dict[str, str]]:
+        refresh: RefreshToken = RefreshToken()
         refresh['user_id'] = user.uid
         return {
             'refresh': str(refresh),

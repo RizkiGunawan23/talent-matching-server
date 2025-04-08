@@ -4,11 +4,10 @@ FROM python:3.12
 # Atur direktori kerja di dalam container
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y wget curl unzip \
-    && wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add - \
-    && echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
-    && apt-get update && apt-get install -y google-chrome-stable \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y wget curl unzip gnupg \
+    && wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
+    && dpkg -i google-chrome-stable_current_amd64.deb || apt-get -fy install \
+    && rm google-chrome-stable_current_amd64.deb
 
 # Copy file requirements
 COPY requirements.txt .
@@ -22,8 +21,14 @@ COPY . .
 # Ekspos port Django (default: 8000)
 EXPOSE 8000
 
+# Tambah user untuk celery
 RUN addgroup --system celery && adduser --system --ingroup celery celery
+
+# Buat folder log dan kasih akses ke user celery
+RUN mkdir -p /var/log/scraper && chown -R celery:celery /var/log/scraper
+
+# Atur agar proses dijalankan oleh user celery
 USER celery
 # Perintah untuk menjalankan server Django
-CMD ["gunicorn", "--workers=4", "--threads=2", "--bind", "0.0.0.0:8000", "talent_matching_server.wsgi:application"]
+CMD ["gunicorn", "--reload", "--workers=1", "--threads=1", "--bind", "0.0.0.0:8000", "talent_matching_server.wsgi:application"]
 

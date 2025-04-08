@@ -1,12 +1,12 @@
-from django.urls import path, include
-from .views.authentication import (
+from core.views.authentication import (
     SignUpView,
     SignInView,
     SignOutView,
     ForgetPasswordView,
 )
-from .views.job import JobRecommendationView, JobScrapingView, JobScrapingDetailView, JobScrapingTaskStatusView
-from .views.profile import ProfileView
+from core.views.job import JobRecommendationView, JobScrapingView, JobScrapingCancelView, JobScrapingTaskStatusView, JobView
+from core.views.profile import ProfileView
+from django.urls import path, include
 from rest_framework_simplejwt.views import TokenRefreshView
 
 urlpatterns = [
@@ -19,11 +19,14 @@ urlpatterns = [
 
     path('jobs/recommendation/', JobRecommendationView.as_view(),
          name='job-recommendation'),
-    path('jobs/scraping/', JobScrapingView.as_view(), name='job-scraping'),
-    path('jobs/scraping/detail/', JobScrapingDetailView.as_view(),
-         name='job-scraping-detail'),
-    path('jobs/scraping/status/<str:task_id>/',
+    path('jobs/scraping/', JobScrapingView.as_view(),
+         name='job-scraping'),
+    path('jobs/scraping/cancel', JobScrapingCancelView.as_view(),
+         name='job-scraping-cancel'),
+    path('jobs/scraping/status/',
          JobScrapingTaskStatusView.as_view(), name='job-scraping-status'),
+    path('jobs/', JobView.as_view(),
+         name='create-scraped-jobs'),
 
     path('profile/update/', ProfileView.as_view(), name='profile-update'),
 ]
