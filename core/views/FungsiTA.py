@@ -74,7 +74,7 @@ class RelatedSkillsView(APIView):
 
         query = """
         MATCH (s:Skill)<-[:REQUIRED_SKILLS]-(j:Job)-[:REQUIRED_SKILLS]->(other:Skill)
-        WHERE s.name = $skill AND s <> other
+        WHERE toLower(s.name) = toLower($skill) AND s <> other
         RETURN other.name AS related_skill, COUNT(*) AS frequency
         ORDER BY frequency DESC
         LIMIT 10
