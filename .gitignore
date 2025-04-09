@@ -85,5 +85,3 @@ media/
 *.ipr
 *.iws
 out/
-
-scraping_result/

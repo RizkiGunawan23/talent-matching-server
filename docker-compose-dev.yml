@@ -1,6 +1,8 @@
 services:
     django:
-        build: .
+        build:
+            context: .
+            dockerfile: KoTA203.Dockerfile
         container_name: talent-matching-django
         depends_on:
             - redis
@@ -22,7 +24,9 @@ services:
                   path: requirements.txt
 
     celery:
-        build: .
+        build:
+            context: .
+            dockerfile: KoTA203.Dockerfile
         container_name: talent-matching-celery
         depends_on:
             - redis

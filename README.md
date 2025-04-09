@@ -101,10 +101,12 @@ NEO4J_BOLT_URL=bolt://neo4j:12345678@neo4j:7687
 
 ### 🛑 Perintah Tambahan:
 
-| Perintah                 | Deskripsi                        |
-| ------------------------ | -------------------------------- |
-| `docker-compose down`    | Hentikan & hapus container       |
-| `docker-compose down -v` | Hapus container & volume (Neo4j) |
+| Perintah                                            | Deskripsi                                |
+| --------------------------------------------------- | ---------------------------------------- |
+| `docker compose -f docker-compose-dev.yml down`     | Hentikan & hapus container (development) |
+| `docker compose -f docker-compose-dev.yml down -v`  | Hapus container & volume (development)   |
+| `docker compose -f docker-compose-prod.yml down`    | Hentikan & hapus container (production)  |
+| `docker compose -f docker-compose-prod.yml down -v` | Hapus container & volume (production)    |
 
 ## 🛠️ Menambahkan Package Python
 
