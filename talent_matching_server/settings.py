@@ -10,10 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
-from pathlib import Path
-from neomodel import config
 import datetime
 import os
+from pathlib import Path
+
+from neomodel import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-qrjskl_#%ptl$*18pu798oqapa6usoxnm7aj#2=t43+^3!u3pz'
+SECRET_KEY = "django-insecure-qrjskl_#%ptl$*18pu798oqapa6usoxnm7aj#2=t43+^3!u3pz"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -34,27 +35,27 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'rest_framework',
-    'rest_framework_simplejwt.token_blacklist',
-    'django_neomodel',
-    'neomodel',
-    'core',
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "rest_framework",
+    "rest_framework_simplejwt.token_blacklist",
+    "django_neomodel",
+    "neomodel",
+    "core",
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
 SIMPLE_JWT = {
@@ -64,51 +65,58 @@ SIMPLE_JWT = {
     "BLACKLIST_AFTER_ROTATION": True,
     "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
     "TOKEN_BLACKLIST_ENABLED": True,
-    "USER_ID_FIELD": "uid",
-    "USER_ID_CLAIM": "uid",
+    "USER_ID_FIELD": "uid",  # Field di model User
+    "USER_ID_CLAIM": "user_id",  # Claim di dalam token JWT
+    "AUTH_HEADER_TYPES": ("Bearer",),
+    "SIGNING_KEY": SECRET_KEY,  # Pastikan kunci penandatanganan disetel
+    "ALGORITHM": "HS256",  # Pastikan algoritma ditentukan
+    "VERIFYING_KEY": None,
+    "AUDIENCE": None,
+    "ISSUER": None,
 }
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'utils.custom_jwt_authentication.CookieJWTAuthentication',
-    ),
-    'EXCEPTION_HANDLER': 'utils.exception_handler.custom_exception_handler',
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "utils.custom_jwt_authentication.Neo4jJWTAuthentication",
+    ],
+    "EXCEPTION_HANDLER": "utils.exception_handler.custom_exception_handler",
 }
 
-ROOT_URLCONF = 'talent_matching_server.urls'
+ROOT_URLCONF = "talent_matching_server.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'talent_matching_server.wsgi.application'
+WSGI_APPLICATION = "talent_matching_server.wsgi.application"
 
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
     }
 }
 
 
 NEOMODEL_NEO4J_BOLT_URL = os.getenv(
-    "NEO4J_BOLT_URL", "bolt://neo4j:12345678@neo4j:7687")
+    "NEO4J_BOLT_URL", "bolt://host.docker.internal:7687"
+)
 config.DATABASE_URL = NEOMODEL_NEO4J_BOLT_URL
 
 CACHES = {
@@ -118,30 +126,48 @@ CACHES = {
     }
 }
 
-CELERY_BROKER_URL = os.getenv("REDIS_URL", "redis://redis:6379/0")
-CELERY_RESULT_BACKEND = os.getenv("REDIS_URL", "redis://redis:6379/0")
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
+# Ganti bagian konfigurasi Redis/Celery
+CELERY_BROKER_URL = "redis://redis:6379"
+CELERY_RESULT_BACKEND = "redis"  # Hanya tentukan tipe backend, bukan URL lengkap
 
+# Tambahkan konfigurasi terpisah
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
+CELERY_REDIS_HOST = "redis"
+CELERY_REDIS_PORT = 6379
+CELERY_REDIS_DB = 0
 
-CELERY_IMPORTS = ('core.tasks',)
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+
+CELERY_IMPORTS = ("core.tasks",)
+
+# Media files configuration
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "uploaded_files")
+
+# Define specific folders
+MEDIA_ONTOLOGY_DIR = os.path.join(MEDIA_ROOT, "ontology")
+MEDIA_PROFILE_IMAGES_DIR = os.path.join(MEDIA_ROOT, "profile_images")
+
+# Create directories if they don't exist
+for directory in [MEDIA_ONTOLOGY_DIR, MEDIA_PROFILE_IMAGES_DIR]:
+    os.makedirs(directory, exist_ok=True)
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
@@ -149,9 +175,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "UTC"
 
 USE_I18N = True
 
@@ -161,9 +187,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = "static/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

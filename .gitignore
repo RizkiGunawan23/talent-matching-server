@@ -16,6 +16,7 @@ venv/
 env/
 ENV/
 *.env
+.venv/
 
 # macOS
 .DS_Store
@@ -85,5 +86,5 @@ media/
 *.ipr
 *.iws
 out/
-
-scraping_result/
+uploaded_files/ontology/*
+uploaded_files/profile_images/*

@@ -10,11 +10,11 @@ Proyek ini adalah server API untuk aplikasi Talent Matching menggunakan **Django
 
 ## ✨ Fitur Utama
 
-- 🔍 **Pencocokan Kandidat** – Menganalisis data graf dari **Neo4j** untuk menemukan kandidat terbaik berdasarkan keterampilan dan pengalaman.
-- 🛠️ **Scraping Lowongan Pekerjaan** – Mengambil data pekerjaan dari berbagai sumber dengan **Selenium**.
-- 🚀 **RESTful API** – Backend berbasis **Django REST Framework** untuk akses data yang cepat dan aman.
-- ⚡ **Caching & Queue Processing** – **Redis** digunakan untuk caching hasil pencarian dan antrean tugas scraping dengan **Celery**.
-- 📦 **Docker Support** – Dapat dijalankan dengan mudah menggunakan Docker Compose.
+-   🔍 **Pencocokan Kandidat** – Menganalisis data graf dari **Neo4j** untuk menemukan kandidat terbaik berdasarkan keterampilan dan pengalaman.
+-   🛠️ **Scraping Lowongan Pekerjaan** – Mengambil data pekerjaan dari berbagai sumber dengan **Selenium**.
+-   🚀 **RESTful API** – Backend berbasis **Django REST Framework** untuk akses data yang cepat dan aman.
+-   ⚡ **Caching & Queue Processing** – **Redis** digunakan untuk caching hasil pencarian dan antrean tugas scraping dengan **Celery**.
+-   📦 **Docker Support** – Dapat dijalankan dengan mudah menggunakan Docker Compose.
 
 ## 📂 Struktur Proyek
 
@@ -54,10 +54,10 @@ talent-matching-server/
 
 Pastikan Anda sudah menginstal software berikut sebelum memulai:
 
-- **Docker**: Untuk menjalankan aplikasi di atas container docker
-- **Python**: Versi 3.12 atau lebih baru
-- **Pip**: Untuk mengelola dependensi Python
-- **Neo4j Desktop**: Untuk monitoring data graf
+-   **Docker**: Untuk menjalankan aplikasi di atas container docker
+-   **Python**: Versi 3.12 atau lebih baru
+-   **Pip**: Untuk mengelola dependensi Python
+-   **Neo4j Desktop**: Untuk monitoring data graf
 
 ## 📦 Instalasi
 
@@ -88,7 +88,7 @@ Copy dan paste file .env.example dan rename menjadi .env.
 Ubah bagian username dan password Neo4j mengikuti variabel NEO4J_AUTH di file docker-compose-dev.yml atau docker-compose-prod.yml. Contoh:
 
 ```bash
-NEO4J_BOLT_URL=bolt://neo4j:12345678@neo4j:7687
+NEO4J_BOLT_URL=bolt://neo4j:12345678@host.docker.internal:7689
 ```
 
 ## 🚀 Menjalankan dengan Docker

@@ -1,3 +1,3 @@
-from .custom_jwt_authentication import Neo4jJWTAuthentication, CookieJWTAuthentication
+from .custom_jwt_authentication import Neo4jJWTAuthentication
 from .exception_handler import custom_exception_handler
 from .job_data_parser import normalize_glints_job_data

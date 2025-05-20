@@ -1,34 +1,63 @@
-# Gunakan image Python
-FROM python:3.12
+FROM python:3.12-slim AS builder
 
-# Atur direktori kerja di dalam container
+# Install only build dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends gcc python3-dev
 WORKDIR /app
-
-RUN apt-get update && apt-get install -y wget curl unzip gnupg \
-    && wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
-    && dpkg -i google-chrome-stable_current_amd64.deb || apt-get -fy install \
-    && rm google-chrome-stable_current_amd64.deb
-
-# Copy file requirements
 COPY requirements.txt .
-
-# Install dependensi Python
+# Install explicitly to system Python
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy seluruh project ke container
-COPY . .
+FROM python:3.12-slim
 
-# Ekspos port Django (default: 8000)
-EXPOSE 8000
+WORKDIR /app
 
-# Tambah user untuk celery
+# Install runtime dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    wget curl ca-certificates fonts-liberation libasound2 libatk-bridge2.0-0 \
+    libatk1.0-0 libatspi2.0-0 libcups2 libdbus-1-3 libdrm2 libgbm1 \
+    libnspr4 libnss3 libxcomposite1 libxdamage1 libxfixes3 libxkbcommon0 \
+    libxrandr2 xdg-utils \
+    default-jre \
+    && wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
+    && dpkg -i google-chrome-stable_current_amd64.deb || apt-get -fy install \
+    && rm google-chrome-stable_current_amd64.deb \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy all packages from builder
+COPY --from=builder /usr/local/lib/python3.12 /usr/local/lib/python3.12
+COPY --from=builder /usr/local/bin /usr/local/bin
+
+# Create log directories
+RUN mkdir -p /var/log/scraper/glints
+RUN mkdir -p /app/uploaded_files  
+
+# Add non-root user
 RUN addgroup --system celery && adduser --system --ingroup celery celery
+RUN chown -R celery:celery /var/log/scraper
 
-# Buat folder log dan kasih akses ke user celery
-RUN mkdir -p /var/log/scraper && chown -R celery:celery /var/log/scraper
+# Ubah permission directory
+RUN chown -R celery:celery /app
+RUN chown -R celery:celery /app/uploaded_files 
 
-# Atur agar proses dijalankan oleh user celery
+# Copy application code
+COPY ./talent_matching_server/ /app/talent_matching_server/
+COPY ./core/ /app/core/
+COPY ./manage.py /app/
+COPY ./utils/ /app/utils/
+
+# Install gunicorn explicitly to ensure it's accessible
+RUN pip install --no-cache-dir gunicorn watchdog
+
+# Set proper permissions
+RUN chown -R celery:celery /app
+
+# Add entrypoint script
+COPY ./docker-entrypoint.sh /app/
+RUN chmod +x /app/docker-entrypoint.sh
+
+EXPOSE 8000
 USER celery
-# Perintah untuk menjalankan server Django
-CMD ["gunicorn", "--reload", "--workers=1", "--threads=1", "--bind", "0.0.0.0:8000", "talent_matching_server.wsgi:application"]
+
+CMD ["/app/docker-entrypoint.sh"]
 

@@ -4,20 +4,41 @@ services:
         container_name: talent-matching-django
         depends_on:
             - redis
-            - neo4j
         env_file: .env
+        environment:
+            - NEO4J_URI=${NEO4J_URI:-bolt://host.docker.internal:7689}
+            - REDIS_URL=redis://redis:6379 # Hapus /0 di akhir URL
+            - ENVIRONMENT=development
         ports:
             - "8000:8000"
+        volumes:
+            - ./logs:/var/log/scraper
+            - ./uploaded_files:/app/uploaded_files
         restart: always
         develop:
             watch:
                 - action: sync
-                  path: .
-                  target: /app
+                  path: ./talent_matching_server
+                  target: /app/talent_matching_server
+                  ignore:
+                      - "**/__pycache__/"
+                      - "**/*.pyc"
+                - action: sync
+                  path: ./core
+                  target: /app/core
                   ignore:
                       - "**/__pycache__/"
                       - "**/*.pyc"
                       - "**/migrations/"
+                - action: sync
+                  path: ./manage.py
+                  target: /app/manage.py
+                - action: sync
+                  path: ./utils
+                  target: /app/utils
+                  ignore:
+                      - "**/__pycache__/"
+                      - "**/*.pyc"
                 - action: rebuild
                   path: requirements.txt
 
@@ -29,23 +50,27 @@ services:
             - django
         env_file: .env
         environment:
-            HOME: /tmp
-        command: watchmedo auto-restart --recursive --pattern="*.py" -- celery -A talent_matching_server worker --loglevel=info
+            - HOME=/tmp
+            - NEO4J_BOLT_URL=${NEO4J_BOLT_URL:-bolt://host.docker.internal:7689}
+            - REDIS_URL=redis://redis:6379 # Hapus /0 di akhir URL
+            - ENVIRONMENT=development
+        command: python -m watchdog.watchmedo auto-restart --recursive --pattern="*.py" -- celery -A talent_matching_server worker --loglevel=info
         shm_size: "1gb"
         volumes:
             - ./logs:/var/log/scraper
+            - ./uploaded_files:/app/uploaded_files
         restart: always
         develop:
             watch:
                 - action: sync
-                  path: .
-                  target: /app
-                  ignore:
-                      - "**/__pycache__/"
-                      - "**/*.pyc"
+                  path: ./talent_matching_server
+                  target: /app/talent_matching_server
+                - action: sync
+                  path: ./core
+                  target: /app/core
 
     redis:
-        image: redis:latest
+        image: redis:alpine
         container_name: talent-matching-redis
         ports:
             - "6379:6379"
@@ -54,20 +79,7 @@ services:
             - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
         command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
 
-    neo4j:
-        image: neo4j:5.10
-        container_name: talent-matching-neo4j
-        ports:
-            - "7474:7474" # Neo4j Browser
-            - "7687:7687" # Bolt Protocol (Django pakai ini)
-        environment:
-            NEO4J_AUTH: neo4j/12345678
-        volumes:
-            - neo4j_data:/data
-            - neo4j_logs:/logs
-        restart: always
-
 volumes:
-    neo4j_data:
-    neo4j_logs:
+    uploaded_files:
+        driver: local
     redis_data:

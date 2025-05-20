@@ -1,0 +1,73 @@
+{
+    "Doktor (S3)": [
+        "Doktor (S3)",
+        "Doktor",
+        "S3",
+        "Doktor Falsafah",
+        "Falsafah Doktor",
+        "Doctor of Philosophy",
+        "PhD",
+        "Ph.D.",
+        "PhD.",
+        "Ph. D.",
+        "Ph.D"
+    ],
+    "Magister (S2)": [
+        "Magister (S2)",
+        "Magister",
+        "S2",
+        "Master",
+        "Master's Degree",
+        "M.Sc.",
+        "M.A.",
+        "M.S.",
+        "M.A"
+    ],
+    "Sarjana (S1)": [
+        "Sarjana (S1)",
+        "Sarjana",
+        "S1",
+        "Bachelor",
+        "Bachelor's Degree",
+        "Bachelor of Science",
+        "Bachelor of Arts",
+        "B.Sc.",
+        "B.A.",
+        "B.S.",
+        "B.A"
+    ],
+    "Diploma (D4)": [
+        "Diploma (D4)",
+        "Diploma 4",
+        "D4",
+        "D-4",
+        "Sarjana Terapan",
+        "Applied Bachelor"
+    ],
+    "Diploma (D1-D3)": [
+        "Diploma (D3)",
+        "Diploma 3",
+        "D3",
+        "Associate Degree",
+        "Associate's Degree",
+        "A.S.",
+        "A.A.",
+        "A.S"
+    ],
+    "SMA/SMK": [
+        "SMK",
+        "SMA",
+        "Sekolah Menengah Kejuruan",
+        "Sekolah Menengah Atas",
+        "High School",
+        "Secondary School",
+        "Senior High"
+    ],
+    "SMP": [
+        "SMP",
+        "Sekolah Menengah Pertama",
+        "Junior High School",
+        "Middle School"
+    ],
+    "SD": ["SD", "Sekolah Dasar", "Elementary School", "Primary School"]
+}
