@@ -17,6 +17,7 @@
         "Magister",
         "S2",
         "Master",
+        "Master Degree",
         "Master's Degree",
         "M.Sc.",
         "M.A.",
@@ -28,13 +29,8 @@
         "Sarjana",
         "S1",
         "Bachelor",
-        "Bachelor's Degree",
-        "Bachelor of Science",
-        "Bachelor of Arts",
-        "B.Sc.",
-        "B.A.",
-        "B.S.",
-        "B.A"
+        "Bachelor Degree",
+        "Bachelor's Degree"
     ],
     "Diploma (D4)": [
         "Diploma (D4)",
@@ -44,15 +40,13 @@
         "Sarjana Terapan",
         "Applied Bachelor"
     ],
-    "Diploma (D1-D3)": [
+    "Diploma (D3)": [
         "Diploma (D3)",
         "Diploma 3",
         "D3",
+        "Associate",
         "Associate Degree",
-        "Associate's Degree",
-        "A.S.",
-        "A.A.",
-        "A.S"
+        "Associate's Degree"
     ],
     "SMA/SMK": [
         "SMK",
@@ -60,8 +54,7 @@
         "Sekolah Menengah Kejuruan",
         "Sekolah Menengah Atas",
         "High School",
-        "Secondary School",
-        "Senior High"
+        "Senior Highschool"
     ],
     "SMP": [
         "SMP",

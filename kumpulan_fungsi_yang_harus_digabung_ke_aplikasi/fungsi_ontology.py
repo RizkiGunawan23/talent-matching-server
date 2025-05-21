@@ -32,7 +32,8 @@ def import_jobs_to_ontology(graph, jobs_data, start_idx=0, end_idx=None):
 
     # Tambahkan pemetaan khusus untuk kasus-kasus tertentu
     special_cases = {
-        "c#": "cs",  # C# dipetakan ke CS
+        "c#": "cs",
+        "ci/cd": "ci_cd",
     }
 
     print(f"Found {len(ontology_skills)} skills in the ontology")

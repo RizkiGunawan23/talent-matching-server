@@ -12,7 +12,6 @@ services:
         ports:
             - "8000:8000"
         volumes:
-            - ./logs:/var/log/scraper
             - ./uploaded_files:/app/uploaded_files
         restart: always
         develop:
@@ -57,7 +56,6 @@ services:
         command: python -m watchdog.watchmedo auto-restart --recursive --pattern="*.py" -- celery -A talent_matching_server worker --loglevel=info
         shm_size: "1gb"
         volumes:
-            - ./logs:/var/log/scraper
             - ./uploaded_files:/app/uploaded_files
         restart: always
         develop:

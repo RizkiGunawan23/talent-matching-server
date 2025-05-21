@@ -88,3 +88,7 @@ media/
 out/
 uploaded_files/ontology/*
 uploaded_files/profile_images/*
+
+# Exclude temp/cache files within model
+models/ner/model-best/__pycache__/
+models/ner/model-best/*.log

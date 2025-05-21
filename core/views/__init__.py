@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-from .authentication import SignUpView, SignInView, ForgetPasswordView
-from .job import JobRecommendationView, JobScrapingView, JobScrapingCancelView, JobScrapingTaskStatusView, JobView
-from .profile import ProfileView
-=======
 # Import admin job views
 from core.views.admin.job import AdminJobDetailView, AdminJobView
 
@@ -35,4 +30,3 @@ from core.views.job_seeker.job import (
 )
 from core.views.job_seeker.profile import ProfileView
 from core.views.seeder import SeederView
->>>>>>> 1d6d152 (Fresh start with clean history)

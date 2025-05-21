@@ -1,0 +1,644 @@
+{
+    ".": {
+        ".NET": [".net", ".net framework", "net framework"]
+    },
+    "3": {
+        "3D Design": ["3d design"]
+    },
+    "A": {
+        "A/B Testing": ["a/b testing"],
+        "AES": ["aes", "advanced encryption standard"],
+        "AI Applications": ["ai application", "ai applications"],
+        "AI Tools": ["ai tools"],
+        "AJAX": ["ajax"],
+        "API Development": ["api", "api development", "api integrasi", "apis"],
+        "Appium": ["appium"],
+        "ASP.NET": ["asp.net"],
+        "AWS": ["aws", "amazon web services"],
+        "AWS Amplify": ["aws amplify", "amplify"],
+        "AWS CloudFormation": ["aws cloudformation", "cloudformation"],
+        "AWS Lambda": ["aws lambda"],
+        "Activity Diagram": ["activity diagram"],
+        "Adobe Photoshop": ["adobe photoshop"],
+        "Adobe XD": ["adobe xd"],
+        "Agile": [
+            "agile",
+            "agile development",
+            "agile developments",
+            "agile methodologies",
+            "agile methodology",
+            "agile principle",
+            "agile principles",
+            "agile project management",
+            "agile project managements",
+            "agile software development",
+            "agile software developments",
+            "agile/scrum"
+        ],
+        "Ahrefs": ["ahrefs"],
+        "Amazon S3": ["amazon s3"],
+        "Analisis Jaringan Sistem": ["analisis jaringan sistem"],
+        "Analog Circuit Design": ["analog circuit design"],
+        "Android Development": ["android", "android development"],
+        "Android SDK": ["android sdk"],
+        "Angular": ["angular", "angular.js", "angularjs"],
+        "Ansible": ["ansible"],
+        "Apache": ["apache"],
+        "Apache Airflow": ["apache airflow", "airflow"],
+        "Apache Hadoop": ["apache hadoop", "hadoop"],
+        "Apache Spark": ["apache spark", "spark"],
+        "Apache Struts": ["apache struts", "struts"],
+        "Apium": ["apium"],
+        "App Development": ["app development", "application development"],
+        "Appsheet": ["appsheet"],
+        "Arduino": ["arduino"],
+        "Artificial Intelligence": ["ai", "artificial intelligence"],
+        "Assembly": ["assembly", "assembly language"],
+        "Authorization": ["auth", "authorization"],
+        "Automasi Digital": ["automasi digital"],
+        "Automation Testing": [
+            "automated testing",
+            "automation testing",
+            "test automation"
+        ],
+        "Azure": ["azure"]
+    },
+    "B": {
+        "BI Tools": ["bi tools", "business intelligence tools"],
+        "BPMN": ["bpmn"],
+        "Backbone": ["backbone"],
+        "Backend Development": [
+            "back-end development",
+            "back-end developments",
+            "backend development",
+            "backend developments"
+        ],
+        "Bash": ["bash"],
+        "BGP": ["bgp", "border gateway protocol"],
+        "Big Data Analysis": ["big data analysis"],
+        "Bitbucket": ["bitbucket"],
+        "Blackbox Testing": [
+            "black box",
+            "black box testing",
+            "blackbox",
+            "blackbox testing"
+        ],
+        "Bootstrap": ["bootstrap", "bootstrap 4", "bootstrap 5"],
+        "Bug Life Cycle": ["bug life cycle"],
+        "Bug Reporting": ["bug reporting"],
+        "Bug Tracking": ["bug tracking"],
+        "Burp Suite": ["burp suite"],
+        "Business Requirements Document": [
+            "brd",
+            "business requirements document"
+        ]
+    },
+    "C": {
+        "C": ["c"],
+        "C#": ["c sharp", "c#"],
+        "C++": ["c plus plus", "c++"],
+        "CI/CD": ["ci/cd"],
+        "CMS": ["cms"],
+        "CRM": ["crm"],
+        "CSS": [
+            "cascading style sheet",
+            "cascading style sheets",
+            "css",
+            "css3"
+        ],
+        "Canva Design": ["canva design"],
+        "Cassandra": ["cassandra"],
+        "Ceph": ["ceph"],
+        "Check Point": ["check point", "checkpoint"],
+        "Cisco": ["cisco"],
+        "Clean Architecture": ["clean architecture"],
+        "ClickHouse": ["clickhouse"],
+        "Cloud & Server Management": [
+            "cloud & server management",
+            "cloud and server management"
+        ],
+        "Cloud Computing": ["cloud computing"],
+        "Cloud Database": ["cloud database"],
+        "Cloud Hosting": ["cloud hosting"],
+        "Cloud Integration": ["cloud integration"],
+        "Cloud Networking": ["cloud network", "cloud networking"],
+        "Code Review": ["code review"],
+        "CodeIgniter": [
+            "codeigniter",
+            "codeigniter 3",
+            "codeigniter 4",
+            "ci",
+            "ci3",
+            "ci4"
+        ],
+        "Computer Hardware": ["computer hardware"],
+        "Computer Networking": ["computer networking"],
+        "Computer Vision": ["computer vision"],
+        "Confluence": ["confluence"],
+        "Container": ["container"],
+        "Cortex XSOAR": ["cortex xsoar", "xsoar"],
+        "Cryptography": ["cryptography"],
+        "Cybersecurity": ["cyber security", "cybersecurity"],
+        "Cypress": ["cypress"]
+    },
+    "D": {
+        "DNS": ["dns"],
+        "Dart": ["dart"],
+        "Data Analytics": ["data analysis", "data analytic", "data analytics"],
+        "Data Architecture": ["data architecture"],
+        "Data Bricks": ["databrick", "data bricks"],
+        "Data Cleaning": ["data cleaning", "data cleansing"],
+        "Data Collection": ["data collection"],
+        "Data Infrastructure": ["data infrastructure"],
+        "Data Management": ["data management"],
+        "Data Migration": ["data migration"],
+        "Data Modeling": ["data modeling"],
+        "Data Orchestration": ["data orchestration"],
+        "Data Pipeline Management": ["data pipeline management"],
+        "Data Quality Assurance": ["data quality assurance"],
+        "Data Reporting": ["data reporting"],
+        "Data Visualization and Reporting": [
+            "data visualization and reporting"
+        ],
+        "Database Administration": ["database administration"],
+        "Database Security": ["database security"],
+        "Databricks": ["databrick", "databricks"],
+        "Datadog": ["datadog"],
+        "Debugging": ["debugging"],
+        "Deep Learning": ["deep learning"],
+        "Delphi": ["delphi"],
+        "Dependency Injection": ["dependency injection"],
+        "Design Network": ["design network"],
+        "DevOps": ["devops", "dev ops"],
+        "DevSecOps": ["devsecops", "dev sec ops"],
+        "Django": ["django"],
+        "Docker": ["docker"],
+        "Documentation and Best Practices": [
+            "documentation and best practices",
+            "documentation & best practices"
+        ],
+        "Draw.io": ["draw.io"]
+    },
+    "E": {
+        "ELT": ["elt"],
+        "ELT Pipeline": ["elt pipeline"],
+        "ERP": ["erp"],
+        "ETL": ["etl"],
+        "ETL Pipeline": ["etl pipeline"],
+        "Eclipse": ["eclipse", "eclipse ide"],
+        "Edge Functions": ["edge functions"],
+        "Elastic Stack": ["elastic stack"],
+        "ElasticSearch": ["elasticsearch"],
+        "Entity Relationship Diagram": ["entity relationship diagram", "erd"],
+        "ESP32": ["esp32"],
+        "Event-Driven Architecture": ["event-driven architecture"],
+        "Exploit Development": ["exploit development"],
+        "Exploratory Testing": ["exploratory testing"],
+        "Express": ["express", "express.js", "expressjs", "express js"]
+    },
+    "F": {
+        "Figma": ["figma"],
+        "Firebase": ["firebase"],
+        "Firewall": ["firewall"],
+        "Flask": ["flask"],
+        "Flowchart": ["flowchart"],
+        "Flutter": ["flutter"],
+        "Frontend Development": [
+            "front-end development",
+            "frontend development"
+        ],
+        "Fullstack": ["fullstack", "fullstack developer"],
+        "Functional Programming": [
+            "functional programming",
+            "fungsional programming"
+        ],
+        "Functional Specification Document": [
+            "fsd",
+            "functional specification document"
+        ],
+        "Functional Testing": ["functional testing", "fungsional testing"]
+    },
+    "G": {
+        "Game Development": ["game development"],
+        "Ghidra": ["ghidra", "ghindra"],
+        "Gin": ["gin"],
+        "Git": ["git"],
+        "Git Flow": ["git flow"],
+        "GitHub": ["github", "git hub"],
+        "GitHub Actions": ["github actions"],
+        "GitLab": ["gitlab"],
+        "Go": ["go", "go / golang", "golang"],
+        "Google Analytics": ["google analytics"],
+        "Google BigQuery": ["google bigquery"],
+        "Google Cloud Platform": ["google cloud platform", "gcp"],
+        "Google PubSub": [
+            "google pub/sub",
+            "google pubsub",
+            "pub/sub",
+            "pubsub"
+        ],
+        "Grafana": ["grafana"],
+        "GraphQL": ["graphql"],
+        "Graphic Design": ["graphic design"],
+        "Greybox Testing": ["grey box", "grey box testing", "greybox testing"]
+    },
+    "H": {
+        "HAProxy": ["haproxy"],
+        "HCL BigFix": ["hcl bigfix"],
+        "HMI Programming": ["hmi programming"],
+        "HRIS Database Management": ["hris database management"],
+        "HTML": ["html", "html5", "hypertext markup language"],
+        "Hibernate Framework": ["hibernate", "hibernate framework"],
+        "Hosting": ["hosting"],
+        "Hyper-V": ["hyper-v"]
+    },
+    "I": {
+        "IBM SPSS": ["ibm spss"],
+        "IDA Pro": ["ida pro"],
+        "IDS": ["ids", "intrusion detection system"],
+        "Intellij": ["intellij", "intellij idea"],
+        "IOT": ["internet of things", "iot"],
+        "IP": ["ip", "internet protocol"],
+        "IP Networking": ["ip networking"],
+        "ISO 27001": ["iso 27001"],
+        "IT Infrastructure Management": ["it infrastructure management"],
+        "IT Management": ["it management"],
+        "IT Project Management": [
+            "it project management",
+            "managemen proyek ti"
+        ],
+        "IT Security": ["it security"],
+        "IT Service Management": ["it service management"],
+        "Inertia": ["inertia", "inertia.js"],
+        "Instalasi LAN": ["instalasi lan"],
+        "Integration Testing": ["integration testing"],
+        "Ionic Framework": ["ionic", "ionic framework"]
+    },
+    "J": {
+        "Jasper Reports": ["jasper", "jasper reports"],
+        "Java": ["java"],
+        "Java Server Pages": ["java server pages", "jsp"],
+        "JavaScript": ["java script", "javascript", "js"],
+        "Jenkins": ["jenkins"],
+        "Jest": ["jest"],
+        "Jetpack Compose": ["jetpack compose"],
+        "Jira": ["jira"],
+        "JSON": ["json", "javascript object notation"]
+    },
+    "K": {
+        "Kafka": ["kafka"],
+        "Katalon": ["katalon"],
+        "Keamanan IT": ["keamanan it"],
+        "Konfigurasi Serat Optik": ["konfigurasi serat optik"],
+        "Kotlin": ["kotlin"],
+        "Kotlin Android SDK": ["kotlin android sdk"],
+        "Kubernetes": ["kubernetes"]
+    },
+    "L": {
+        "LAN": ["lan", "local area network"],
+        "LESS": ["less"],
+        "LLM": ["large language model", "llm"],
+        "Laravel": ["laravel"],
+        "Lark": ["lark"],
+        "Linux": ["linux"],
+        "Linux System Administration": ["linux system administration"],
+        "Load Balancing": ["load balancing"],
+        "LTE": ["lte", "long term evolution"],
+        "Lumen": ["lumen"]
+    },
+    "M": {
+        "MQTT": ["message queue telemetry transport", "mqtt"],
+        "MSSQL": ["microsoft sql server", "mssql", "sql server", "sqlserver"],
+        "MVC": ["model-view-controller", "mvc", "mvc architecture"],
+        "MVVM": ["model-view-viewmodel", "mvvm"],
+        "Machine Learning": ["machine learning"],
+        "Malware Analysis": ["malware analysis"],
+        "Manual Testing": ["manual testing"],
+        "MariaDB": ["mariadb"],
+        "Metabase": ["metabase"],
+        "MicroTik": ["mikrotik", "microtik"],
+        "Metasploit": ["metasploit"],
+        "Microcontrollers": ["microcontrollers", "micro controller"],
+        "Microservices Architecture": [
+            "microservices",
+            "microservices architecture"
+        ],
+        "Microsoft Azure": ["microsoft azure"],
+        "Microsoft Excel": ["excel", "microsoft excel"],
+        "Microsoft Office": ["microsoft office"],
+        "Microsoft Outlook": ["microsoft outlook", "outlook"],
+        "Microsoft PowerPoint": ["microsoft powerpoint", "powerpoint"],
+        "Microsoft SQL Server": [
+            "microsoft sql server",
+            "sql server",
+            "sqlserver"
+        ],
+        "Microsoft SharePoint": ["microsoft sharepoint", "sharepoint"],
+        "Microsoft Visio": ["microsoft visio", "visio"],
+        "Microsoft Word": ["microsoft word", "word"],
+        "Middleware": ["middleware"],
+        "Mobile Application Testing": [
+            "mobile app testing",
+            "mobile application testing"
+        ],
+        "Mobile Development": ["mobile app development", "mobile development"],
+        "Mobile UI Design": ["mobile ui design"],
+        "Mobx": ["mobx"],
+        "MongoDB": ["mongodb"],
+        "Monitoring and Maintenance": [
+            "monitoring and maintenance",
+            "monitoring & maintenance"
+        ],
+        "MySQL": ["my sql", "mysql"]
+    },
+    "N": {
+        "NB-IoT": ["narrowband iot", "nb-iot"],
+        "NIST CSF": ["nist csf", "nist cybersecurity framework", "nist"],
+        "NLP": ["natural language processing", "nlp"],
+        "NPM": ["node package manager", "npm"],
+        "Nessus": ["nessus"],
+        "Nest": ["nest", "nest.js", "nestjs"],
+        "Network Administration": ["network administration"],
+        "Network Protocols": ["network protocols", "network protocol"],
+        "Network Security": ["network security"],
+        "Networking": ["networking"],
+        "Neural Networks": ["neural networks"],
+        "Next": ["next", "next js", "next.js", "nextjs"],
+        "Nginx": ["nginx"],
+        "NoSQL": ["no sql", "no-sql", "nosql", "nosql database"],
+        "Node.js": ["node js", "node.js", "nodejs"],
+        "Nuxt": ["nuxt", "nuxt js", "nuxt.js", "nuxtjs"]
+    },
+    "O": {
+        "Object-Oriented Programming": [
+            "object-oriented programming",
+            "oop",
+            "object-oriented programming (oop)"
+        ],
+        "OLAP": ["olap", "olap technology", "online analytical processing"],
+        "ONT": ["ont", "optical network terminal"],
+        "ONU": ["onu", "optical network unit"],
+        "OOD": ["object-oriented design", "ood"],
+        "OOP": [
+            "object-oriented programming",
+            "object-oriented programming (oop)"
+        ],
+        "OPNsense": ["opnsense"],
+        "OSPF": ["open shortest path first", "osp", "ospf"],
+        "OWASP": ["owasp"],
+        "Objective-C": ["objective c", "objective-c"],
+        "Odoo": ["odoo", "odoo coding"],
+        "OpenAPI": ["openapi"],
+        "Oracle Database": ["oracle database", "oracle"]
+    },
+    "P": {
+        "PABX": ["pabx", "private automatic branch exchange"],
+        "PCB Design": ["pcb design"],
+        "PHP": ["hypertext preprocessor", "php"],
+        "PLC Programming": ["plc", "plc programming"],
+        "Package Manager": ["pacakage manager (npm/yam)", "package manager"],
+        "Palo Alto": ["palo alto", "paloalto"],
+        "Pandas": ["pandas"],
+        "Pemelihan Jaringan Internet": ["pemelihan jaringan internet"],
+        "Pemrograman OOP": ["pemrograman oop"],
+        "Pemrograman Web": ["pemrograman web"],
+        "Penetration Testing": ["penetration testing"],
+        "Perl": ["perl"],
+        "Playwright": ["playwright"],
+        "PocketBase": ["pocket base", "pocketbase"],
+        "Podman": ["podman"],
+        "PostgreSQL": ["postgre", "postgre sql", "postgres", "postgresql"],
+        "Postman": ["postman", "postman software"],
+        "Power BI": ["power bi"],
+        "PowerShell": ["powershell"],
+        "Predictive Analytics": [
+            "predictive analytics",
+            "predictive analysis",
+            "predictive analitics"
+        ],
+        "Programming Languages": [
+            "programming language",
+            "programming languages"
+        ],
+        "Project Coordination": ["project coordination"],
+        "Project Documentation": ["project documentation"],
+        "Project Management": ["project management"],
+        "Project Planning": ["project planning"],
+        "Prometheus": ["prometheus"],
+        "Proxmox": ["proxmox"],
+        "PyTorch": ["pytorch"],
+        "Python": ["phyton", "python"]
+    },
+    "Q": {
+        "QA Automation": ["qa automation"],
+        "QA Testing": ["qa testing"],
+        "Qase.io": ["qase.io"],
+        "Quarkus": ["quarkus"],
+        "Qweb": ["qweb"]
+    },
+    "R": {
+        "R": ["r", "r language", "r programming", "r programming language"],
+        "RDBMS": ["rdbms", "relational database management system"],
+        "RESTful API": ["rest api", "rest apis", "restful api"],
+        "RPA": ["robotic process automation", "rpa"],
+        "RSA": ["rsa", "rsa algorithm", "rsa encryption"],
+        "RabbitMQ": ["rabbitmq"],
+        "Raspberry Pi": ["raspberry pi"],
+        "React": ["react", "react js", "react.js", "reactjs", "reac t"],
+        "React Native": ["react native"],
+        "Redis": ["redis"],
+        "Redshift": ["redshift"],
+        "Redux": ["redux"],
+        "Relational Database": ["relational database", "relational databases"],
+        "Repository Management": ["repository management"],
+        "Responsive Web Design": ["responsive web", "responsive web design"],
+        "Robotics": ["robotics"],
+        "Router": ["router", "routers"],
+        "Router Configuration": ["router configuration"],
+        "Routing": ["routing"],
+        "Ruby": ["ruby"],
+        "Ruby on Rails": ["ruby on rails"]
+    },
+    "S": {
+        "SAP": ["sap"],
+        "SAP NetWeaver": ["sap net weaver", "sap netweave", "sap netweaver"],
+        "SASS": ["sass"],
+        "SCADA": ["scada", "supervisory control and data acquisition"],
+        "SCSS": ["scss"],
+        "SD-WAN": ["sd-wan", "sdwan"],
+        "SDLC": ["sdlc", "software development life cycle"],
+        "Sensors": ["sensor", "sensors"],
+        "SEO": ["search engine optimization", "seo"],
+        "SIEM Platforms": ["siem platform", "siem platforms"],
+        "SIP": ["sip", "session initiation protocol"],
+        "SOAR Platforms": ["soar platform", "soar platforms"],
+        "SQL": ["sql", "structured query language"],
+        "SS7": ["ss7", "signaling system 7"],
+        "SSIS": ["sql server integration services", "ssis"],
+        "STLC": ["software testing life cycle", "stlc"],
+        "SaaS": ["saas", "software as a service"],
+        "Scala": ["scala"],
+        "Scikit-Learn": ["scikit learn", "scikit-learn"],
+        "Scrum": ["scrum"],
+        "Security Management": ["security management"],
+        "Security Operations": ["security operations"],
+        "Security System": ["security system"],
+        "Security Testing": ["security testing"],
+        "Selenium": ["selenium webdriver", "selenium"],
+        "Sequelize": ["sequelize"],
+        "Sequence Diagram": ["seq diagram", "sequence diagram"],
+        "Server Management": ["server management"],
+        "Shadcn": ["shadcn"],
+        "Snowflake": ["snowflake"],
+        "Socket.IO": ["socket io", "socket.io"],
+        "Software Architecture": ["software architecture"],
+        "Software Design": ["software design"],
+        "Software Development": ["software development"],
+        "Software Documentation": ["software documentation"],
+        "Software Testing": ["software testing"],
+        "Solution Architecture": ["solution architecture"],
+        "Splunk": ["splunk"],
+        "Spreadsheet": ["spreadsheet"],
+        "Spring Boot": [
+            "java spring boot",
+            "spring",
+            "spring boot",
+            "spring framework",
+            "springboot"
+        ],
+        "State Management": ["state management"],
+        "Statistical Data Analysis": ["statistical data analysis"],
+        "Svelte": ["svelte"],
+        "SvelteKit": ["sveltekit"],
+        "Swift": ["swift"],
+        "Switch": ["switch", "switches"],
+        "Switching": ["switching"],
+        "System Analysis": ["system analysis"],
+        "System Configuration": ["system configuration"],
+        "System Deployment": ["system deployment"],
+        "System Design": ["system design"],
+        "System Integration": ["system integration"]
+    },
+    "T": {
+        "TCP/IP": [
+            "tcp ip",
+            "tcp ip protocol",
+            "tcp ip protocols",
+            "tcp/ip",
+            "tcp/ip protocol",
+            "tcp/ip protocols"
+        ],
+        "Tableau": ["tableau"],
+        "TailwindCSS": ["tailwind", "tailwind css", "tailwindcss"],
+        "Technical Writing": ["technical writing"],
+        "Telecommunication Networks": [
+            "telecommunication network",
+            "telecommunication networks"
+        ],
+        "TensorFlow": ["tensorflow"],
+        "Terraform": ["terraform"],
+        "Test Automation": ["test automation"],
+        "Test Scenario": ["test scenario"],
+        "TestRail": ["testrail"],
+        "Threat Intelligence Platforms": [
+            "TIP",
+            "threat intelligence platform",
+            "threat intelligence platforms"
+        ],
+        "Thymeleaf": ["thymeleaf"],
+        "Topologi Jaringan": ["topologi jaringan"],
+        "Trello": ["trello"],
+        "TypeScript": ["ts", "type script", "typescript"]
+    },
+    "U": {
+        "UI": ["ui", "user interface"],
+        "UI Design": ["ui design", "user interface design"],
+        "UI/UX": ["ui and ux", "ui ux", "ui/ux"],
+        "UI/UX Design": ["ui/ux design"],
+        "UIkit": ["uikit"],
+        "UNIX": ["unix"],
+        "UX": ["user experience", "ux"],
+        "UX Design": ["user experience design", "ux design"],
+        "UIPath": ["uipath"],
+        "UML": ["uml", "unified modeling language"],
+        "Unity": ["unity", "unity 3d", "unity3d"],
+        "Usability Testing": ["usability testing"],
+        "User Acceptance Testing": [
+            "user acceptance testing",
+            "user acceptance test",
+            "uat"
+        ]
+    },
+    "V": {
+        "VB.NET": ["vb net", "vb.net"],
+        "VMware": ["vmware"],
+        "VPN": ["vpn", "virtual private network"],
+        "Veeam": ["veeam"],
+        "Version Control": ["version control"],
+        "Visual Studio": ["visual studio"],
+        "Visualisasi Data": ["visualisasi data"],
+        "Vite": ["vite"],
+        "Vue": ["vue", "vue js", "vue.js", "vuejs"],
+        "Vuex": ["vuex"],
+        "Vulnerability Assessment": ["vulnerability assessment"],
+        "Vulnerability Research": ["vulnerability research"]
+    },
+    "W": {
+        "Waterfall": [
+            "waterfall",
+            "waterfall methodology",
+            "waterfall metodologi"
+        ],
+        "Web Design": ["web design"],
+        "Web Development": ["web development"],
+        "Web Hosting": ["web hosting"],
+        "Web Testing": ["web testing"],
+        "WebSocket": ["web socket", "web sockets", "websocket", "websockets"],
+        "WebdriverIO": ["wdio", "webdriver io", "webdriverio"],
+        "Webpack": ["webpack"],
+        "Website Testing": ["website testing"],
+        "Whitebox & Blackbox Testing": [
+            "white box & black box testing",
+            "white box & blackbox testing",
+            "white box and black box testing",
+            "white box and blackbox testing",
+            "whitebox & black box testing",
+            "whitebox & blackbox testing",
+            "whitebox and black box testing",
+            "whitebox and blackbox testing"
+        ],
+        "Whitebox Testing": [
+            "white box",
+            "white box testing",
+            "whitebox",
+            "whitebox testing"
+        ],
+        "Wireless Networking": ["wireless network", "wireless networking"],
+        "Wireshark": ["wireshark"],
+        "WordPress Development": ["wordpress", "wordpress development"]
+    },
+    "X": {
+        "XML": ["xml"],
+        "Xamarin": ["xamarin"]
+    },
+    "Y": {
+        "YAML": ["yaml"],
+        "Yarn": ["yarn"]
+    },
+    "Z": {
+        "Zabbix": ["zabbix"],
+        "Zigbee": ["zigbee"]
+    },
+    "a": {
+        "aaPanel": ["aapanel"]
+    },
+    "c": {
+        "cPanel": ["cpanel"]
+    },
+    "i": {
+        "iOS Development": ["ios", "ios development"]
+    },
+    "j": {
+        "jQuery": ["jquery"]
+    }
+}

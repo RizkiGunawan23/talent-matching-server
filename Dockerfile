@@ -28,13 +28,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY --from=builder /usr/local/lib/python3.12 /usr/local/lib/python3.12
 COPY --from=builder /usr/local/bin /usr/local/bin
 
-# Create log directories
-RUN mkdir -p /var/log/scraper/glints
+# Create directories
 RUN mkdir -p /app/uploaded_files  
 
 # Add non-root user
 RUN addgroup --system celery && adduser --system --ingroup celery celery
-RUN chown -R celery:celery /var/log/scraper
 
 # Ubah permission directory
 RUN chown -R celery:celery /app
