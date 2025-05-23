@@ -95,7 +95,8 @@ srsly==2.5.1
 sympy==1.14.0
 thinc==8.3.6
 tokenizers==0.21.1
-torch==2.7.0
+--find-links https://download.pytorch.org/whl/torch
+torch==2.7.0+cpu
 tqdm==4.67.1
 transformers==4.49.0
 trio==0.29.0

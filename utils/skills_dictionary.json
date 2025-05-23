@@ -12,7 +12,6 @@
         "AI Tools": ["ai tools"],
         "AJAX": ["ajax"],
         "API Development": ["api", "api development", "api integrasi", "apis"],
-        "Appium": ["appium"],
         "ASP.NET": ["asp.net"],
         "AWS": ["aws", "amazon web services"],
         "AWS Amplify": ["aws amplify", "amplify"],
@@ -74,7 +73,6 @@
             "backend developments"
         ],
         "Bash": ["bash"],
-        "BGP": ["bgp", "border gateway protocol"],
         "Big Data Analysis": ["big data analysis"],
         "Bitbucket": ["bitbucket"],
         "Blackbox Testing": [
@@ -83,7 +81,7 @@
             "blackbox",
             "blackbox testing"
         ],
-        "Bootstrap": ["bootstrap", "bootstrap 4", "bootstrap 5"],
+        "Bootstrap": ["bootstrap"],
         "Bug Life Cycle": ["bug life cycle"],
         "Bug Reporting": ["bug reporting"],
         "Bug Tracking": ["bug tracking"],
@@ -106,12 +104,17 @@
             "css",
             "css3"
         ],
+        "CSS3": [
+            "cascading style sheet",
+            "cascading style sheets",
+            "css",
+            "css3"
+        ],
         "Canva Design": ["canva design"],
         "Cassandra": ["cassandra"],
         "Ceph": ["ceph"],
         "Check Point": ["check point", "checkpoint"],
         "Cisco": ["cisco"],
-        "Clean Architecture": ["clean architecture"],
         "ClickHouse": ["clickhouse"],
         "Cloud & Server Management": [
             "cloud & server management",
@@ -123,14 +126,7 @@
         "Cloud Integration": ["cloud integration"],
         "Cloud Networking": ["cloud network", "cloud networking"],
         "Code Review": ["code review"],
-        "CodeIgniter": [
-            "codeigniter",
-            "codeigniter 3",
-            "codeigniter 4",
-            "ci",
-            "ci3",
-            "ci4"
-        ],
+        "CodeIgniter": ["codeigniter", "codeigniter 3", "codeigniter 4"],
         "Computer Hardware": ["computer hardware"],
         "Computer Networking": ["computer networking"],
         "Computer Vision": ["computer vision"],
@@ -173,10 +169,6 @@
         "DevSecOps": ["devsecops", "dev sec ops"],
         "Django": ["django"],
         "Docker": ["docker"],
-        "Documentation and Best Practices": [
-            "documentation and best practices",
-            "documentation & best practices"
-        ],
         "Draw.io": ["draw.io"]
     },
     "E": {
@@ -185,16 +177,13 @@
         "ERP": ["erp"],
         "ETL": ["etl"],
         "ETL Pipeline": ["etl pipeline"],
-        "Eclipse": ["eclipse", "eclipse ide"],
+        "Eclipse": ["eclipse"],
         "Edge Functions": ["edge functions"],
         "Elastic Stack": ["elastic stack"],
         "ElasticSearch": ["elasticsearch"],
         "Entity Relationship Diagram": ["entity relationship diagram", "erd"],
-        "ESP32": ["esp32"],
-        "Event-Driven Architecture": ["event-driven architecture"],
         "Exploit Development": ["exploit development"],
-        "Exploratory Testing": ["exploratory testing"],
-        "Express": ["express", "express.js", "expressjs", "express js"]
+        "Exploratory Testing": ["exploratory testing"]
     },
     "F": {
         "Figma": ["figma"],
@@ -208,10 +197,6 @@
             "frontend development"
         ],
         "Fullstack": ["fullstack", "fullstack developer"],
-        "Functional Programming": [
-            "functional programming",
-            "fungsional programming"
-        ],
         "Functional Specification Document": [
             "fsd",
             "functional specification document"
@@ -226,12 +211,11 @@
         "Git Flow": ["git flow"],
         "GitHub": ["github", "git hub"],
         "GitHub Actions": ["github actions"],
-        "GitLab": ["gitlab"],
         "Go": ["go", "go / golang", "golang"],
         "Google Analytics": ["google analytics"],
         "Google BigQuery": ["google bigquery"],
         "Google Cloud Platform": ["google cloud platform", "gcp"],
-        "Google PubSub": [
+        "Google Pub/Sub": [
             "google pub/sub",
             "google pubsub",
             "pub/sub",
@@ -247,7 +231,7 @@
         "HCL BigFix": ["hcl bigfix"],
         "HMI Programming": ["hmi programming"],
         "HRIS Database Management": ["hris database management"],
-        "HTML": ["html", "html5", "hypertext markup language"],
+        "HTML5": ["html", "html5", "hypertext markup language"],
         "Hibernate Framework": ["hibernate", "hibernate framework"],
         "Hosting": ["hosting"],
         "Hyper-V": ["hyper-v"]
@@ -256,9 +240,7 @@
         "IBM SPSS": ["ibm spss"],
         "IDA Pro": ["ida pro"],
         "IDS": ["ids", "intrusion detection system"],
-        "Intellij": ["intellij", "intellij idea"],
         "IOT": ["internet of things", "iot"],
-        "IP": ["ip", "internet protocol"],
         "IP Networking": ["ip networking"],
         "ISO 27001": ["iso 27001"],
         "IT Infrastructure Management": ["it infrastructure management"],
@@ -282,8 +264,7 @@
         "Jenkins": ["jenkins"],
         "Jest": ["jest"],
         "Jetpack Compose": ["jetpack compose"],
-        "Jira": ["jira"],
-        "JSON": ["json", "javascript object notation"]
+        "Jira": ["jira"]
     },
     "K": {
         "Kafka": ["kafka"],
@@ -291,7 +272,6 @@
         "Keamanan IT": ["keamanan it"],
         "Konfigurasi Serat Optik": ["konfigurasi serat optik"],
         "Kotlin": ["kotlin"],
-        "Kotlin Android SDK": ["kotlin android sdk"],
         "Kubernetes": ["kubernetes"]
     },
     "L": {
@@ -303,26 +283,20 @@
         "Linux": ["linux"],
         "Linux System Administration": ["linux system administration"],
         "Load Balancing": ["load balancing"],
-        "LTE": ["lte", "long term evolution"],
         "Lumen": ["lumen"]
     },
     "M": {
         "MQTT": ["message queue telemetry transport", "mqtt"],
         "MSSQL": ["microsoft sql server", "mssql", "sql server", "sqlserver"],
         "MVC": ["model-view-controller", "mvc", "mvc architecture"],
-        "MVVM": ["model-view-viewmodel", "mvvm"],
         "Machine Learning": ["machine learning"],
         "Malware Analysis": ["malware analysis"],
         "Manual Testing": ["manual testing"],
         "MariaDB": ["mariadb"],
         "Metabase": ["metabase"],
-        "MicroTik": ["mikrotik", "microtik"],
         "Metasploit": ["metasploit"],
-        "Microcontrollers": ["microcontrollers", "micro controller"],
-        "Microservices Architecture": [
-            "microservices",
-            "microservices architecture"
-        ],
+        "MicroTik": ["mikrotik"],
+        "Microservices": ["microservices", "microservices architecture"],
         "Microsoft Azure": ["microsoft azure"],
         "Microsoft Excel": ["excel", "microsoft excel"],
         "Microsoft Office": ["microsoft office"],
@@ -345,10 +319,6 @@
         "Mobile UI Design": ["mobile ui design"],
         "Mobx": ["mobx"],
         "MongoDB": ["mongodb"],
-        "Monitoring and Maintenance": [
-            "monitoring and maintenance",
-            "monitoring & maintenance"
-        ],
         "MySQL": ["my sql", "mysql"]
     },
     "N": {
@@ -370,11 +340,6 @@
         "Nuxt": ["nuxt", "nuxt js", "nuxt.js", "nuxtjs"]
     },
     "O": {
-        "Object-Oriented Programming": [
-            "object-oriented programming",
-            "oop",
-            "object-oriented programming (oop)"
-        ],
         "OLAP": ["olap", "olap technology", "online analytical processing"],
         "ONT": ["ont", "optical network terminal"],
         "ONU": ["onu", "optical network unit"],
@@ -389,7 +354,8 @@
         "Objective-C": ["objective c", "objective-c"],
         "Odoo": ["odoo", "odoo coding"],
         "OpenAPI": ["openapi"],
-        "Oracle Database": ["oracle database", "oracle"]
+        "Oracle": ["oracle"],
+        "Oracle Database": ["oracle database"]
     },
     "P": {
         "PABX": ["pabx", "private automatic branch exchange"],
@@ -400,8 +366,6 @@
         "Palo Alto": ["palo alto", "paloalto"],
         "Pandas": ["pandas"],
         "Pemelihan Jaringan Internet": ["pemelihan jaringan internet"],
-        "Pemrograman OOP": ["pemrograman oop"],
-        "Pemrograman Web": ["pemrograman web"],
         "Penetration Testing": ["penetration testing"],
         "Perl": ["perl"],
         "Playwright": ["playwright"],
@@ -439,12 +403,12 @@
     "R": {
         "R": ["r", "r language", "r programming", "r programming language"],
         "RDBMS": ["rdbms", "relational database management system"],
-        "RESTful API": ["rest api", "rest apis", "restful api"],
+        "REST API": ["rest api", "rest apis", "restful api"],
         "RPA": ["robotic process automation", "rpa"],
         "RSA": ["rsa", "rsa algorithm", "rsa encryption"],
         "RabbitMQ": ["rabbitmq"],
         "Raspberry Pi": ["raspberry pi"],
-        "React": ["react", "react js", "react.js", "reactjs", "reac t"],
+        "React": ["react", "react js", "react.js", "reactjs"],
         "React Native": ["react native"],
         "Redis": ["redis"],
         "Redshift": ["redshift"],
@@ -453,7 +417,6 @@
         "Repository Management": ["repository management"],
         "Responsive Web Design": ["responsive web", "responsive web design"],
         "Robotics": ["robotics"],
-        "Router": ["router", "routers"],
         "Router Configuration": ["router configuration"],
         "Routing": ["routing"],
         "Ruby": ["ruby"],
@@ -467,13 +430,10 @@
         "SCSS": ["scss"],
         "SD-WAN": ["sd-wan", "sdwan"],
         "SDLC": ["sdlc", "software development life cycle"],
-        "Sensors": ["sensor", "sensors"],
         "SEO": ["search engine optimization", "seo"],
         "SIEM Platforms": ["siem platform", "siem platforms"],
-        "SIP": ["sip", "session initiation protocol"],
         "SOAR Platforms": ["soar platform", "soar platforms"],
         "SQL": ["sql", "structured query language"],
-        "SS7": ["ss7", "signaling system 7"],
         "SSIS": ["sql server integration services", "ssis"],
         "STLC": ["software testing life cycle", "stlc"],
         "SaaS": ["saas", "software as a service"],
@@ -484,7 +444,7 @@
         "Security Operations": ["security operations"],
         "Security System": ["security system"],
         "Security Testing": ["security testing"],
-        "Selenium": ["selenium webdriver", "selenium"],
+        "Selenium": ["selenium webdriver"],
         "Sequelize": ["sequelize"],
         "Sequence Diagram": ["seq diagram", "sequence diagram"],
         "Server Management": ["server management"],
@@ -496,10 +456,9 @@
         "Software Development": ["software development"],
         "Software Documentation": ["software documentation"],
         "Software Testing": ["software testing"],
-        "Solution Architecture": ["solution architecture"],
         "Splunk": ["splunk"],
         "Spreadsheet": ["spreadsheet"],
-        "Spring Boot": [
+        "Spring Framework": [
             "java spring boot",
             "spring",
             "spring boot",
@@ -508,10 +467,8 @@
         ],
         "State Management": ["state management"],
         "Statistical Data Analysis": ["statistical data analysis"],
-        "Svelte": ["svelte"],
-        "SvelteKit": ["sveltekit"],
         "Swift": ["swift"],
-        "Switch": ["switch", "switches"],
+        "Switches": ["switch", "switches"],
         "Switching": ["switching"],
         "System Analysis": ["system analysis"],
         "System Configuration": ["system configuration"],
@@ -559,8 +516,7 @@
         "UNIX": ["unix"],
         "UX": ["user experience", "ux"],
         "UX Design": ["user experience design", "ux design"],
-        "UIPath": ["uipath"],
-        "UML": ["uml", "unified modeling language"],
+        "UiPath": ["uipath"],
         "Unity": ["unity", "unity 3d", "unity3d"],
         "Usability Testing": ["usability testing"],
         "User Acceptance Testing": [
@@ -575,7 +531,6 @@
         "VPN": ["vpn", "virtual private network"],
         "Veeam": ["veeam"],
         "Version Control": ["version control"],
-        "Visual Studio": ["visual studio"],
         "Visualisasi Data": ["visualisasi data"],
         "Vite": ["vite"],
         "Vue": ["vue", "vue js", "vue.js", "vuejs"],
@@ -618,11 +573,9 @@
         "WordPress Development": ["wordpress", "wordpress development"]
     },
     "X": {
-        "XML": ["xml"],
-        "Xamarin": ["xamarin"]
+        "XML": ["xml"]
     },
     "Y": {
-        "YAML": ["yaml"],
         "Yarn": ["yarn"]
     },
     "Z": {

@@ -90,5 +90,11 @@ uploaded_files/ontology/*
 uploaded_files/profile_images/*
 
 # Exclude temp/cache files within model
-models/ner/model-best/__pycache__/
-models/ner/model-best/*.log
+talent_matching_ner_model
+
+# Direktori lengkap
+/talent_matching_ner_model/
+
+# Isi direktori
+talent_matching_ner_model/**
+.buildcache

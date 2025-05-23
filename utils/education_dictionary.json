@@ -1,66 +1,95 @@
 {
-    "Doktor (S3)": [
-        "Doktor (S3)",
-        "Doktor",
-        "S3",
-        "Doktor Falsafah",
-        "Falsafah Doktor",
-        "Doctor of Philosophy",
-        "PhD",
-        "Ph.D.",
-        "PhD.",
-        "Ph. D.",
-        "Ph.D"
-    ],
-    "Magister (S2)": [
-        "Magister (S2)",
-        "Magister",
-        "S2",
-        "Master",
-        "Master Degree",
-        "Master's Degree",
-        "M.Sc.",
-        "M.A.",
-        "M.S.",
-        "M.A"
-    ],
-    "Sarjana (S1)": [
-        "Sarjana (S1)",
-        "Sarjana",
-        "S1",
-        "Bachelor",
-        "Bachelor Degree",
-        "Bachelor's Degree"
-    ],
-    "Diploma (D4)": [
-        "Diploma (D4)",
-        "Diploma 4",
-        "D4",
-        "D-4",
-        "Sarjana Terapan",
-        "Applied Bachelor"
-    ],
-    "Diploma (D3)": [
-        "Diploma (D3)",
-        "Diploma 3",
-        "D3",
-        "Associate",
-        "Associate Degree",
-        "Associate's Degree"
-    ],
-    "SMA/SMK": [
-        "SMK",
-        "SMA",
-        "Sekolah Menengah Kejuruan",
-        "Sekolah Menengah Atas",
-        "High School",
-        "Senior Highschool"
-    ],
-    "SMP": [
-        "SMP",
-        "Sekolah Menengah Pertama",
-        "Junior High School",
-        "Middle School"
-    ],
-    "SD": ["SD", "Sekolah Dasar", "Elementary School", "Primary School"]
+    "Doktor (S3)": {
+        "rank": 8,
+        "aliases": [
+            "Doktor (S3)",
+            "Doktor",
+            "S3",
+            "Doktor Falsafah",
+            "Falsafah Doktor",
+            "Doctor of Philosophy",
+            "PhD",
+            "Ph.D.",
+            "PhD.",
+            "Ph. D.",
+            "Ph.D"
+        ]
+    },
+    "Magister (S2)": {
+        "rank": 7,
+        "aliases": [
+            "Magister (S2)",
+            "Magister",
+            "S2",
+            "Master",
+            "Master Degree",
+            "Master's Degree",
+            "M.Sc.",
+            "M.A.",
+            "M.S.",
+            "M.A"
+        ]
+    },
+    "Sarjana (S1)": {
+        "rank": 6,
+        "aliases": [
+            "Sarjana (S1)",
+            "Sarjana",
+            "S1",
+            "Bachelor",
+            "Bachelor Degree",
+            "Bachelor's Degree"
+        ]
+    },
+    "Diploma (D4)": {
+        "rank": 5,
+        "aliases": [
+            "Diploma (D4)",
+            "Diploma 4",
+            "D4",
+            "D-4",
+            "Sarjana Terapan",
+            "Applied Bachelor"
+        ]
+    },
+    "Diploma (D3)": {
+        "rank": 4,
+        "aliases": [
+            "Diploma (D3)",
+            "Diploma 3",
+            "D3",
+            "Associate",
+            "Associate Degree",
+            "Associate's Degree"
+        ]
+    },
+    "SMA/SMK": {
+        "rank": 3,
+        "aliases": [
+            "SMK",
+            "SMA",
+            "Sekolah Menengah Kejuruan",
+            "Sekolah Menengah Atas",
+            "High School",
+            "Senior Highschool"
+        ]
+    },
+    "SMP": {
+        "rank": 2,
+        "aliases": [
+            "SMP",
+            "Sekolah Menengah Pertama",
+            "Junior High School",
+            "Middle School"
+        ]
+    },
+    "SD": {
+        "rank": 1,
+        "aliases": [
+            "SD",
+            "Sekolah Dasar",
+            "Elementary School",
+            "Primary School"
+        ]
+    }
 }

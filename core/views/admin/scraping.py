@@ -18,7 +18,7 @@ from rest_framework.views import APIView
 
 from core.models import Job, ScrapingTask, UploadedFile, User
 from core.serializers import UploadedFileSerializer
-from core.tasks import scrape_glints_data_detail
+from core.tasks import scrape_job_data
 from utils.job_data_parser import normalize_glints_job_data
 
 
@@ -41,7 +41,7 @@ class JobScrapingView(APIView):
                     status=status.HTTP_403_FORBIDDEN,
                 )
 
-            task = scrape_glints_data_detail.delay()
+            task = scrape_job_data.delay()
 
             user: User = request.user
 
@@ -155,11 +155,6 @@ class JobScrapingTaskStatusView(APIView):
             {
                 "task_id": task_id,
                 "status": task_status,
-                "max_page": (
-                    max_page
-                    if task_status != "PENDING" and task_status != "GETTING_AUTH_DATA"
-                    else None
-                ),
                 "scraped_jobs": (
                     scraped_jobs
                     if task_status == "SCRAPING_JOB_DETAIL" or task_status == "SUCCESS"

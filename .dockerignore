@@ -3,6 +3,7 @@ __pycache__/
 *$py.class
 *.so
 .Python
+env
 env/
 build/
 develop-eggs/
@@ -19,8 +20,9 @@ var/
 .installed.cfg
 *.egg
 .env
+.env/
 .venv
-venv/
+.venv/
 ENV/
 .git/
 .github/
@@ -29,5 +31,28 @@ node_modules/
 logs/
 *.log
 .DS_Store
+
 uploaded_files/ontology/
 uploaded_files/profile_images/
+
+# .dockerignore
+**/__pycache__
+**/*.pyc
+.git
+.gitignore
+.env*
+.DS_Store
+*.log
+*.sqlite3
+venv
+env
+.venv
+.idea
+.vscode
+*.ipynb
+node_modules
+**/migrations/*.py
+!**/migrations/__init__.py
+
+# Jangan include model NER yang besar (akan di-mount sebagai volume)
+talent_matching_ner_model/
