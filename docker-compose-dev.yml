@@ -21,6 +21,7 @@ services:
         volumes:
             - ./talent_matching_ner_model:/app/talent_matching_ner_model
             - ./uploaded_files:/app/uploaded_files
+            - ./debug_screenshots:/app/debug_screenshots
         restart: always
         develop:
             watch:
@@ -65,11 +66,12 @@ services:
             - NEO4J_BOLT_URL=${NEO4J_BOLT_URL:-bolt://host.docker.internal:7689}
             - REDIS_URL=redis://redis:6379
             - ENVIRONMENT=development
-        command: celery -A talent_matching_server worker --loglevel=info
+        command: watchmedo auto-restart --directory=/app --pattern="*.py" --recursive -- celery -A talent_matching_server worker --loglevel=info --pool=solo
         shm_size: "1gb"
         volumes:
             - ./uploaded_files:/app/uploaded_files
             - ./talent_matching_ner_model:/app/talent_matching_ner_model
+            - ./debug_screenshots:/app/debug_screenshots
         restart: always
         develop:
             watch:

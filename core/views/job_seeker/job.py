@@ -11,7 +11,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from core.models import Job, ScrapingTask, Skill
-from utils.job_data_parser import normalize_glints_job_data
+from core.scrapers.normalize_glints_data import normalize_glints_job_data
 
 
 class JobRecommendationView(APIView):

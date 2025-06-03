@@ -1,398 +1,566 @@
+import datetime
+import math
 import random
 import re
 import time
-from typing import Any, Dict, List, Optional
 
 from django.core.cache import cache
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
-from core.scrapers.utils import close_driver, get_driver, is_task_cancelled
+from core.scrapers.helper import (
+    add_cookie_safely,
+    close_driver,
+    get_driver,
+    is_task_cancelled,
+    update_task_progress,
+)
 
-# ===== AUTHENTICATION FUNCTIONS =====
 
-
-def authenticate_to_glints(task_id: str) -> tuple:
-    """Login ke Glints dan mendapatkan cookies"""
-    print("Mencoba login ke Glints")
+def authenticate_to_kalibrr(task_id: str) -> tuple:
+    """Login ke Kalibrr dan return authenticated driver"""
     driver = get_driver()
 
+    if driver is None:
+        error_msg = "Failed to create Chrome driver"
+        return None, None, error_msg
+
     try:
-        # Buka halaman login
-        print("Membuka halaman login Glints")
-        driver.get("https://glints.com/id/login")
+        driver.get("https://www.kalibrr.com/login")
+        driver.refresh()
         time.sleep(random.uniform(2, 4))
 
-        # Klik tombol email login
-        login_email_button = WebDriverWait(driver, 20).until(
-            EC.element_to_be_clickable(
-                (By.XPATH, "//a[@aria-label='Login with Email button']")
-            )
+        if is_task_cancelled(task_id):
+            close_driver(driver)
+            return None, None, "Task cancelled"
+
+        WebDriverWait(driver, 20).until(
+            EC.presence_of_element_located((By.ID, "login-email"))
         )
-        login_email_button.click()
 
-        # Isi email dan password
-        email_field = driver.find_element(By.ID, "login-form-email")
-        password_field = driver.find_element(By.ID, "login-form-password")
+        email_field = driver.find_element(By.ID, "login-email")
+        password_field = driver.find_element(By.ID, "login-password")
 
-        email_field.send_keys("scrapingglints@gmail.com")
-        password_field.send_keys("scrapingglints123")
+        email_field.clear()
+        email_field.send_keys("scrapingkalibrr@gmail.com")
+
+        password_field.clear()
+        password_field.send_keys("scrapingkalibrr123")
+
+        if is_task_cancelled(task_id):
+            close_driver(driver)
+            return None, None, "Task cancelled"
 
         # Submit login
-        submit_button = driver.find_element(
-            By.XPATH, "//button[@data-cy='submit_btn_login']"
-        )
+        submit_button = driver.find_element(By.XPATH, "//button[@type='submit']")
         submit_button.click()
+        time.sleep(random.uniform(5, 8))
 
-        # Verifikasi login
-        WebDriverWait(driver, 15).until(
-            EC.presence_of_all_elements_located(
-                (
-                    By.XPATH,
-                    "//h1[@class='ForYouTabHeadersc__Heading-sc-vgyvm0-0 euPYjq']",
-                )
-            )
+        if is_task_cancelled(task_id):
+            close_driver(driver)
+            return None, None, "Task cancelled"
+
+        driver.get(
+            "https://jobseeker.kalibrr.com/job-board/i/it-and-software/1?sort=Freshness"
         )
+        time.sleep(random.uniform(3, 5))
 
-        # Ambil cookies
+        if is_task_cancelled(task_id):
+            close_driver(driver)
+            return None, None, "Task cancelled"
+
+        # Ambil cookies untuk backup (optional)
         cookies = driver.get_cookies()
-        close_driver(driver)
 
-        return cookies, None
+        # JANGAN close driver - return driver yang sudah authenticated
+        return driver, cookies, None
 
     except Exception as e:
-        error_msg = f"Error saat authenticate_to_glints: {str(e)}"
-        print(error_msg)
         close_driver(driver)
-        return None, error_msg
+        return None, None, error_msg
+
+
+def create_authenticated_session(cookies: list[dict], task_id: str):
+    """Membuat session baru dengan cookies yang sudah authenticated"""
+    if is_task_cancelled(task_id):
+        return None
+
+    driver = get_driver()
+    if driver is None:
+        return None
+
+    try:
+        # Buka halaman jobseeker terlebih dahulu
+        driver.get("https://jobseeker.kalibrr.com/")
+        time.sleep(2)
+
+        # Tambahkan cookies dengan aman
+        success_count = 0
+        for cookie in cookies:
+            # Filter cookies yang relevan dengan jobseeker.kalibrr.com
+            if "domain" in cookie:
+                if "kalibrr.com" in cookie["domain"]:
+                    if add_cookie_safely(driver, cookie):
+                        success_count += 1
+            else:
+                if add_cookie_safely(driver, cookie):
+                    success_count += 1
+
+        # Refresh halaman untuk menerapkan cookies
+        driver.refresh()
+        time.sleep(3)
+
+        return driver
+
+    except Exception as e:
+        close_driver(driver)
+        return None
 
 
 # ===== URL COLLECTION FUNCTIONS =====
 
 
-def get_max_page_number(driver, task_id: str, update_progress_func=None) -> int:
+def get_max_page_number(
+    driver,
+    task_id: str,
+    update_progress_func=None,
+    progress_data: dict[str, any] = {"scraped_jobs": 0},
+) -> int:
     """Mendapatkan jumlah maksimal halaman"""
     try:
-        pagination_buttons = driver.find_elements(
-            By.XPATH, "//button[contains(@class, 'AnchorPaginationsc__Number')]"
+        if update_progress_func:
+            update_progress_func(
+                task_id, "GETTING_KALIBRR_MAX_PAGE_NUMBER", progress_data
+            )
+
+        if is_task_cancelled(task_id):
+            return 0
+
+        # Cari elemen pagination
+        page_span_element = driver.find_element(
+            By.XPATH,
+            "/html/body/kb-app-root/div/main/div/kb-job-board/div/div/div[1]/div[2]/kb-job-board-pagination/div/span",
         )
 
+        if is_task_cancelled(task_id):
+            return 0
+
         max_page = 1  # Default jika hanya ada 1 halaman
-        for button in pagination_buttons:
-            try:
-                page_num = int(button.text)
-                if page_num > max_page:
-                    max_page = page_num
-            except ValueError:
-                continue
 
-        print(f"Halaman terakhir yang tersedia: {max_page}")
+        if page_span_element:
+            # Ambil teks dari elemen span
+            pagination_text = page_span_element.text.strip()
 
-        if update_progress_func:
-            progress_data = {"max_page": max_page}
-            update_progress_func(task_id, "GETTING_MAX_PAGE_NUMBER", progress_data)
+            # Cari angka terakhir setelah "of" menggunakan regex
+            # Pattern untuk menangkap angka setelah "of"
+            match = re.search(r"of\s+(\d+)", pagination_text)
+
+            if match:
+                total_jobs = int(match.group(1))
+
+                # Hitung max page (total jobs dibagi 15, lalu ceil)
+                max_page = math.ceil(total_jobs / 15)
+            else:
+                # Fallback: coba cari semua angka dan ambil yang terbesar
+                numbers = re.findall(r"\d+", pagination_text)
+                if numbers:
+                    total_jobs = int(numbers[-1])  # Ambil angka terakhir
+                    max_page = math.ceil(total_jobs / 15)
+
+        if is_task_cancelled(task_id):
+            return 0
 
         return max_page
     except Exception as e:
-        print(f"Error mendapatkan jumlah halaman: {e}")
         return 1
 
 
 def collect_job_urls(
-    driver, max_page: int, task_id: str, update_progress_func=None
-) -> List[str]:
+    driver,
+    max_page: int,
+    task_id: str,
+    update_progress_func=None,
+    progress_data: dict[str, any] = {"scraped_jobs": 0},
+) -> list[str]:
     """Mengumpulkan semua URL pekerjaan"""
     job_urls = []
-    progress_data = {"max_page": max_page, "total_jobs": 0}
+    seen_urls = set()
 
-    for page in range(1, max_page + 1):
+    if update_progress_func:
+        update_progress_func(task_id, "COLLECTING_KALIBRR_JOB_URLS", progress_data)
+
+    # for page in range(1, max_page + 1):
+    for page in range(1, 2):
         try:
             if is_task_cancelled(task_id):
-                print(f"Task dibatalkan saat scraping page ke-{page}.")
                 break
 
-            print(f"Scraping halaman {page}/{max_page}")
-            url = f"https://glints.com/id/job-category/computer-technology"
-            url = f"{url}?page={page}" if page > 1 else url
+            url = f"https://jobseeker.kalibrr.com/job-board/i/it-and-software/{page}?sort=Freshness"
 
             driver.get(url)
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             time.sleep(random.uniform(3, 5))
 
-            job_title_tags = WebDriverWait(driver, 15).until(
+            if is_task_cancelled(task_id):
+                break
+
+            job_link_elements = WebDriverWait(driver, 15).until(
                 EC.presence_of_all_elements_located(
-                    (By.XPATH, "//a[starts-with(@href, '/id/opportunities/jobs/')]")
+                    (
+                        By.XPATH,
+                        "//a[contains(@href, '/c/') and contains(@href, '/jobs/') and contains(@class, 'k-font-bold')]",
+                    )
                 )
             )
 
-            for job_title_tag in job_title_tags:
-                job_urls.append(job_title_tag.get_attribute("href"))
+            if is_task_cancelled(task_id):
+                break
+
+            page_urls = set()  # Track URLs untuk halaman ini
+            for job_link_element in job_link_elements:
+                href = job_link_element.get_attribute("href")
+                if href:
+                    # Bersihkan URL dari query parameters
+                    clean_url = href.split("?")[0]
+
+                    # Cek apakah URL sudah ada di set
+                    if clean_url not in seen_urls and clean_url not in page_urls:
+                        job_urls.append(href)
+                        seen_urls.add(clean_url)
+                        page_urls.add(clean_url)
 
             # Update progress
-            progress_data["total_jobs"] = len(job_urls)
             if update_progress_func:
-                update_progress_func(task_id, "COLLECTING_JOB_URLS", progress_data)
+                update_progress_func(
+                    task_id, "COLLECTING_KALIBRR_JOB_URLS", progress_data
+                )
 
         except Exception as e:
-            print(f"Error di halaman {page}: {e}")
+            pass
+
+    if is_task_cancelled(task_id):
+        return []
 
     return job_urls
 
 
-# ===== DETAIL EXTRACTION FUNCTIONS =====
-
-
-def extract_company_logo(driver) -> Optional[str]:
+def extract_company_logo(driver, task_id) -> str | None:
     """Ekstrak URL logo perusahaan"""
+    if is_task_cancelled(task_id):
+        return None
+
     try:
         img_tag = WebDriverWait(driver, 15).until(
             EC.presence_of_element_located(
                 (
                     By.XPATH,
-                    "/html/body/div[2]/div/div[1]/div[2]/div[2]/div[2]/div/main/div[1]/div[1]/img",
+                    "/html/body/kb-app-root/div/main/div/kb-job-full-page/div/div/kb-job-page/div/div/div[1]/div[1]/kb-company-logo/a/div/img",
                 )
             )
         )
 
-        srcset = img_tag.get_attribute("srcset")
-        urls = [item.strip().split(" ") for item in srcset.split(",")]
-        url_dict = {int(size[:-1]): url for url, size in urls}
-        return url_dict[max(url_dict.keys())]
+        src = img_tag.get_attribute("src")
+        return src
+
     except Exception as e:
-        print(f"Error ekstrak logo: {e}")
         return "https://img.icons8.com/?size=720&id=53373&format=png&color=000000"
 
 
-def extract_job_title(driver) -> Optional[str]:
+def extract_job_title(driver, task_id) -> str | None:
     """Ekstrak judul pekerjaan"""
+    if is_task_cancelled(task_id):
+        return None
+
     try:
         title_tag = WebDriverWait(driver, 15).until(
             EC.presence_of_element_located(
                 (
                     By.XPATH,
-                    "/html/body/div[2]/div/div[1]/div[2]/div[2]/div[2]/div/main/div[1]/div[2]/div/div[1]/h1",
+                    "/html/body/kb-app-root/div/main/div/kb-job-full-page/div/div/kb-job-page/div/div/div[1]/div[1]/h1",
                 )
             )
         )
-        return title_tag.get_attribute("textContent").strip()
+        title = title_tag.get_attribute("textContent").strip()
+        return title
     except Exception as e:
-        print(f"Error ekstrak judul: {e}")
         return None
 
 
-def extract_company_name(driver) -> Optional[str]:
+def extract_company_name(driver, task_id) -> str | None:
     """Ekstrak nama perusahaan"""
+    if is_task_cancelled(task_id):
+        return None
+
     try:
         company_tag = WebDriverWait(driver, 15).until(
             EC.presence_of_element_located(
                 (
                     By.XPATH,
-                    "/html/body/div[2]/div/div[1]/div[2]/div[2]/div[2]/div/main/div[1]/div[2]/div/div[2]/div/a",
+                    "/html/body/kb-app-root/div/main/div/kb-job-full-page/div/div/kb-job-page/div/div/div[1]/div[1]/span/a/h2",
                 )
             )
         )
-        return company_tag.get_attribute("textContent").strip()
+        company_name = company_tag.get_attribute("textContent").strip()
+
+        return company_name
     except Exception as e:
-        print(f"Error ekstrak nama perusahaan: {e}")
         return None
 
 
-def extract_location(driver) -> Dict[str, Optional[str]]:
+def extract_location(driver, task_id) -> dict[str, str | None] | None:
     """Ekstrak informasi lokasi"""
-    location = {"subdistrict": None, "city": None, "province": None}
+    if is_task_cancelled(task_id):
+        return None
 
-    # Ekstrak kecamatan
-    try:
-        subdistrict_tag = WebDriverWait(driver, 15).until(
-            EC.presence_of_element_located(
-                (
-                    By.XPATH,
-                    "/html/body/div[2]/div/div[1]/div[2]/div[2]/div[1]/div/label[5]/a",
-                )
-            )
-        )
-        location["subdistrict"] = subdistrict_tag.get_attribute("textContent").strip()
-    except Exception as e:
-        print(f"Error ekstrak kecamatan: {e}")
+    location = {"city": None}
 
     # Ekstrak kota
     try:
-        city_tag = WebDriverWait(driver, 15).until(
+        location_tag = WebDriverWait(driver, 15).until(
             EC.presence_of_element_located(
                 (
                     By.XPATH,
-                    "/html/body/div[2]/div/div[1]/div[2]/div[2]/div[1]/div/label[4]/a",
+                    "/html/body/kb-app-root/div/main/div/kb-job-full-page/div/div/kb-job-page/div/div/div[1]/div[1]/ul/li[1]/a",
                 )
             )
         )
-        location["city"] = city_tag.get_attribute("textContent").strip()
-    except Exception as e:
-        print(f"Error ekstrak kota: {e}")
 
-    # Ekstrak provinsi
-    try:
-        province_tag = WebDriverWait(driver, 15).until(
-            EC.presence_of_element_located(
-                (
-                    By.XPATH,
-                    "/html/body/div[2]/div/div[1]/div[2]/div[2]/div[1]/div/label[3]/a",
-                )
-            )
+        # Cari elemen span dengan itemprop="addressLocality" untuk mendapatkan kota
+        city_span = location_tag.find_element(
+            By.XPATH, ".//span[@itemprop='addressLocality']"
         )
-        location["province"] = province_tag.get_attribute("textContent").strip()
+
+        location["city"] = city_span.text.strip()
     except Exception as e:
-        print(f"Error ekstrak provinsi: {e}")
+        pass
+
+    if is_task_cancelled(task_id):
+        return None
 
     return location
 
 
-def extract_salary(driver) -> Optional[str]:
+def extract_salary(driver, task_id) -> str | None:
     """Ekstrak informasi gaji"""
+    if is_task_cancelled(task_id):
+        return None
+
     try:
-        salary_tag = WebDriverWait(driver, 15).until(
+        # Cari elemen ul yang berisi informasi gaji
+        ul_element = WebDriverWait(driver, 15).until(
             EC.presence_of_element_located(
                 (
                     By.XPATH,
-                    "/html/body/div[2]/div/div[1]/div[2]/div[2]/div[2]/div/main/div[3]/div[1]/div/span",
+                    "/html/body/kb-app-root/div/main/div/kb-job-full-page/div/div/kb-job-page/div/div/div[1]/div[1]/ul",
                 )
             )
         )
-        salary = salary_tag.get_attribute("textContent").strip()
-        return salary if len(re.findall(r"[\d\.]+", salary)) > 0 else None
-    except Exception:
-        try:
-            # Coba dengan XPath alternatif
-            salary_tag = WebDriverWait(driver, 15).until(
-                EC.presence_of_element_located(
-                    (
-                        By.XPATH,
-                        "/html/body/div[2]/div/div[1]/div[2]/div[2]/div[2]/div/main/div[3]/div[1]",
-                    )
-                )
-            )
-            salary = salary_tag.get_attribute("textContent").strip()
-            return salary if len(re.findall(r"[\d\.]+", salary)) > 0 else None
-        except Exception as e:
-            print(f"Error ekstrak gaji: {e}")
+
+        # Cari elemen kb-salary-range di dalam ul
+        salary_element = ul_element.find_element(
+            By.XPATH, ".//a[contains(@href, '/job-board/sgt/')]"
+        )
+
+        # Ambil text dari elemen salary
+        salary_text = salary_element.text.strip()
+
+        # Validasi apakah ada angka dalam text gaji
+        if salary_text and len(re.findall(r"[\d\.,]+", salary_text)) > 0:
+            return salary_text
+        else:
             return None
 
+    except Exception as e:
+        if is_task_cancelled(task_id):
+            return None
 
-def extract_employment_details(driver) -> Dict[str, Optional[str]]:
+        return None
+
+
+def extract_employment_details(driver, task_id) -> dict[str, str | None] | None:
     """Ekstrak jenis pekerjaan dan cara kerja"""
-    result = {"employment_type": None, "work_setup": None}
+    if is_task_cancelled(task_id):
+        return None
+
+    result = {"employment_type": None, "work_setup": "Kerja di kantor"}
 
     try:
-        details_tag = WebDriverWait(driver, 15).until(
+        # Cari elemen ul yang berisi informasi employment details
+        ul_element = WebDriverWait(driver, 15).until(
             EC.presence_of_element_located(
                 (
                     By.XPATH,
-                    "/html/body/div[2]/div/div[1]/div[2]/div[2]/div[2]/div/main/div[3]/div[3]",
+                    "/html/body/kb-app-root/div/main/div/kb-job-full-page/div/div/kb-job-page/div/div/div[1]/div[1]/ul",
                 )
             )
         )
 
-        details_text = details_tag.get_attribute("textContent").strip()
-        if " · " in details_text:
-            parts = details_text.split(" · ")
-            result["employment_type"] = parts[0]
-            result["work_setup"] = parts[1]
+        # Ekstrak employment type (Penuh waktu, Kontrak, dll.)
+        try:
+            employment_type_element = ul_element.find_element(
+                By.XPATH, ".//a[contains(@href, '/job-board/t/')]"
+            )
+            result["employment_type"] = employment_type_element.text.strip()
+        except Exception as e:
+            pass
+
+        # Ekstrak work setup (Hibrida, Jarak jauh, dll.)
+        try:
+            work_setup_element = ul_element.find_element(
+                By.XPATH, ".//a[contains(@href, '/y/')]"
+            )
+            work_setup_spans = work_setup_element.find_elements(By.TAG_NAME, "span")
+            work_setup_text = (
+                work_setup_spans[1].get_attribute("textContent").strip()
+                if len(work_setup_spans) > 1
+                else ""
+            )
+            result["work_setup"] = work_setup_text
+        except Exception as e:
+            pass
+
+        return result
+
     except Exception as e:
-        print(f"Error ekstrak detail pekerjaan: {e}")
-
-    return result
+        return result
 
 
-def extract_education(driver) -> Optional[str]:
+def extract_education(driver, task_id) -> str | None:
     """Ekstrak pendidikan minimum"""
+    if is_task_cancelled(task_id):
+        return None
+
     try:
         education_tag = WebDriverWait(driver, 15).until(
             EC.presence_of_element_located(
                 (
                     By.XPATH,
-                    "/html/body/div[2]/div/div[1]/div[2]/div[2]/div[2]/div/main/div[3]/div[4]",
+                    "//a[contains(@href, '/job-board/e/')]",
                 )
             )
         )
-        return education_tag.get_attribute("textContent").strip()
+        education_text = education_tag.get_attribute("textContent").strip()
+
+        return education_text
     except Exception as e:
-        print(f"Error ekstrak pendidikan: {e}")
         return None
 
 
-def extract_experience(driver) -> Optional[str]:
-    """Ekstrak pengalaman minimum"""
-    try:
-        experience_tag = WebDriverWait(driver, 15).until(
-            EC.presence_of_element_located(
-                (
-                    By.XPATH,
-                    "/html/body/div[2]/div/div[1]/div[2]/div[2]/div[2]/div/main/div[3]/div[5]",
-                )
-            )
-        )
-        experience = experience_tag.get_attribute("textContent").strip()
-        return experience if "pengalaman" in experience.lower() else None
-    except Exception as e:
-        print(f"Error ekstrak pengalaman: {e}")
-        return None
-
-
-def extract_skills(driver) -> List[str]:
-    """Ekstrak skill yang dibutuhkan"""
-    try:
-        skills_container = WebDriverWait(driver, 15).until(
-            EC.presence_of_element_located(
-                (
-                    By.XPATH,
-                    "//div[contains(@class, 'Opportunitysc__SkillsContainer-sc-gb4ubh-10 jccjri')]",
-                )
-            )
-        )
-
-        time.sleep(random.uniform(2, 3))
-        skill_tags = skills_container.find_elements(By.TAG_NAME, "label")
-        return [tag.get_attribute("textContent").strip() for tag in skill_tags]
-    except Exception as e:
-        print(f"Error ekstrak skills: {e}")
-        return []
-
-
-def extract_description(driver) -> Optional[str]:
+def extract_description(driver, task_id) -> str | None:
     """Ekstrak deskripsi pekerjaan"""
+    if is_task_cancelled(task_id):
+        return None
+
     try:
-        description_container = WebDriverWait(driver, 15).until(
+        # Cari container utama yang berisi semua konten job description
+        main_container = WebDriverWait(driver, 15).until(
             EC.presence_of_element_located(
                 (
                     By.XPATH,
-                    "//div[contains(@class, 'DraftjsReadersc__ContentContainer-sc-zm0o3p-0 pVRwR')]",
+                    "//div[contains(@class, 'md:k-w-full md:k-pr-4 k-p-space')]",
                 )
             )
         )
-        return description_container.get_attribute("innerHTML")
+
+        description_parts = []
+
+        # Ekstrak "Deskripsi Pekerjaan"
+        try:
+            job_desc_header = main_container.find_element(
+                By.XPATH, ".//h2[contains(text(), 'Deskripsi Pekerjaan')]"
+            )
+            # Ambil div yang mengikuti header deskripsi pekerjaan
+            job_desc_content = job_desc_header.find_element(
+                By.XPATH, "./following-sibling::div[1]"
+            )
+            description_parts.append(f"<h2>Deskripsi Pekerjaan</h2>")
+            description_parts.append(job_desc_content.get_attribute("innerHTML"))
+        except Exception as e:
+            pass
+
+        # Ekstrak "Kualifikasi Minimum"
+        try:
+            qual_header = main_container.find_element(
+                By.XPATH, ".//h2[contains(text(), 'Kualifikasi Minimum')]"
+            )
+            # Ambil div yang mengikuti header kualifikasi minimum
+            qual_content = qual_header.find_element(
+                By.XPATH, "./following-sibling::div[1]"
+            )
+            description_parts.append(f"<h2>Kualifikasi Minimum</h2>")
+            description_parts.append(qual_content.get_attribute("innerHTML"))
+        except Exception as e:
+            pass
+
+        # Gabungkan semua bagian
+        if description_parts:
+            full_description = "".join(description_parts)
+            return full_description
+        else:
+            return None
+
     except Exception as e:
-        print(f"Error ekstrak deskripsi: {e}")
         return None
 
 
-def extract_job_details(driver, job_url: str) -> Dict[str, Any]:
+def extract_job_details(
+    driver,
+    job_url: str,
+    task_id: str,
+) -> dict[str, any] | None:
     """Ekstrak semua detail pekerjaan dari URL"""
     print(f"Scraping detail for: {job_url}")
+
+    if is_task_cancelled(task_id):
+        return None
+
     driver.get(job_url)
     driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
     time.sleep(random.uniform(2, 3))
 
-    # Ekstrak semua komponen
-    img_url = extract_company_logo(driver)
-    title = extract_job_title(driver)
-    company_name = extract_company_name(driver)
-    location = extract_location(driver)
-    salary = extract_salary(driver)
-    employment_details = extract_employment_details(driver)
-    education = extract_education(driver)
-    experience = extract_experience(driver)
-    skills = extract_skills(driver)
-    description = extract_description(driver)
+    if is_task_cancelled(task_id):
+        return None
+
+    img_url = extract_company_logo(driver, task_id)
+
+    if is_task_cancelled(task_id):
+        return None
+
+    title = extract_job_title(driver, task_id)
+
+    if is_task_cancelled(task_id):
+        return None
+
+    company_name = extract_company_name(driver, task_id)
+
+    if is_task_cancelled(task_id):
+        return None
+
+    location = extract_location(driver, task_id)
+
+    if is_task_cancelled(task_id):
+        return None
+
+    salary = extract_salary(driver, task_id)
+
+    if is_task_cancelled(task_id):
+        return None
+
+    employment_details = extract_employment_details(driver, task_id)
+
+    if is_task_cancelled(task_id):
+        return None
+
+    education = extract_education(driver, task_id)
+
+    if is_task_cancelled(task_id):
+        return None
+
+    description = extract_description(driver, task_id)
+
+    if is_task_cancelled(task_id):
+        return {}
 
     # Gabungkan hasil
     return {
@@ -400,121 +568,109 @@ def extract_job_details(driver, job_url: str) -> Dict[str, Any]:
         "image_url": img_url,
         "job_title": title,
         "company_name": company_name,
-        "subdistrict": location["subdistrict"],
+        "subdistrict": None,
         "city": location["city"],
-        "province": location["province"],
+        "province": None,
         "salary": salary,
         "employment_type": employment_details["employment_type"],
         "work_setup": employment_details["work_setup"],
         "minimum_education": education,
-        "minimum_experience": experience,
-        "required_skills": skills,
+        "minimum_experience": None,
+        "required_skills": None,
         "job_description": description,
+        "scraped_at": datetime.datetime.now().isoformat(),
     }
 
 
-# ===== PROGRESS MANAGEMENT FUNCTIONS =====
-
-
-def update_task_progress(
-    task_id: str, state: str, progress_data: Dict[str, Any], update_state_func=None
-):
-    """Update progres task di cache dan celery state"""
-    cache.set(f"scraping_progress_{task_id}", progress_data, timeout=None)
-    if update_state_func:
-        update_state_func(state=state, meta=progress_data)
-
-
-# ===== MAIN SCRAPING FUNCTION =====
-
-
-def scrape_kalibrr_jobs(task_id: str, update_state_func=None) -> List[Dict[str, Any]]:
-    """Fungsi utama untuk scraping data Glints"""
-    start_time = time.time()
-    print("Memulai scraping Glints...")
-    progress_data = {}
-
-    # 1. Login dan dapatkan cookies
-    update_task_progress(task_id, "GETTING_AUTH_DATA", progress_data, update_state_func)
-    cookies, auth_error = authenticate_to_glints(task_id)
-
-    if auth_error or not cookies:
-        print(f"Gagal login: {auth_error}")
-        return []
+def scrape_kalibrr_jobs(
+    task_id: str,
+    update_state_func=None,
+    scraped_jobs: int = 0,
+) -> tuple[list[dict[str, any]], int] | tuple[list | None]:
+    """Fungsi utama untuk scraping data Kalibrr"""
+    progress_data = {"scraped_jobs": scraped_jobs}
 
     if is_task_cancelled(task_id):
-        print("Task dibatalkan setelah login.")
-        return []
+        return [], None
 
-    # 2. Inisialisasi driver baru dengan cookies
-    driver = get_driver()
+    # 1. Login dan dapatkan cookies
+    update_task_progress(
+        task_id, "GETTING_KALIBRR_AUTH_DATA", progress_data, update_state_func
+    )
+    driver, cookies, auth_error = authenticate_to_kalibrr(task_id)
+
+    if auth_error or not cookies:
+        return [], None
+
+    if is_task_cancelled(task_id):
+        return [], None
+
     try:
-        # Set cookies
-        driver.get("https://glints.com/id")
-        for cookie in cookies:
-            try:
-                driver.add_cookie(cookie)
-            except Exception as e:
-                print(f"Cookie tidak bisa ditambahkan: {e}")
-
-        # Refresh dan navigasi
-        driver.refresh()
-        time.sleep(random.uniform(3, 5))
-        driver.get("https://glints.com/id/job-category/computer-technology")
+        if is_task_cancelled(task_id):
+            close_driver(driver)
+            return [], None
 
         # 3. Dapatkan jumlah halaman
-        max_page = get_max_page_number(driver, task_id, update_task_progress)
+        max_page = get_max_page_number(
+            driver, task_id, update_task_progress, progress_data
+        )
 
         if is_task_cancelled(task_id):
-            print("Task dibatalkan setelah mendapatkan jumlah halaman.")
             close_driver(driver)
-            return []
+            return [], None
 
         # 4. Kumpulkan semua URL pekerjaan
-        job_urls = collect_job_urls(driver, max_page, task_id, update_task_progress)
+        job_urls = collect_job_urls(
+            driver, max_page, task_id, update_task_progress, progress_data
+        )
 
         if is_task_cancelled(task_id):
-            print("Task dibatalkan setelah mengumpulkan URL.")
             close_driver(driver)
-            return []
+            return [], None
 
         # 5. Scrape detail dari setiap URL
-        progress_data = {
-            "max_page": max_page,
-            "total_jobs": len(job_urls),
-            "scraped_jobs": 0,
-        }
         update_task_progress(
-            task_id, "SCRAPING_JOB_DETAIL", progress_data, update_state_func
+            task_id,
+            "SCRAPING_COLLECTED_KALIBRR_JOB_DETAIL",
+            progress_data,
+            update_state_func,
         )
 
         job_data = []
-        for i, job_url in enumerate(job_urls):
+        for i, job_url in enumerate(job_urls[:10]):
             if is_task_cancelled(task_id):
-                print("Task dibatalkan saat scraping job detail.")
                 break
 
             try:
-                job_detail = extract_job_details(driver, job_url)
+                # Pass task_id to extract_job_details for cancellation checks
+                job_detail = extract_job_details(driver, job_url, task_id)
+
+                # Check if job_detail is None (cancelled during extraction)
+                if job_detail is None:
+                    print(f"Scraping dibatalkan untuk {job_url}")
+                    break
+
                 job_data.append(job_detail)
 
                 # Update progress
-                progress_data["scraped_jobs"] = len(job_data)
+                progress_data["scraped_jobs"] += 1
                 update_task_progress(
-                    task_id, "SCRAPING_JOB_DETAIL", progress_data, update_state_func
+                    task_id,
+                    "SCRAPING_COLLECTED_KALIBRR_JOB_DETAIL",
+                    progress_data,
+                    update_state_func,
                 )
 
             except Exception as e:
-                print(f"Error scraping detail {job_url}: {e}")
+                pass
 
-        end_time = time.time()
-        print(
-            f"Scraping selesai dalam {end_time - start_time:.2f} detik. Total: {len(job_data)} jobs"
-        )
-        return job_data
+        if is_task_cancelled(task_id):
+            close_driver(driver)
+            return [], None
+
+        return job_data, len(job_urls)
 
     except Exception as e:
-        print(f"Error dalam proses scraping: {e}")
-        return []
+        return [], None
     finally:
         close_driver(driver)

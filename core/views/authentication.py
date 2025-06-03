@@ -1,6 +1,6 @@
 import time
 from rest_framework import status
-from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
+from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -13,36 +13,29 @@ from core.services import user_service
 
 class CheckEmailView(APIView):
     permission_classes = [AllowAny]
-    
+
     def post(self, request: Request) -> Response:
-        email = request.data.get('email')
-        
+        email = request.data.get("email")
+
         if not email:
             return Response(
-                {"error": "Email is required"}, 
-                status=status.HTTP_400_BAD_REQUEST
+                {"error": "Email is required"}, status=status.HTTP_400_BAD_REQUEST
             )
-        
+
         # Check if email exists in database
         user_data = user_service.find_user_by_email(email)
-        
+
         if user_data:
             # Email already exists
             return Response(
-                {
-                    "available": False, 
-                    "message": "Email address is already registered"
-                }, 
-                status=status.HTTP_400_BAD_REQUEST
+                {"available": False, "message": "Email address is already registered"},
+                status=status.HTTP_400_BAD_REQUEST,
             )
         else:
             # Email is available
             return Response(
-                {
-                    "available": True, 
-                    "message": "Email address is available"
-                }, 
-                status=status.HTTP_200_OK
+                {"available": True, "message": "Email address is available"},
+                status=status.HTTP_200_OK,
             )
 
 

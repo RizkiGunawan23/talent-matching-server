@@ -59,9 +59,9 @@ class FileUploadView(APIView):
         # Create file record in Neo4j
         file_record = UploadedFile(
             filename=filename,
-            file_path=file_path,
-            content_type=uploaded_file.content_type,
-            file_size=str(uploaded_file.size),
+            filePath=file_path,
+            contentType=uploaded_file.content_type,
+            fileSize=str(uploaded_file.size),
             description=description,
         ).save()
 

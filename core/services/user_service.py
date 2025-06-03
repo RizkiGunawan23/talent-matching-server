@@ -1,12 +1,17 @@
 import uuid
 from datetime import datetime
 from typing import Dict, List, Optional
+
+from django.contrib.auth.hashers import make_password
+
+from core.matchers.matchers_functions import create_user_and_calculate_matches
+
 from .base_service import BaseNeo4jService
 
 
 class UserService(BaseNeo4jService):
     """Service untuk semua operasi User-related"""
-    
+
     def find_user_by_email(self, email: str) -> Optional[Dict]:
         """Find user by email"""
         query = """
@@ -16,22 +21,19 @@ class UserService(BaseNeo4jService):
                    u.created_at as created_at, u.updated_at as updated_at,
                    u.profile_image as profile_image
         """
-        
+
         results = self.execute_query(query, {"email": email})
         return results[0] if results else None
-    
+
     def get_user_with_profile_picture(self, user_email: str) -> Optional[Dict]:
         """Get user data with profile picture for login"""
         query = """
             MATCH (u:User {email: $email})
-            RETURN u.uid as uid, u.email as email, u.user_email as user_email,
-                   u.name as name, u.role as role, u.password as password,
-                   u.created_at as created_at, u.updated_at as updated_at,
-                   u.profile_image as profile_image_path
+            RETURN u.profilePicture as profile_image_path
         """
         results = self.execute_query(query, {"email": user_email})
         return results[0] if results else None
-    
+
     def connect_user_profile_picture(self, user_uid: str, file_uid: str) -> bool:
         """Connect user to profile picture"""
         query = """
@@ -40,11 +42,10 @@ class UserService(BaseNeo4jService):
             CREATE (u)-[:HAS_PROFILE_PICTURE]->(f)
             RETURN u, f
         """
-        
-        results = self.execute_write_query(query, {
-            "user_uid": user_uid, 
-            "file_uid": file_uid
-        })
+
+        results = self.execute_write_query(
+            query, {"user_uid": user_uid, "file_uid": file_uid}
+        )
         return len(results) > 0
 
     def update_user_picture(self, user_uid: str, update_data: Dict) -> bool:
@@ -77,7 +78,7 @@ class UserService(BaseNeo4jService):
             set_clauses.append("u.email = $new_email")
             params["new_email"] = profile_data["email"]
         set_clauses.append("u.updated_at = $updated_at")
-        params["updated_at"] = datetime.now().strftime('%Y-%m-%d')
+        params["updated_at"] = datetime.now().strftime("%Y-%m-%d")
 
         set_clause = ", ".join(set_clauses)
         query = f"""
@@ -108,7 +109,9 @@ class UserService(BaseNeo4jService):
         """
 
         self.execute_write_query(remove_query, {"uid": user_uid})
-        results = self.execute_write_query(add_query, {"uid": user_uid, "skills": skills})
+        results = self.execute_write_query(
+            add_query, {"uid": user_uid, "skills": skills}
+        )
         print(f"Updated skills for user {user_uid}: {results}")
 
         return results[0]["added"] if results else 0
@@ -134,28 +137,48 @@ class UserService(BaseNeo4jService):
             data["profile_image_url"] = None
         return data
 
-    def create_user_with_skills(self, user_data: Dict, skills: List[str] = None) -> Dict:
-        """Create new user with skills"""
-        
-        # Generate UID tanpa dash
-        uid = uuid.uuid4().hex
-        
-        # Generate current timestamp
-        current_date = datetime.now().strftime('%Y-%m-%d')
-        
+    def create_admin(self, user_data: dict) -> dict:
+        """Create new admin user"""
+        uid = str(uuid.uuid4())
+
         query = """
-            CREATE (u:User:Resource {
+            CREATE (u:User {
                 uid: $uid,
-                email: $email,
-                user_email: $email,
                 name: $name,
+                email: $email,
+                password: $password,
+                role: 'admin'
+            })
+            RETURN u.uid as uid, u.email as email, u.name as name, u.role as role
+        """
+
+        params = {
+            "uid": uid,
+            "name": user_data["name"],
+            "email": user_data["email"],
+            "password": make_password(user_data["password"]),
+        }
+
+        results = self.execute_write_query(query, params)
+        return results[0] if results else {}
+
+    def create_user_with_skills(
+        self, user_data: dict, skills: list[str] = None
+    ) -> dict:
+        """Create new user with skills"""
+        create_user_and_calculate_matches()
+
+        # Generate UID tanpa dash
+        uid = uuid.uuid4()
+
+        query = """
+            CREATE (u:User {
+                uid: $uid,
+                name: $name,
+                email: $email,
                 password: $password,
                 role: $role,
-                created_at: $created_at,
-                updated_at: $updated_at
             })
-            
-            // Connect to skills if provided
             WITH u
             UNWIND CASE WHEN $skills IS NOT NULL THEN $skills ELSE [] END AS skill_name
             MATCH (s:Skill {name: skill_name})
@@ -165,18 +188,16 @@ class UserService(BaseNeo4jService):
                    u.name as name, u.role as role, u.created_at as created_at,
                    u.updated_at as updated_at
         """
-        
+
         params = {
             "uid": uid,
             "email": user_data["email"],
             "name": user_data["name"],
             "password": user_data["password"],
             "role": user_data["role"],
-            "created_at": current_date,
-            "updated_at": current_date,
-            "skills": skills
+            "skills": skills,
         }
-        
+
         results = self.execute_write_query(query, params)
         return results[0] if results else {}
 
@@ -190,17 +211,16 @@ class UserService(BaseNeo4jService):
                 OPTIONAL MATCH (u)-[r:HAS_BOOKMARKED]->(j)
                 RETURN r IS NOT NULL as is_bookmarked
             """
-            
-            result = self.execute_query(check_query, {
-                "user_uid": user_uid,
-                "job_url": job_url
-            })
-            
+
+            result = self.execute_query(
+                check_query, {"user_uid": user_uid, "job_url": job_url}
+            )
+
             if not result:
                 return {"success": False, "message": "User or Job not found"}
-            
+
             is_currently_bookmarked = result[0]["is_bookmarked"]
-            
+
             if is_currently_bookmarked:
                 # Remove bookmark
                 remove_query = """
@@ -210,17 +230,16 @@ class UserService(BaseNeo4jService):
                     DELETE r
                     RETURN "removed" as action
                 """
-                
-                self.execute_write_query(remove_query, {
-                    "user_uid": user_uid,
-                    "job_url": job_url
-                })
-                
+
+                self.execute_write_query(
+                    remove_query, {"user_uid": user_uid, "job_url": job_url}
+                )
+
                 return {
                     "success": True,
                     "action": "removed",
                     "is_bookmarked": False,
-                    "message": "Bookmark removed successfully"
+                    "message": "Bookmark removed successfully",
                 }
             else:
                 # Add bookmark
@@ -230,25 +249,21 @@ class UserService(BaseNeo4jService):
                     CREATE (u)-[:HAS_BOOKMARKED]->(j)
                     RETURN "added" as action
                 """
-                
-                self.execute_write_query(add_query, {
-                    "user_uid": user_uid,
-                    "job_url": job_url
-                })
-                
+
+                self.execute_write_query(
+                    add_query, {"user_uid": user_uid, "job_url": job_url}
+                )
+
                 return {
                     "success": True,
                     "action": "added",
                     "is_bookmarked": True,
-                    "message": "Bookmark added successfully"
+                    "message": "Bookmark added successfully",
                 }
-                
+
         except Exception as e:
             print(f"Error toggling bookmark: {e}")
-            return {
-                "success": False,
-                "message": f"Error toggling bookmark: {str(e)}"
-            }
+            return {"success": False, "message": f"Error toggling bookmark: {str(e)}"}
 
     def get_bookmarked_jobs(self, user_uid: str) -> List[Dict]:
         """Get all jobs bookmarked by user"""
@@ -277,15 +292,17 @@ class UserService(BaseNeo4jService):
                        required_skills
                 ORDER BY j.job_title
             """
-            
+
             results = self.execute_query(query, {"user_uid": user_uid})
             return results
-            
+
         except Exception as e:
             print(f"Error getting bookmarked jobs: {e}")
             return []
 
-    def check_bookmark_status(self, user_uid: str, job_urls: List[str]) -> Dict[str, bool]:
+    def check_bookmark_status(
+        self, user_uid: str, job_urls: List[str]
+    ) -> Dict[str, bool]:
         """Check bookmark status for multiple jobs"""
         try:
             query = """
@@ -295,18 +312,17 @@ class UserService(BaseNeo4jService):
                 OPTIONAL MATCH (u)-[r:HAS_BOOKMARKED]->(j)
                 RETURN job_url, r IS NOT NULL as is_bookmarked
             """
-            
-            results = self.execute_query(query, {
-                "user_uid": user_uid,
-                "job_urls": job_urls
-            })
-            
+
+            results = self.execute_query(
+                query, {"user_uid": user_uid, "job_urls": job_urls}
+            )
+
             bookmark_status = {}
             for result in results:
                 bookmark_status[result["job_url"]] = result["is_bookmarked"]
-            
+
             return bookmark_status
-            
+
         except Exception as e:
             print(f"Error checking bookmark status: {e}")
             return {}
@@ -315,35 +331,37 @@ class UserService(BaseNeo4jService):
         """Update user password"""
         try:
             # Update current timestamp
-            current_date = datetime.now().strftime('%Y-%m-%d')
-            
+            current_date = datetime.now().strftime("%Y-%m-%d")
+
             query = """
                 MATCH (u:User {uid: $user_uid})
                 SET u.password = $new_password,
                     u.updated_at = $updated_at
                 RETURN u.uid as uid
             """
-            
+
             params = {
                 "user_uid": user_uid,
                 "new_password": new_password,
-                "updated_at": current_date
+                "updated_at": current_date,
             }
-            
+
             result = self.execute_write_query(query, params)
-            
+
             if result:
                 print(f"✅ Password updated successfully for user: {user_uid}")
                 return True
             else:
                 print(f"❌ Failed to update password for user: {user_uid}")
                 return False
-                
+
         except Exception as e:
             print(f"❌ Error updating password: {e}")
             return False
 
-    def report_job(self, user_uid: str, job_url: str, report_type: str, report_descriptions: str) -> bool:
+    def report_job(
+        self, user_uid: str, job_url: str, report_type: str, report_descriptions: str
+    ) -> bool:
         """
         Membuat relasi HAS_REPORTED dari User ke Job dengan property reportType, reportDescriptions, reportDate, reportStatus
         """
@@ -362,10 +380,11 @@ class UserService(BaseNeo4jService):
             "report_type": report_type,
             "report_descriptions": report_descriptions,
             "report_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            "report_status": "Perlu Ditinjau"
+            "report_status": "Perlu Ditinjau",
         }
         results = self.execute_write_query(query, params)
         return bool(results)
+
 
 # Global instance
 user_service = UserService()

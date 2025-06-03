@@ -1,6 +1,6 @@
 {
     "Doktor (S3)": {
-        "rank": 8,
+        "rank": 7,
         "aliases": [
             "Doktor (S3)",
             "Doktor",
@@ -16,7 +16,7 @@
         ]
     },
     "Magister (S2)": {
-        "rank": 7,
+        "rank": 6,
         "aliases": [
             "Magister (S2)",
             "Magister",
@@ -31,7 +31,7 @@
         ]
     },
     "Sarjana (S1)": {
-        "rank": 6,
+        "rank": 5,
         "aliases": [
             "Sarjana (S1)",
             "Sarjana",
@@ -41,20 +41,15 @@
             "Bachelor's Degree"
         ]
     },
-    "Diploma (D4)": {
-        "rank": 5,
+    "Diploma (D1-D4)": {
+        "rank": 4,
         "aliases": [
             "Diploma (D4)",
             "Diploma 4",
             "D4",
             "D-4",
             "Sarjana Terapan",
-            "Applied Bachelor"
-        ]
-    },
-    "Diploma (D3)": {
-        "rank": 4,
-        "aliases": [
+            "Applied Bachelor",
             "Diploma (D3)",
             "Diploma 3",
             "D3",

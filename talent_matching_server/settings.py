@@ -29,14 +29,13 @@ SECRET_KEY = "django-insecure-qrjskl_#%ptl$*18pu798oqapa6usoxnm7aj#2=t43+^3!u3pz
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# Update ALLOWED_HOSTS untuk Docker
-ALLOWED_HOSTS = ['*']  # Add this line
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
 
 INSTALLED_APPS = [
-    "corsheaders",  # Add this FIRST
+    "corsheaders",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -51,7 +50,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    "corsheaders.middleware.CorsMiddleware",  # Add this FIRST
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -118,26 +117,34 @@ DATABASES = {
 
 
 NEOMODEL_NEO4J_BOLT_URL = os.getenv(
-    "NEO4J_BOLT_URL", "bolt://host.docker.internal:7687"
+    "NEO4J_BOLT_URL", "bolt://neo4j:12345678@host.docker.internal:7687"
 )
 config.DATABASE_URL = NEOMODEL_NEO4J_BOLT_URL
+# config.DATABASE_NAME = "django"
+
+
+REDIS_URL = os.getenv(
+    "REDIS_URL", "redis://redis:6379/0"
+)  # Pastikan fallback ke localhost
+print(f"🔗 Using REDIS_URL: {REDIS_URL}")
 
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": os.getenv("REDIS_URL", "redis://redis:6379/0"),
+        "LOCATION": REDIS_URL,
     }
 }
 
-# Ganti bagian konfigurasi Redis/Celery
-CELERY_BROKER_URL = "redis://redis:6379"
-CELERY_RESULT_BACKEND = "redis"  # Hanya tentukan tipe backend, bukan URL lengkap
+CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "redis://redis:6379")
+CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND", "redis://redis:6379")
 
-# Tambahkan konfigurasi terpisah
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
-CELERY_REDIS_HOST = "redis"
-CELERY_REDIS_PORT = 6379
-CELERY_REDIS_DB = 0
+CELERY_REDIS_HOST = os.getenv("CELERY_REDIS_HOST", "redis")
+CELERY_REDIS_PORT = int(os.getenv("CELERY_REDIS_PORT", "6379"))
+CELERY_REDIS_DB = int(os.getenv("CELERY_REDIS_DB", "0"))
+
+print(f"⚡ Celery Broker: {CELERY_BROKER_URL}")
+print(f"📦 Cache Location: {CACHES['default']['LOCATION']}")
 
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
@@ -149,11 +156,10 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "uploaded_files")
 
 # Define specific folders
-MEDIA_ONTOLOGY_DIR = os.path.join(MEDIA_ROOT, "ontology")
 MEDIA_PROFILE_IMAGES_DIR = os.path.join(MEDIA_ROOT, "profile_images")
 
 # Create directories if they don't exist
-for directory in [MEDIA_ONTOLOGY_DIR, MEDIA_PROFILE_IMAGES_DIR]:
+for directory in [MEDIA_PROFILE_IMAGES_DIR]:
     os.makedirs(directory, exist_ok=True)
 
 # Password validation
@@ -197,7 +203,6 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# CSRF settings for API
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
@@ -208,25 +213,25 @@ CORS_ALLOW_ALL_ORIGINS = True  # For development only
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_HEADERS = [
-    'accept',
-    'accept-encoding',
-    'authorization',
-    'content-type',
-    'dnt',
-    'origin',
-    'user-agent',
-    'x-csrftoken',
-    'x-requested-with',
+    "accept",
+    "accept-encoding",
+    "authorization",
+    "content-type",
+    "dnt",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
     # JANGAN tambahkan 'access-control-allow-origin' di sini
 ]
 
 CORS_ALLOW_METHODS = [
-    'DELETE',
-    'GET',
-    'OPTIONS',
-    'PATCH',
-    'POST',
-    'PUT',
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
 ]
 
 # Tambahkan konfigurasi tambahan
