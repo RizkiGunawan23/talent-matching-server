@@ -33,7 +33,9 @@ class User(StructuredNode):
     role = StringProperty(default="user")
     created_at = DateTimeFormatProperty(default_now=True)
     updated_at = DateTimeFormatProperty(default_now=True)
+    uri = StringProperty()
 
+    profile_picture = RelationshipTo("UploadedFile", "HAS_PROFILE_PICTURE", cardinality=ZeroOrOne)
     skills = RelationshipTo("Skill", "HAS_SKILLS", cardinality=ZeroOrMore)
 
     @property

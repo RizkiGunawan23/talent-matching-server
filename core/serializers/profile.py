@@ -21,3 +21,18 @@ class ProfileSerializer(serializers.Serializer):
     #             instance.skills.connect(skill_obj)
     #     instance.save()
     #     return instance
+
+
+class EditProfileSerializer(serializers.Serializer):
+    uid = serializers.CharField(required=True)
+    email = serializers.EmailField(required=True)
+    name = serializers.CharField(required=False)
+    skills = serializers.ListField(child=serializers.CharField(), required=False)
+    profile_image = serializers.ImageField(required=False)
+
+
+class UserProfileSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    name = serializers.CharField()
+    skills = serializers.ListField(child=serializers.CharField())
+    profile_image_url = serializers.CharField(allow_null=True, required=False)

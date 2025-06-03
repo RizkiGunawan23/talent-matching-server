@@ -29,12 +29,14 @@ SECRET_KEY = "django-insecure-qrjskl_#%ptl$*18pu798oqapa6usoxnm7aj#2=t43+^3!u3pz
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# Update ALLOWED_HOSTS untuk Docker
+ALLOWED_HOSTS = ['*']  # Add this line
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    "corsheaders",  # Add this FIRST
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -49,6 +51,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",  # Add this FIRST
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -193,3 +196,39 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# CSRF settings for API
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
+
+# Update CORS configuration - hapus headers yang bermasalah
+CORS_ALLOW_ALL_ORIGINS = True  # For development only
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOWED_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+    # JANGAN tambahkan 'access-control-allow-origin' di sini
+]
+
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
+
+# Tambahkan konfigurasi tambahan
+CORS_PREFLIGHT_MAX_AGE = 86400
+CORS_ALLOW_PRIVATE_NETWORK = True

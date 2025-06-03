@@ -22,6 +22,7 @@ confection==0.1.5
 cssselect==1.2.0
 cymem==2.0.11
 Django==5.1.5
+django-cors-headers==4.4.0
 django-neomodel==0.0.7
 django-redis==5.4.0
 djangorestframework==3.15.2
