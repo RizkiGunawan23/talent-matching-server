@@ -2,6 +2,8 @@ import uuid
 from datetime import datetime
 from typing import Dict, List, Optional
 
+from django.contrib.auth.hashers import make_password
+
 from core.matchers.matchers_functions import create_user_and_calculate_matches
 
 from .base_service import BaseNeo4jService
@@ -154,7 +156,7 @@ class UserService(BaseNeo4jService):
             "uid": uid,
             "name": user_data["name"],
             "email": user_data["email"],
-            "password": user_data["password"],
+            "password": make_password(user_data["password"]),
         }
 
         results = self.execute_write_query(query, params)
