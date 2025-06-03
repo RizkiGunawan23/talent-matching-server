@@ -57,7 +57,10 @@ def matching_job_after_scraping(self, jobs_data=[]):
 
             cypher = """
             MATCH (m:MatchingTask {uid: $task_id})<-[:HAS_PROCESS]-(s:ScrapingTask)
-            SET s.status = 'IMPORTED'
+            SET s.status = 'IMPORTED', 
+                s.finishedAt = $finished_at,
+                m.status = 'IMPORTED',
+                m.finishedAt = $finished_at
             """
             params = {
                 "task_id": task_id,
