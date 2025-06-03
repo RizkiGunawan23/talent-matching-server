@@ -403,6 +403,18 @@ class JobService(BaseNeo4jService):
             traceback.print_exc()
             return None
 
+    def delete_job_by_url(self, job_url: str) -> bool:
+        """
+        Hapus node Job (beserta semua relasinya) berdasarkan job_url
+        """
+        query = """
+            MATCH (j:Job {job_url: $job_url})
+            DETACH DELETE j
+            RETURN COUNT(j) AS deleted_count
+        """
+        results = self.execute_write_query(query, {"job_url": job_url})
+        return results and results[0].get("deleted_count", 0) > 0
+
 
 # Global instance
 job_service = JobService()

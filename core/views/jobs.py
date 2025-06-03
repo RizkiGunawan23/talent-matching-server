@@ -7,6 +7,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from core.services import user_service
 from core.services import job_service
 from core.services.matching_service import MatchingService
 import json
@@ -253,3 +254,29 @@ class JobDetailByIdView(APIView):
                 'success': False,
                 'error': str(e)
             }, status=500)
+
+class ReportJobView(APIView):
+    def post(self, request):
+        user_uid = request.data.get("user_uid")
+        job_url = request.data.get("job_url")
+        report_type = request.data.get("reportType")
+        report_descriptions = request.data.get("reportDescriptions")
+        print("masuk")
+
+        if not all([user_uid, job_url, report_type]):
+            return Response({"success": False, "message": "Semua field harus diisi"}, status=status.HTTP_400_BAD_REQUEST)
+
+        success = user_service.report_job(user_uid, job_url, report_type, report_descriptions)
+        if success:
+            return Response({"success": True, "message": "Report berhasil dikirim"}, status=status.HTTP_201_CREATED)
+        return Response({"success": False, "message": "Gagal mengirim report"}, status=status.HTTP_400_BAD_REQUEST)
+
+class DeleteJobView(APIView):
+    def delete(self, request):
+        job_url = request.data.get("job_url")
+        if not job_url:
+            return Response({"success": False, "message": "job_url harus diisi"}, status=status.HTTP_400_BAD_REQUEST)
+        success = job_service.delete_job_by_url(job_url)
+        if success:
+            return Response({"success": True, "message": "Job berhasil dihapus"}, status=status.HTTP_200_OK)
+        return Response({"success": False, "message": "Job tidak ditemukan atau gagal dihapus"}, status=status.HTTP_404_NOT_FOUND)

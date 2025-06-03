@@ -343,6 +343,29 @@ class UserService(BaseNeo4jService):
             print(f"❌ Error updating password: {e}")
             return False
 
+    def report_job(self, user_uid: str, job_url: str, report_type: str, report_descriptions: str) -> bool:
+        """
+        Membuat relasi HAS_REPORTED dari User ke Job dengan property reportType, reportDescriptions, reportDate, reportStatus
+        """
+        query = """
+            MATCH (u:User {uid: $user_uid}), (j:Job {job_url: $job_url})
+            MERGE (u)-[r:HAS_REPORTED]->(j)
+            SET r.reportType = $report_type,
+                r.reportDescriptions = $report_descriptions,
+                r.reportDate = $report_date,
+                r.reportStatus = $report_status
+            RETURN r
+        """
+        params = {
+            "user_uid": user_uid,
+            "job_url": job_url,
+            "report_type": report_type,
+            "report_descriptions": report_descriptions,
+            "report_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "report_status": "Perlu Ditinjau"
+        }
+        results = self.execute_write_query(query, params)
+        return bool(results)
 
 # Global instance
 user_service = UserService()

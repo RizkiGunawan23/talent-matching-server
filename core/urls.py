@@ -28,10 +28,11 @@ from core.views.job_seeker.profile import ProfileView
 from core.views.seeder import SeederView
 from core.views.media import ProfileImageView
 from core.views.skills import SkillsListView
-from core.views.jobs import JobFilterOptionsView, JobSearchView, ProvincesView, JobRecommendationView, JobDetailByIdView
+from core.views.jobs import JobFilterOptionsView, JobSearchView, ProvincesView, JobRecommendationView, JobDetailByIdView, ReportJobView, DeleteJobView
 from core.views.bookmark import BookmarkView, BookmarkStatusView
 from core.views.password import ChangePasswordView
 from core.views.profile import EditProfileView, UserProfileView
+from core.views.maintenance import MaintenanceStatusView
 
 urlpatterns = [
     path("seeder/users/", SeederView.as_view(), name="seeder-users"),
@@ -82,4 +83,7 @@ urlpatterns = [
     path('auth/change-password/', ChangePasswordView.as_view(), name='change-password'),
     path('profile/edit/', EditProfileView.as_view(), name='edit-profile'),
     path('profile/default/', UserProfileView.as_view(), name='user-profile-default'),
+    path('maintenance/status/',MaintenanceStatusView.as_view(), name='maintenance-status'),
+    path('jobs/report/', ReportJobView.as_view(), name='report-job'),
+    path('jobs/delete/', DeleteJobView.as_view(), name='delete-job'),
 ]
