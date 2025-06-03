@@ -59,7 +59,7 @@ class ProfileView(APIView):
         #         "uploaded_at": profile_image.created_at,
         #     }
 
-        return Response({"message": "Success with token"}, status=status.HTTP_200_OK)
+        return Response({"message": "Success with tokennnn"}, status=status.HTTP_200_OK)
 
     def patch(self, request):
         """Update user profile information"""

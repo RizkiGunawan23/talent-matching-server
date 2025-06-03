@@ -1,10 +1,14 @@
+import os
+import uuid
 from typing import Dict
 
 from django.contrib.auth.hashers import check_password, make_password
 from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from core.matchers.matchers_functions import create_user_and_calculate_matches
 from core.models import User
+from core.services import user_service
 
 
 class SignUpSerializer(serializers.Serializer):
@@ -16,14 +20,14 @@ class SignUpSerializer(serializers.Serializer):
             "invalid": "Format email tidak valid.",
         },
     )
-    password = serializers.RegexField(
-        regex=r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$",
+    password = serializers.CharField(
+        min_length=8,
         required=True,
         write_only=True,
         error_messages={
             "required": "Password harus diisi.",
             "blank": "Password harus diisi.",
-            "invalid": "Password minimal 8 karakter dan harus memiliki setidaknya 1 huruf kapital, 1 huruf kecil, 1 angka, dan 1 simbol.",
+            "min_length": "Password minimal 8 karakter.",
         },
     )
     name = serializers.CharField(
@@ -39,25 +43,89 @@ class SignUpSerializer(serializers.Serializer):
         error_messages={"invalid_choice": "Role harus berisi 'user' atau 'admin'."},
     )
 
-    def validate_email(self, value: str):
-        user: User | None = User.nodes.get_or_none(email=value)
+    profile_picture = serializers.FileField(
+        required=False,
+        allow_empty_file=False,
+        error_messages={
+            "invalid": "File tidak valid.",
+        },
+    )
 
-        if not user:
+    # Skills field - list of skill names
+    skills = serializers.ListField(
+        child=serializers.CharField(),
+        required=False,
+        allow_empty=True,
+        error_messages={
+            "invalid": "Skills harus berupa list.",
+        },
+    )
+
+    def validate_email(self, value: str):
+        user_data = user_service.find_user_by_email(value)
+
+        if not user_data:
             return value
 
         raise serializers.ValidationError("Email already exists")
 
-    def create(self, validated_data: Dict[str, str]):
-        user: User = User(
-            email=validated_data["email"],
-            password=make_password(
-                validated_data["password"],
-            ),
-            name=validated_data["name"],
-            role=validated_data["role"],
-        )
-        user.save()
-        return user
+    def validate_skills(self, value: list[str]):
+        """Validate skills - at least 1 skill required"""
+        if not value or len(value) == 0:
+            raise serializers.ValidationError("At least 1 skill is required")
+
+        return value
+
+    def create(self, validated_data: dict):
+        if validated_data.get("role") == "admin":
+            created_user = user_service.create_admin(validated_data)
+            return type("User", (), created_user)()
+        elif validated_data.get("role") == "user":
+            uid = str(uuid.uuid4())
+
+            profile_picture = validated_data.pop("profile_picture", None)
+            skills = validated_data.pop("skills", [])
+
+            filepath = None
+            if profile_picture:
+                content_type = profile_picture.content_type
+                extension = {
+                    "image/jpeg": ".jpg",
+                    "image/jpg": ".jpg",
+                    "image/png": ".png",
+                }.get(
+                    content_type, ".jpg"
+                )  # Default to jpg if unknown
+
+                # Save the file to storage with proper extension
+                filename = f"profile_{uid}{extension}"
+                filepath = os.path.join("uploaded_files", "profile_images", filename)
+
+            # Create user using user_service with skills
+            user_data = {
+                "uid": str(uid),
+                "name": validated_data["name"],
+                "email": validated_data["email"],
+                "password": make_password(validated_data["password"]),
+                "profile_image": filepath,
+                "role": validated_data["role"],
+                "skills": skills,
+            }
+
+            # Create user with skills
+            created_user = create_user_and_calculate_matches(user_data)
+
+            if profile_picture and created_user:
+                # Ensure directory exists
+                os.makedirs(os.path.dirname(filepath), exist_ok=True)
+
+                # Save file
+                with open(filepath, "wb") as destination:
+                    for chunk in profile_picture.chunks():
+                        destination.write(chunk)
+
+            # Return user object for compatibility
+            return type("User", (), created_user)()
 
 
 class SignInSerializer(serializers.Serializer):
@@ -102,8 +170,25 @@ class CustomTokenSerializer(serializers.Serializer):
     def get_token(cls, user: User) -> Dict[str, str | Dict[str, str]]:
         refresh: RefreshToken = RefreshToken()
         refresh["user_id"] = user.uid
+
+        user_data = {
+            "uid": user.uid,
+            "email": user.email,
+            "name": user.name,
+            "role": getattr(user, "role", "user"),
+            "profile_picture_url": None,
+        }
+
+        # Add profile picture URL if available
+        if hasattr(user, "profile_image_path") and user.profile_image_path:
+            # Create proper URL for profile picture
+            profile_picture_url = (
+                f"http://localhost:8000/api/profile/image/{user.email}/"
+            )
+            user_data["profile_picture_url"] = profile_picture_url
+
         return {
             "refresh": str(refresh),
             "access": str(refresh.access_token),
-            "user": {"uid": user.uid, "email": user.email, "name": user.name},
+            "user": user_data,
         }
