@@ -1,3 +1,4 @@
+import time
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -18,7 +19,7 @@ class EditProfileView(APIView):
     parser_classes = [MultiPartParser, FormParser, JSONParser]
     permission_classes = []
 
-    def patch(self, request):
+    def patch(self, request): # Simulasi delay untuk testing
         serializer = EditProfileSerializer(data=request.data)
         if serializer.is_valid():
             print(f"Data yang diterima: {serializer.validated_data}")
@@ -69,8 +70,23 @@ class EditProfileView(APIView):
             print(f"Skills yang diterima: {skills}")
             if skills is not None:
                 user_service.update_user_skills(uid, skills)
-
-            return Response({"success": True, "message": "Profil berhasil diupdate"}, status=status.HTTP_200_OK)
+                
+            # Ambil data user terbaru untuk mendapatkan profile_image_url
+            updated_user_data = user_service.get_user_with_skills_and_profile(email)
+            
+            # Ambil profile_image_url dan tambahkan domain
+            profile_image_url = updated_user_data.get("profile_image_url") if updated_user_data else None
+            if profile_image_url:
+                profile_image_url = f"http://localhost:8000{profile_image_url}"
+            
+            # Buat response dengan profile_image_url yang sudah dimodifikasi
+            response_data = {
+                "success": True, 
+                "message": "Profil berhasil diupdate",
+                "profile_image_url": profile_image_url
+            }
+                
+            return Response(response_data, status=status.HTTP_200_OK)
         return Response({"success": False, "errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 

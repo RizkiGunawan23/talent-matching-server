@@ -28,8 +28,14 @@ class EditProfileSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True)
     name = serializers.CharField(required=False)
     skills = serializers.ListField(child=serializers.CharField(), required=False)
-    profile_image = serializers.ImageField(required=False)
-
+    profile_image = serializers.FileField(required=False)
+    def validate_profile_image(self, value):
+        if value:
+            # Validasi manual tanpa PIL
+            content_type = getattr(value, 'content_type', '')
+            if not content_type.startswith('image/'):
+                raise serializers.ValidationError("File harus berupa gambar")
+        return value
 
 class UserProfileSerializer(serializers.Serializer):
     email = serializers.EmailField()
