@@ -193,7 +193,7 @@ def import_all_users_to_ontology(graph, TALENT_NAMESPACE, users_data):
         total_skills_added += user_skills_added
 
     print(f"✅ Users import completed:")
-    print(f"   Total users processed: {len(users_data['data'])}")
+    print(f"   Total users processed: {len(users_data)}")
     print(f"   Total skills added: {total_skills_added}")
 
     return graph

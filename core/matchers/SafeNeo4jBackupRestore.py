@@ -536,7 +536,7 @@ class SafeNeo4jBackupRestore:
         print("👤 Enriching User nodes with additional properties...")
 
         try:
-            users_list = users_data.get("data", [])
+            users_list = users_data
             print(f"   Found {len(users_list)} users in data")
 
             updated_count = 0

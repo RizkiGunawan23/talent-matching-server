@@ -597,7 +597,7 @@ def scrape_glints_jobs(
         )
 
         job_data = []
-        for i, job_url in enumerate(job_urls[0:5]):
+        for i, job_url in enumerate(job_urls[0:10]):
             if is_task_cancelled(task_id):
                 break
 

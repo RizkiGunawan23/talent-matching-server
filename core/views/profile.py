@@ -6,6 +6,7 @@ from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from core.matchers.matchers_functions import update_user_skills_and_recalculate_matches
 from core.serializers.profile import EditProfileSerializer, UserProfileSerializer
 from core.services import user_service
 
@@ -78,11 +79,13 @@ class EditProfileView(APIView):
             # Update skills jika ada
             skills = serializer.validated_data.get("skills")
             print(f"Skills yang diterima: {skills}")
-            if skills is not None:
-                user_service.update_user_skills(uid, skills)
+            # if skills is not None:
+            #     user_service.update_user_skills(uid, skills)
 
             # Ambil data user terbaru untuk mendapatkan profile_image_url
             updated_user_data = user_service.get_user_with_skills_and_profile(email)
+
+            update_user_skills_and_recalculate_matches(email, skills)
 
             # Ambil profile_image_url dan tambahkan domain
             profile_image_url = (

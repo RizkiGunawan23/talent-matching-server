@@ -637,7 +637,7 @@ def scrape_kalibrr_jobs(
         )
 
         job_data = []
-        for i, job_url in enumerate(job_urls[:5]):
+        for i, job_url in enumerate(job_urls[:10]):
             if is_task_cancelled(task_id):
                 break
 

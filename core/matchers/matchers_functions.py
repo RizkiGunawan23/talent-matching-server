@@ -119,6 +119,8 @@ def matching_after_scraping(task_id, update_state_func=None, jobs_data=[]):
             update_state_func=update_state_func,
         )
 
+        print("\n✅ Matching completed successfully.")
+
     except Exception as e:
         print(f"\n❌ Error during processing: {e}")
 
@@ -164,7 +166,7 @@ def create_user_and_calculate_matches(new_user_data):
     }
 
 
-def update_user_skills_and_recalculate_matches(user_data, new_skills):
+def update_user_skills_and_recalculate_matches(user_email, new_skills):
     """
     Update user skills dan recalculate matches hanya untuk user tersebut
     tanpa mengganggu matches user lain
@@ -172,8 +174,6 @@ def update_user_skills_and_recalculate_matches(user_data, new_skills):
     TALENT = Namespace(
         "http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/"
     )
-
-    user_email = user_data["email"]
 
     base_graph = load_base_ontology()
 
@@ -185,7 +185,7 @@ def update_user_skills_and_recalculate_matches(user_data, new_skills):
 
     new_matches = calculate_user_job_similarity_for_specific_user(temp_graph, user_uri)
 
-    temp_graph = add_user_job_matches_to_ontology(temp_graph, new_matches, TALENT)
+    temp_graph = add_user_job_matches_to_ontology(temp_graph, TALENT, new_matches)
 
     temp_graph = apply_dynamic_categorization_pipeline(temp_graph, TALENT)
 
@@ -194,10 +194,3 @@ def update_user_skills_and_recalculate_matches(user_data, new_skills):
     )
 
     update_neo4j_for_specific_user(user_email, new_skills, categorized_matches)
-
-    return {
-        "user_email": user_email,
-        "new_skills": new_skills,
-        "matches_found": len(new_matches),
-        "categorized_matches": len(categorized_matches),
-    }
