@@ -22,8 +22,6 @@ class SignUpSerializer(serializers.Serializer):
     )
     password = serializers.CharField(
         min_length=8,
-    password = serializers.CharField(
-        min_length=8,
         required=True,
         write_only=True,
         error_messages={
