@@ -366,7 +366,7 @@ class UserService(BaseNeo4jService):
         Membuat relasi HAS_REPORTED dari User ke Job dengan property reportType, reportDescriptions, reportDate, reportStatus
         """
         query = """
-            MATCH (u:User {uid: $user_uid}), (j:Job {job_url: $job_url})
+            MATCH (u:User {uid: $user_uid}), (j:Job {jobUrl: $job_url})
             MERGE (u)-[r:HAS_REPORTED]->(j)
             SET r.reportType = $report_type,
                 r.reportDescriptions = $report_descriptions,
@@ -382,7 +382,9 @@ class UserService(BaseNeo4jService):
             "report_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "report_status": "Perlu Ditinjau",
         }
+        print("Reporting job...")
         results = self.execute_write_query(query, params)
+        print("Reporting job completed.")
         return bool(results)
 
 

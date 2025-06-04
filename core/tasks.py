@@ -64,6 +64,7 @@ def matching_job_after_scraping(self, jobs_data=[]):
             """
             params = {
                 "task_id": task_id,
+                "finished_at": timezone.now(),
             }
             db.cypher_query(cypher, params)
             db.commit()
