@@ -211,12 +211,14 @@ CSRF_TRUSTED_ORIGINS = [
 # Update CORS configuration - hapus headers yang bermasalah
 CORS_ALLOW_ALL_ORIGINS = True  # For development only
 CORS_ALLOW_CREDENTIALS = True
+CORS_EXPOSE_HEADERS = ["Content-Type", "X-CSRFToken"]
 
 CORS_ALLOWED_HEADERS = [
     "accept",
     "accept-encoding",
     "authorization",
     "content-type",
+    "content-disposition",
     "dnt",
     "origin",
     "user-agent",

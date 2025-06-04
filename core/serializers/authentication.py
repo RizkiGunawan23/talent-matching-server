@@ -125,8 +125,9 @@ class SignUpSerializer(serializers.Serializer):
                     for chunk in profile_picture.chunks():
                         destination.write(chunk)
 
+            user_data_full = user_service.get_user_with_profile_picture(user_data["email"])
             # Return user object for compatibility
-            return type("User", (), created_user)()
+            return type("User", (), user_data_full)()
 
 
 class SignInSerializer(serializers.Serializer):

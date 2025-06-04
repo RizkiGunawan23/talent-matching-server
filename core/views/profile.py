@@ -39,10 +39,15 @@ class EditProfileView(APIView):
             # Update profile (name saja, email tidak diupdate)
             if profile_data:
                 user_service.update_user_profile(email, profile_data)
+            
+            skills = serializer.validated_data.get("skills")
+            print(f"Skills yang diterima: {skills}")
 
+            update_user_skills_and_recalculate_matches(email, skills)
             # Update foto profil jika ada
             profile_image = serializer.validated_data.get("profile_image")
             if profile_image:
+                print(f"File gambar yang diterima: {profile_image.name}")
                 # Ambil data user lama untuk dapatkan path lama
                 user_data = user_service.get_user_with_profile_picture(email)
                 old_filepath = (
@@ -63,7 +68,7 @@ class EditProfileView(APIView):
                     for chunk in profile_image.chunks():
                         destination.write(chunk)
                 # Update path di Neo4j
-                user_service.update_user_picture(uid, {"profile_image": filepath})
+                user_service.update_user_picture(uid, {"profilePicture": filepath})
 
                 # Hapus file lama jika berbeda dan ada
                 if (
@@ -77,15 +82,11 @@ class EditProfileView(APIView):
                         print(f"Gagal menghapus file lama: {e}")
 
             # Update skills jika ada
-            skills = serializer.validated_data.get("skills")
-            print(f"Skills yang diterima: {skills}")
             # if skills is not None:
             #     user_service.update_user_skills(uid, skills)
 
             # Ambil data user terbaru untuk mendapatkan profile_image_url
             updated_user_data = user_service.get_user_with_skills_and_profile(email)
-
-            update_user_skills_and_recalculate_matches(email, skills)
 
             # Ambil profile_image_url dan tambahkan domain
             profile_image_url = (

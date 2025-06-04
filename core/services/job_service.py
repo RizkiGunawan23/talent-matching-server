@@ -15,10 +15,10 @@ class JobService(BaseNeo4jService):
             where_conditions.append(
                 """
                     (
-                        toLower(j.job_title) CONTAINS toLower($job_title) OR
-                        toLower(j.company_name) CONTAINS toLower($job_title) OR
+                        toLower(j.jobTitle) CONTAINS toLower($job_title) OR
+                        toLower(j.companyName) CONTAINS toLower($job_title) OR
                         EXISTS {
-                            MATCH (j)-[:REQUIRED_SKILL|HAS_ADDITIONAL_SKILL]->(s:Skill)
+                            MATCH (j)-[:REQUIRED_SKILL]->(s:Skill)
                             WHERE toLower(s.name) CONTAINS toLower($job_title)
                         }
                     )
@@ -41,7 +41,7 @@ class JobService(BaseNeo4jService):
         if filters.get("salaryMin"):
             try:
                 salary_min = int(filters["salaryMin"])
-                where_conditions.append("j.minimum_salary >= $salary_min")
+                where_conditions.append("j.minimumSalary >= $salary_min")
                 parameters["salary_min"] = salary_min
             except ValueError:
                 pass
@@ -49,19 +49,19 @@ class JobService(BaseNeo4jService):
         if filters.get("salaryMax"):
             try:
                 salary_max = int(filters["salaryMax"])
-                where_conditions.append("j.maximum_salary <= $salary_max")
+                where_conditions.append("j.maximumSalary <= $salary_max")
                 parameters["salary_max"] = salary_max
             except ValueError:
                 pass
 
         # Employment type filter - OR logic (if any of selected types match)
         if filters.get("jobTypes") and len(filters["jobTypes"]) > 0:
-            where_conditions.append("j.employment_type IN $employment_types")
+            where_conditions.append("j.employmentType IN $employment_types")
             parameters["employment_types"] = filters["jobTypes"]
 
         # Work setup filter - OR logic (if any of selected setups match)
         if filters.get("workArrangements") and len(filters["workArrangements"]) > 0:
-            where_conditions.append("j.work_setup IN $work_setups")
+            where_conditions.append("j.workSetup IN $work_setups")
             parameters["work_setups"] = filters["workArrangements"]
 
         # Experience filter - OR logic (if job fits any of selected experience ranges)
@@ -71,37 +71,37 @@ class JobService(BaseNeo4jService):
             for exp in filters["experiences"]:
                 if exp == "no-experience":
                     experience_conditions.append(
-                        "(j.minimum_experience = 0 OR j.minimum_experience IS NULL)"
+                        "(j.minimumExperience = 0 OR j.minimumExperience IS NULL)"
                     )
                 elif exp == "fresh-graduate":
                     experience_conditions.append(
-                        "(j.minimum_experience <= 1 OR j.minimum_experience IS NULL)"
+                        "(j.minimumExperience <= 1 OR j.minimumExperience IS NULL)"
                     )
                 elif exp == "less-than-year":
                     experience_conditions.append(
-                        "(j.minimum_experience < 1 OR j.minimum_experience IS NULL)"
+                        "(j.minimumExperience < 1 OR j.minimumExperience IS NULL)"
                     )
                 elif exp == "1-3-years":
                     experience_conditions.append(
-                        "(j.minimum_experience >= 1 AND j.minimum_experience <= 3)"
+                        "(j.minimumExperience >= 1 AND j.minimumExperience <= 3)"
                     )
                 elif exp == "3-5-years":
                     experience_conditions.append(
-                        "(j.minimum_experience >= 3 AND j.minimum_experience <= 5)"
+                        "(j.minimumExperience >= 3 AND j.minimumExperience <= 5)"
                     )
                 elif exp == "5-10-years":
                     experience_conditions.append(
-                        "(j.minimum_experience >= 5 AND j.minimum_experience <= 10)"
+                        "(j.minimumExperience >= 5 AND j.minimumExperience <= 10)"
                     )
                 elif exp == "more-than-10":
-                    experience_conditions.append("(j.minimum_experience > 10)")
+                    experience_conditions.append("(j.minimumExperience > 10)")
 
             if experience_conditions:
                 where_conditions.append(f"({' OR '.join(experience_conditions)})")
 
         # Education filter - OR logic (if any of selected education levels match)
         if filters.get("educationLevels") and len(filters["educationLevels"]) > 0:
-            where_conditions.append("j.minimum_education IN $education_levels")
+            where_conditions.append("j.minimumEducation IN $education_levels")
             parameters["education_levels"] = filters["educationLevels"]
 
         # Build WHERE clause - AND logic between different filter types
@@ -115,27 +115,27 @@ class JobService(BaseNeo4jService):
             MATCH (j:Job)
             WHERE {where_clause}
             OPTIONAL MATCH (j)-[:REQUIRED_SKILL]->(s:Skill)
-            OPTIONAL MATCH (j)-[:HAS_ADDITIONAL_SKILL]->(a:AdditionalSkill)
+            OPTIONAL MATCH (j)-[:REQUIRED_SKILL]->(a:AdditionalSkill)
             WITH j, collect(DISTINCT s.name) as required_skills, collect(DISTINCT a.name) as additional_skills
             RETURN 
             j.uri as uid,
-            j.job_url as job_url,
-            j.job_title as job_title,
-            j.company_name as company_name,
+            j.jobUrl as job_url,
+            j.jobTitle as job_title,
+            j.companyName as company_name,
             j.city as city,
             j.province as province,
             j.subdistrict as subdistrict,
-            j.minimum_salary as minimum_salary,
-            j.maximum_salary as maximum_salary,
-            j.salary_unit as salary_unit,
-            j.salary_type as salary_type,
-            j.employment_type as employment_type,
-            j.work_setup as work_setup,
-            j.minimum_education as minimum_education,
-            j.minimum_experience as minimum_experience,
-            j.maximum_experience as maximum_experience,
-            j.image_url as image_url,
-            j.job_description as job_description,
+            j.minimumSalary as minimum_salary,
+            j.maximumSalary as maximum_salary,
+            j.salaryUnit as salary_unit,
+            j.salaryType as salary_type,
+            j.employmentType as employment_type,
+            j.workSetup as work_setup,
+            j.minimumEducation as minimum_education,
+            j.minimumExperience as minimum_experience,
+            j.maximumExperience as maximum_experience,
+            j.imageUrl as image_url,
+            j.jobDescription as job_description,
             required_skills,
             additional_skills
             ORDER BY j.scrapedAt {sort_order}
@@ -179,33 +179,33 @@ class JobService(BaseNeo4jService):
         return transformed_results
 
     def get_filter_options(self) -> Dict[str, List[Dict]]:
-        """Get all available filter options from Job nodes in database"""
+        """Get all available filter options from Job nodes in database with case-insensitive deduplication"""
 
         # Get unique employment types
         employment_types_query = """
             MATCH (j:Job)
-            WHERE j.employment_type IS NOT NULL AND j.employment_type <> ''
-            RETURN DISTINCT j.employment_type as value
-            ORDER BY j.employment_type
+            WHERE j.employmentType IS NOT NULL AND j.employmentType <> ''
+            RETURN DISTINCT j.employmentType as value
+            ORDER BY j.employmentType
         """
 
         # Get unique work setups
         work_setups_query = """
             MATCH (j:Job)
-            WHERE j.work_setup IS NOT NULL AND j.work_setup <> ''
-            RETURN DISTINCT j.work_setup as value
-            ORDER BY j.work_setup
+            WHERE j.workSetup IS NOT NULL AND j.workSetup <> ''
+            RETURN DISTINCT j.workSetup as value
+            ORDER BY j.workSetup
         """
 
         # Get unique education levels
         education_levels_query = """
             MATCH (j:Job)
-            WHERE j.minimum_education IS NOT NULL AND j.minimum_education <> ''
-            RETURN DISTINCT j.minimum_education as value
-            ORDER BY j.minimum_education
+            WHERE j.minimumEducation IS NOT NULL AND j.minimumEducation <> ''
+            RETURN DISTINCT j.minimumEducation as value
+            ORDER BY j.minimumEducation
         """
 
-        # TAMBAH: Get unique provinces
+        # Get unique provinces
         provinces_query = """
             MATCH (j:Job)
             WHERE j.province IS NOT NULL AND j.province <> ''
@@ -219,7 +219,7 @@ class JobService(BaseNeo4jService):
         education_results = self.execute_query(education_levels_query)
         provinces_results = self.execute_query(provinces_query)
 
-        # Create simple helper function to generate ID from label
+        # Function to create ID from label
         def create_id(label):
             return (
                 label.lower()
@@ -229,32 +229,42 @@ class JobService(BaseNeo4jService):
                 .replace("/", "-")
             )
 
-        # Process results without mapping - use actual database values
+        # Function to deduplicate by lowercase comparison
+        def deduplicate_case_insensitive(results):
+            unique_values = {}
+            for result in results:
+                value = result["value"]
+                # Use lowercase version as key to detect duplicates
+                lowercase_value = value.lower()
+                # Only add if this lowercase value hasn't been seen yet
+                if lowercase_value not in unique_values:
+                    unique_values[lowercase_value] = value
+            return unique_values.values()
+
+        # Process employment types - deduplicate case-insensitive
         employment_options = []
-        for result in employment_results:
-            value = result["value"]
+        for value in deduplicate_case_insensitive(employment_results):
             employment_options.append(
                 {"id": create_id(value), "label": value, "value": value}
             )
 
+        # Process work setups - deduplicate case-insensitive
         work_setup_options = []
-        for result in work_setup_results:
-            value = result["value"]
+        for value in deduplicate_case_insensitive(work_setup_results):
             work_setup_options.append(
                 {"id": create_id(value), "label": value, "value": value}
             )
 
+        # Process education levels - deduplicate case-insensitive
         education_options = []
-        for result in education_results:
-            value = result["value"]
+        for value in deduplicate_case_insensitive(education_results):
             education_options.append(
                 {"id": create_id(value), "label": value, "value": value}
             )
 
-        # TAMBAH: Process provinces
+        # Process provinces - deduplicate case-insensitive
         province_options = []
-        for result in provinces_results:
-            value = result["value"]
+        for value in deduplicate_case_insensitive(provinces_results):
             province_options.append(
                 {"id": create_id(value), "label": value, "value": value}
             )
@@ -295,7 +305,7 @@ class JobService(BaseNeo4jService):
             "workArrangements": work_setup_options,
             "experiences": experience_options,
             "educationLevels": education_options,
-            "provinces": province_options,  # TAMBAH: province options
+            "provinces": province_options,
         }
 
     # TAMBAH: Method khusus untuk mengambil provinces saja
@@ -331,28 +341,28 @@ class JobService(BaseNeo4jService):
             # Query untuk mencari job berdasarkan suffix dari job_url
             query = """
             MATCH (j:Job)
-            WHERE j.job_url = $url
+            WHERE j.jobUrl = $url
             OPTIONAL MATCH (j)-[:REQUIRED_SKILL]->(s:Skill)
-            OPTIONAL MATCH (j)-[:HAS_ADDITIONAL_SKILL]->(a:AdditionalSkill)
+            OPTIONAL MATCH (j)-[:REQUIRED_SKILL]->(a:AdditionalSkill)
             WITH j, collect(DISTINCT s.name) as required_skills, collect(DISTINCT a.name) as additional_skills
-            RETURN j.job_url as job_url, 
-                   j.job_title as title, 
-                   j.company_name as company_name,
+            RETURN j.jobUrl as job_url, 
+                   j.jobTitle as title, 
+                   j.companyName as company_name,
                    j.city as city, 
                    j.province as province, 
-                   j.image_url as image_url,
-                   j.minimum_salary as minimum_salary, 
-                   j.maximum_salary as maximum_salary,
-                   j.salary_unit as salary_unit, 
-                   j.salary_type as salary_type,
-                   j.employment_type as employment_type, 
-                   j.work_setup as work_setup,
-                   j.minimum_education as minimum_education, 
-                   j.minimum_experience as minimum_experience, 
-                   j.maximum_experience as maximum_experience,
+                   j.imageUrl as image_url,
+                   j.minimumSalary as minimum_salary, 
+                   j.maximumSalary as maximum_salary,
+                   j.salaryUnit as salary_unit, 
+                   j.salaryType as salary_type,
+                   j.employmentType as employment_type, 
+                   j.workSetup as work_setup,
+                   j.minimumEducation as minimum_education, 
+                   j.minimumExperience as minimum_experience, 
+                   j.maximumExperience as maximum_experience,
                    required_skills,
                    additional_skills,
-                   j.job_description as job_description
+                   j.jobDescription as job_description
             LIMIT 1
             """
 
@@ -408,7 +418,7 @@ class JobService(BaseNeo4jService):
         Hapus node Job (beserta semua relasinya) berdasarkan job_url
         """
         query = """
-            MATCH (j:Job {job_url: $job_url})
+            MATCH (j:Job {jobUrl: $job_url})
             DETACH DELETE j
             RETURN COUNT(j) AS deleted_count
         """
