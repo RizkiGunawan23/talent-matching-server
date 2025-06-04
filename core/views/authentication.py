@@ -1,3 +1,4 @@
+import time
 from rest_framework import status
 from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -73,7 +74,6 @@ class SignInView(APIView):
             user = serializer.validated_data["user"]
             token_data = CustomTokenSerializer.get_token(user)
 
-            # Return tokens in response body
             return Response(
                 {
                     "message": "Login successful",

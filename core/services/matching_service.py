@@ -45,9 +45,9 @@ class MatchingService(BaseNeo4jService):
             MATCH (m)-[:JOB_MATCH]->(j:Job)
         """
         
-        # Add job title filter - PERBAIKAN: gunakan job_title bukan title
+        # Add job title filter - PERBAIKAN: gunakan jobTitle bukan job_title
         if job_query and job_query != 'all':
-            filter_conditions.append("toLower(j.job_title) CONTAINS toLower($job_query)")
+            filter_conditions.append("toLower(j.jobTitle) CONTAINS toLower($job_query)")
             params["job_query"] = job_query
             
         # Add location filter
@@ -57,17 +57,17 @@ class MatchingService(BaseNeo4jService):
             
         # Add job type filter
         if job_types and len(job_types) > 0:
-            filter_conditions.append("j.employment_type IN $job_types")
+            filter_conditions.append("j.employmentType IN $job_types")
             params["job_types"] = job_types
             
         # Add work arrangement filter
         if work_arrangements and len(work_arrangements) > 0:
-            filter_conditions.append("j.work_setup IN $work_arrangements")
+            filter_conditions.append("j.workSetup IN $work_arrangements")
             params["work_arrangements"] = work_arrangements
             
         # Add education level filter
         if education_levels and len(education_levels) > 0:
-            filter_conditions.append("j.minimum_education IN $education_levels")
+            filter_conditions.append("j.minimumEducation IN $education_levels")
             params["education_levels"] = education_levels
             
         # Add experience filter
@@ -78,22 +78,22 @@ class MatchingService(BaseNeo4jService):
             
             exp_conditions = []
             if has_junior:
-                exp_conditions.append("(j.minimum_experience >= 0 AND j.maximum_experience <= 2)")
+                exp_conditions.append("(j.minimumExperience >= 0 AND j.maximumExperience <= 2)")
             if has_mid:
-                exp_conditions.append("(j.minimum_experience >= 3 AND j.maximum_experience <= 5)")
+                exp_conditions.append("(j.minimumExperience >= 3 AND j.maximumExperience <= 5)")
             if has_senior:
-                exp_conditions.append("(j.minimum_experience >= 6)")
+                exp_conditions.append("(j.minimumExperience >= 6)")
                 
             if exp_conditions:
                 filter_conditions.append("(" + " OR ".join(exp_conditions) + ")")
     
         # Add salary filters - PERBAIKAN: Tambahkan pengecekan None untuk salary
         if salary_min and str(salary_min).isdigit():
-            filter_conditions.append("(j.minimum_salary >= $salary_min OR j.maximum_salary >= $salary_min)")
+            filter_conditions.append("(j.minimumSalary >= $salary_min OR j.maximumSalary >= $salary_min)")
             params["salary_min"] = int(salary_min)
         
         if salary_max and str(salary_max).isdigit():
-            filter_conditions.append("(j.minimum_salary <= $salary_max)")
+            filter_conditions.append("(j.minimumSalary <= $salary_max)")
             params["salary_max"] = int(salary_max)
             
         # Apply all filters
@@ -103,17 +103,17 @@ class MatchingService(BaseNeo4jService):
         # Get required skills and add match type information
         query += """
             OPTIONAL MATCH (j)-[:REQUIRED_SKILL]->(s:Skill)
-            OPTIONAL MATCH (j)-[:HAS_ADDITIONAL_SKILL]->(a:AdditionalSkill)
+            OPTIONAL MATCH (j)-[:REQUIRED_SKILL]->(a:AdditionalSkill)
             WITH m, j, apoc.coll.toSet(collect(DISTINCT s.name) + collect(DISTINCT a.name)) as required_skills
-            RETURN j.job_url as job_url, j.job_title as job_title, j.company_name as company_name,
-                   j.city as city, j.province as province, j.image_url as image_url,
-                   j.minimum_salary as minimum_salary, j.maximum_salary as maximum_salary,
-                   j.salary_unit as salary_unit, j.salary_type as salary_type,
-                   j.employment_type as employment_type, j.work_setup as work_setup,
-                   j.minimum_education as minimum_education, 
-                   j.minimum_experience as minimum_experience, 
-                   j.maximum_experience as maximum_experience,
-                   required_skills, j.job_description as job_description,
+            RETURN j.jobUrl as job_url, j.jobTitle as job_title, j.companyName as company_name,
+                   j.city as city, j.province as province, j.imageUrl as image_url,
+                   j.minimumSalary as minimum_salary, j.maximumSalary as maximum_salary,
+                   j.salaryUnit as salary_unit, j.salaryType as salary_type,
+                   j.employmentType as employment_type, j.workSetup as work_setup,
+                   j.minimumEducation as minimum_education, 
+                   j.minimumExperience as minimum_experience, 
+                   j.maximumExperience as maximum_experience,
+                   required_skills, j.jobDescription as job_description,
                    m.similarityScore as similarity_score, m.matchType as match_type
         """
 

@@ -14,6 +14,7 @@ from core.views.admin.scraping import (
     JobScrapingView,
 )
 from core.views.authentication import (
+    CheckEmailView,
     ForgetPasswordView,
     SignInView,
     SignOutView,
@@ -41,6 +42,13 @@ from core.views.media import ProfileImageView
 from core.views.password import ChangePasswordView
 from core.views.profile import EditProfileView, UserProfileView
 from core.views.seeder import SeederView
+from core.views.media import ProfileImageView
+from core.views.skills import SkillsListView
+from core.views.jobs import JobFilterOptionsView, JobSearchView, ProvincesView, JobRecommendationView, JobDetailByIdView, ReportJobView, DeleteJobView
+from core.views.bookmark import BookmarkView, BookmarkStatusView
+from core.views.password import ChangePasswordView
+from core.views.profile import EditProfileView, UserProfileView
+from core.views.maintenance import MaintenanceStatusView
 from core.views.skills import SkillsListView
 
 urlpatterns = [
@@ -49,6 +57,7 @@ urlpatterns = [
     path("auth/sign-up/", SignUpView.as_view(), name="sign-up"),
     path("auth/sign-in/", SignInView.as_view(), name="sign-in"),
     path("auth/sign-out/", SignOutView.as_view(), name="sign-out"),
+    path('auth/check-email/', CheckEmailView.as_view(), name='check-email'),
     path("auth/forgot-password/", ForgetPasswordView.as_view(), name="forgot-password"),
     path(
         "jobs/recommendation/",

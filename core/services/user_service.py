@@ -19,7 +19,7 @@ class UserService(BaseNeo4jService):
             RETURN u.uid as uid, u.email as email, u.user_email as user_email,
                    u.name as name, u.role as role, u.password as password,
                    u.created_at as created_at, u.updated_at as updated_at,
-                   u.profile_image as profile_image
+                   u.profilePicture as profile_image
         """
 
         results = self.execute_query(query, {"email": email})
@@ -29,29 +29,17 @@ class UserService(BaseNeo4jService):
         """Get user data with profile picture for login"""
         query = """
             MATCH (u:User {email: $email})
-            RETURN u.profilePicture as profile_image_path
+            RETURN u.uid as uid, u.email as email, u.name as name, 
+                   u.password as password, u.role as role, 
+                   u.profilePicture as profile_image_path
         """
         results = self.execute_query(query, {"email": user_email})
         return results[0] if results else None
 
-    def connect_user_profile_picture(self, user_uid: str, file_uid: str) -> bool:
-        """Connect user to profile picture"""
-        query = """
-            MATCH (u:User {uid: $user_uid})
-            MATCH (f:UploadedFile {uid: $file_uid})
-            CREATE (u)-[:HAS_PROFILE_PICTURE]->(f)
-            RETURN u, f
-        """
-
-        results = self.execute_write_query(
-            query, {"user_uid": user_uid, "file_uid": file_uid}
-        )
-        return len(results) > 0
-
     def update_user_picture(self, user_uid: str, update_data: Dict) -> bool:
         """
         Update property pada node User berdasarkan uid.
-        Contoh: update_data = {"profile_image": "uploaded_files/profile_images/xxx.jpg"}
+        Contoh: update_data = {"profilePicture": "uploaded_files/profile_images/xxx.jpg"}
         """
         set_clauses = []
         params = {"uid": user_uid}
@@ -124,7 +112,7 @@ class UserService(BaseNeo4jService):
             MATCH (u:User {email: $email})
             OPTIONAL MATCH (u)-[:HAS_SKILL]->(s:Skill)
             RETURN u.uid as uid, u.email as email, u.name as name, collect(s.name) as skills,
-                   u.profile_image as profile_image_path
+                   u.profilePicture as profile_image_path
         """
         results = self.execute_query(query, {"email": user_email})
         if not results:
@@ -207,7 +195,7 @@ class UserService(BaseNeo4jService):
             # Check if bookmark already exists
             check_query = """
                 MATCH (u:User {uid: $user_uid})
-                MATCH (j:Job {job_url: $job_url})
+                MATCH (j:Job {jobUrl: $job_url})
                 OPTIONAL MATCH (u)-[r:HAS_BOOKMARKED]->(j)
                 RETURN r IS NOT NULL as is_bookmarked
             """
@@ -225,7 +213,7 @@ class UserService(BaseNeo4jService):
                 # Remove bookmark
                 remove_query = """
                     MATCH (u:User {uid: $user_uid})
-                    MATCH (j:Job {job_url: $job_url})
+                    MATCH (j:Job {jobUrl: $job_url})
                     MATCH (u)-[r:HAS_BOOKMARKED]->(j)
                     DELETE r
                     RETURN "removed" as action
@@ -245,7 +233,7 @@ class UserService(BaseNeo4jService):
                 # Add bookmark
                 add_query = """
                     MATCH (u:User {uid: $user_uid})
-                    MATCH (j:Job {job_url: $job_url})
+                    MATCH (j:Job {jobUrl: $job_url})
                     CREATE (u)-[:HAS_BOOKMARKED]->(j)
                     RETURN "added" as action
                 """
@@ -272,25 +260,25 @@ class UserService(BaseNeo4jService):
                 MATCH (u:User {uid: $user_uid})-[:HAS_BOOKMARKED]->(j:Job)
                 OPTIONAL MATCH (j)-[:REQUIRED_SKILL]->(s:Skill)
                 WITH j, collect(DISTINCT s.name) as required_skills
-                RETURN j.job_url as job_url,
-                       j.job_title as job_title,
-                       j.company_name as company_name,
+                RETURN j.jobUrl as job_url,
+                       j.jobTitle as job_title,
+                       j.companyName as company_name,
                        j.city as city,
                        j.province as province,
                        j.subdistrict as subdistrict,
-                       j.minimum_salary as minimum_salary,
-                       j.maximum_salary as maximum_salary,
-                       j.salary_unit as salary_unit,
-                       j.salary_type as salary_type,
-                       j.employment_type as employment_type,
-                       j.work_setup as work_setup,
-                       j.minimum_education as minimum_education,
-                       j.minimum_experience as minimum_experience,
-                       j.maximum_experience as maximum_experience,
-                       j.image_url as image_url,
-                       j.job_description as job_description,
+                       j.minimumSalary as minimum_salary,
+                       j.maximumSalary as maximum_salary,
+                       j.salaryUnit as salary_unit,
+                       j.salaryType as salary_type,
+                       j.employmentType as employment_type,
+                       j.workSetup as work_setup,
+                       j.minimumEducation as minimum_education,
+                       j.minimumExperience as minimum_experience,
+                       j.maximumExperience as maximum_experience,
+                       j.imageUrl as image_url,
+                       j.jobDescription as job_description,
                        required_skills
-                ORDER BY j.job_title
+                ORDER BY j.jobTitle
             """
 
             results = self.execute_query(query, {"user_uid": user_uid})

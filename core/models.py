@@ -33,6 +33,7 @@ class User(StructuredNode):
     role = StringProperty(default="user")
     profilePicture = StringProperty()
 
+    profile_picture = RelationshipTo("UploadedFile", "HAS_PROFILE_PICTURE", cardinality=ZeroOrOne)
     skills = RelationshipTo("Skill", "HAS_SKILLS", cardinality=ZeroOrMore)
 
     @property

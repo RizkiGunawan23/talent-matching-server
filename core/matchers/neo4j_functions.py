@@ -543,18 +543,37 @@ def clean_up_neo4j(tx: Transaction):
 
 
 def fix_resource_nodes_to_skills(tx: Transaction):
+    # URIs to exclude from Skill labeling
+    excluded_uris = [
+        "http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Job",
+        "http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/User",
+        "http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Skills",
+        "http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/UserJobMatch",
+        "http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Mid_Match",
+        "http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Weak_Match",
+        "http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Strong_Match"
+    ]
+    
+    # Step 1: Add Skill label to Class nodes except excluded URIs
     tx.run(
         """
-        MATCH (n:Resource)
-        WHERE size(labels(n)) = 1
-        AND n.uri IS NOT NULL
-        WITH n, SPLIT(n.uri, '/') AS parts
-        WITH n, parts[SIZE(parts)-1] AS lastPart
-        WITH n, REPLACE(lastPart, '_', ' ') AS skillName
-        REMOVE n:Resource
-        SET n:Skill, n.name = skillName
-        RETURN count(n) AS converted
+        MATCH (n:Class) 
+        WHERE NOT n.uri IN $excluded_uris
+        SET n:Skill
+        """,
+        {"excluded_uris": excluded_uris}
+    )
+    
+    # Step 2: Add name property based on URI
+    base_uri = "http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/"
+    tx.run(
         """
+        MATCH (n:Skill) 
+        WHERE n.uri STARTS WITH $base_uri
+        WITH n, replace(n.uri, $base_uri, '') as extracted_name
+        SET n.name = replace(extracted_name, '_', ' ')
+        """,
+        {"base_uri": base_uri}
     )
 
 
@@ -682,8 +701,8 @@ def import_and_clean_neo4j_with_enrichment(
                             {},
                             update_state_func,
                         )
-                    clean_up_neo4j(tx)
                     fix_resource_nodes_to_skills(tx)
+                    clean_up_neo4j(tx)
                     remove_all_resource_labels_and_uris(tx)
                     convert_match_labels_to_property(tx)
 

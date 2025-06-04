@@ -1,6 +1,6 @@
+from typing import Dict, List
 import os
 import uuid
-from typing import Dict
 
 from django.contrib.auth.hashers import check_password, make_password
 from rest_framework import serializers
@@ -27,6 +27,7 @@ class SignUpSerializer(serializers.Serializer):
         error_messages={
             "required": "Password harus diisi.",
             "blank": "Password harus diisi.",
+            "min_length": "Password minimal 8 karakter.",
             "min_length": "Password minimal 8 karakter.",
         },
     )
@@ -124,8 +125,9 @@ class SignUpSerializer(serializers.Serializer):
                     for chunk in profile_picture.chunks():
                         destination.write(chunk)
 
+            user_data_full = user_service.get_user_with_profile_picture(user_data["email"])
             # Return user object for compatibility
-            return type("User", (), created_user)()
+            return type("User", (), user_data_full)()
 
 
 class SignInSerializer(serializers.Serializer):
@@ -150,14 +152,14 @@ class SignInSerializer(serializers.Serializer):
         email = attrs["email"]
         password = attrs["password"]
 
-        user: User | None = User.nodes.get_or_none(email=email)
+        # Gunakan user_service untuk login dengan profile picture
+        user_data = user_service.get_user_with_profile_picture(email)
 
-        print(user)
-
-        if not user or not check_password(password, user.password):
+        if not user_data or not check_password(password, user_data['password']):
             raise serializers.ValidationError("Email atau password tidak valid")
 
-        attrs["user"] = user
+        # Buat user object sederhana untuk compatibility
+        attrs["user"] = type('User', (), user_data)()
         return attrs
 
 
@@ -167,7 +169,7 @@ class CustomTokenSerializer(serializers.Serializer):
     user = serializers.DictField(read_only=True)
 
     @classmethod
-    def get_token(cls, user: User) -> Dict[str, str | Dict[str, str]]:
+    def get_token(cls, user) -> Dict[str, str | Dict[str, str]]:
         refresh: RefreshToken = RefreshToken()
         refresh["user_id"] = user.uid
 
