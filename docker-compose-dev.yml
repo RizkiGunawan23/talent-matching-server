@@ -1,0 +1,90 @@
+services:
+    django:
+        build:
+            context: .
+            dockerfile: Dockerfile
+            target: django
+            cache_from:
+                - type=local,src=.buildcache
+            cache_to:
+                - type=local,dest=.buildcache,mode=max
+        container_name: talent-matching-django
+        depends_on:
+            - redis
+        env_file: .env
+        environment:
+            - NEO4J_URI=${NEO4J_URI:-bolt://host.docker.internal:7689}
+            - REDIS_URL=redis://redis:6379
+            - ENVIRONMENT=development
+        ports:
+            - "8000:8000"
+        volumes:
+            - ./talent_matching_ner_model:/app/talent_matching_ner_model
+            - ./uploaded_files:/app/uploaded_files
+        restart: always
+        develop:
+            watch:
+                - action: sync
+                  path: ./talent_matching_server
+                  target: /app/talent_matching_server
+                  ignore:
+                      - "**/__pycache__/"
+                      - "**/*.pyc"
+                - action: sync
+                  path: ./api
+                  target: /app/api
+                  ignore:
+                      - "**/__pycache__/"
+                      - "**/*.pyc"
+                      - "**/migrations/"
+                - action: sync
+                  path: ./manage.py
+                  target: /app/manage.py
+                - action: rebuild
+                  path: requirements.txt
+        command: gunicorn --reload --workers=1 --threads=1 --bind 0.0.0.0:8000 talent_matching_server.wsgi:application
+
+    celery:
+        build:
+            context: .
+            dockerfile: Dockerfile
+            target: celery
+        container_name: talent-matching-celery
+        depends_on:
+            - redis
+            - django
+        env_file: .env
+        environment:
+            - HOME=/tmp
+            - NEO4J_BOLT_URL=${NEO4J_BOLT_URL:-bolt://host.docker.internal:7689}
+            - REDIS_URL=redis://redis:6379
+            - ENVIRONMENT=development
+        command: watchmedo auto-restart --directory=/app --pattern="*.py" --recursive -- celery -A talent_matching_server worker --loglevel=info --pool=solo
+        shm_size: "1gb"
+        volumes:
+            - ./uploaded_files:/app/uploaded_files
+            - ./talent_matching_ner_model:/app/talent_matching_ner_model
+        restart: always
+        develop:
+            watch:
+                - action: sync
+                  path: ./talent_matching_server
+                  target: /app/talent_matching_server
+                - action: sync
+                  path: ./api
+                  target: /app/api
+
+    redis:
+        image: redis:alpine
+        container_name: talent-matching-redis
+        ports:
+            - "6379:6379"
+        volumes:
+            - redis_data:/data
+            - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+        command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+
+volumes:
+    uploaded_files:
+        driver: local
+    redis_data:

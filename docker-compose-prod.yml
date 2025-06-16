@@ -1,0 +1,42 @@
+services:
+    django:
+        build: .
+        container_name: talent-matching-django
+        depends_on:
+            - redis
+        env_file: .env
+        environment:
+            - ENVIRONMENT=production
+        ports:
+            - "8000:8000"
+        volumes:
+        restart: always
+
+    celery:
+        build: .
+        container_name: talent-matching-celery
+        depends_on:
+            - redis
+            - django
+        env_file: .env
+        environment:
+            - HOME=/tmp
+            - ENVIRONMENT=production
+        command: celery -A talent_matching_server worker --loglevel=info
+        shm_size: "1gb"
+        volumes:
+        restart: always
+
+    redis:
+        image: redis:alpine
+        container_name: talent-matching-redis
+        ports:
+            - "6379:6379"
+        volumes:
+            - redis_data:/data
+            - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+        command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+        restart: always
+
+volumes:
+    redis_data:

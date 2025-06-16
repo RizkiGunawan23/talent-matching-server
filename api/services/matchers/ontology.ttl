@@ -1,0 +1,1818 @@
+@prefix : <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@base <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/> .
+
+<http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology> rdf:type owl:Ontology .
+
+#################################################################
+#    Object Properties
+#################################################################
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/HAS_SKILL
+:HAS_SKILL rdf:type owl:ObjectProperty ;
+           rdfs:domain :User ;
+           rdfs:range :Skills .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/JOB_MATCH
+:JOB_MATCH rdf:type owl:ObjectProperty ;
+           rdfs:domain :UserJobMatch ;
+           rdfs:range :Job .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/REQUIRED_SKILL
+:REQUIRED_SKILL rdf:type owl:ObjectProperty ;
+                rdfs:domain :Job ;
+                rdfs:range :Skills .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/USER_MATCH
+:USER_MATCH rdf:type owl:ObjectProperty ;
+            rdfs:domain :UserJobMatch ;
+            rdfs:range :User .
+
+
+#################################################################
+#    Data properties
+#################################################################
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/job_url
+:job_url rdf:type owl:DatatypeProperty ;
+         rdfs:domain :Job ;
+         rdfs:range xsd:string .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/similarityScore
+:similarityScore rdf:type owl:DatatypeProperty ;
+                 rdfs:domain :UserJobMatch ;
+                 rdfs:range xsd:float .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/user_email
+:user_email rdf:type owl:DatatypeProperty ;
+            rdfs:domain :User ;
+            rdfs:range xsd:string .
+
+
+#################################################################
+#    Classes
+#################################################################
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology#PL_SQL
+:PL_SQL rdf:type owl:Class ;
+        rdfs:subClassOf :SQL-based_Systems .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology#SQL
+:SQL rdf:type owl:Class ;
+     rdfs:subClassOf :General_Languages ,
+                     :SQL-based_Systems .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/AES
+:AES rdf:type owl:Class ;
+     rdfs:subClassOf :Techniques .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/AI_Applications
+:AI_Applications rdf:type owl:Class ;
+                 rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/ML_&_AI> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/AI_Tools
+:AI_Tools rdf:type owl:Class ;
+          rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/ML_&_AI> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/API_Development
+:API_Development rdf:type owl:Class ;
+                 rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Web_Servers_&_APIs> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/ASP.NET
+:ASP.NET rdf:type owl:Class ;
+         rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Web_&_Server> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/AWS
+:AWS rdf:type owl:Class ;
+     rdfs:subClassOf :Services .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/AWS_Amplify
+:AWS_Amplify rdf:type owl:Class ;
+             rdfs:subClassOf :Services .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/AWS_Lambda
+:AWS_Lambda rdf:type owl:Class ;
+            rdfs:subClassOf :Services .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Activities
+:Activities rdf:type owl:Class ;
+            rdfs:subClassOf :Manual_Testing .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Android_SDK
+:Android_SDK rdf:type owl:Class ;
+             rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Platforms_&_Frameworks> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Angular
+:Angular rdf:type owl:Class ;
+         rdfs:subClassOf :Frontend_Frameworks .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Ansible
+:Ansible rdf:type owl:Class ;
+         rdfs:subClassOf :Tools_IaaS .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Apache_Airflow
+:Apache_Airflow rdf:type owl:Class ;
+                rdfs:subClassOf :ETL_Tools .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Appium
+:Appium rdf:type owl:Class ;
+        rdfs:subClassOf :Tools_Auto_Test .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Application_Security
+:Application_Security rdf:type owl:Class ;
+                      rdfs:subClassOf :Cybersecurity .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Architecture
+:Architecture rdf:type owl:Class ;
+              rdfs:subClassOf :Programming .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Arduino
+:Arduino rdf:type owl:Class ;
+         rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Embedded_&_Control> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Artificial_Intelligence
+:Artificial_Intelligence rdf:type owl:Class ;
+                         rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/ML_&_AI> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Assembly
+:Assembly rdf:type owl:Class ;
+          rdfs:subClassOf :General_Languages .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Automation_Testing
+:Automation_Testing rdf:type owl:Class ;
+                    rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Testing_&_QA> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Azure
+:Azure rdf:type owl:Class ;
+       rdfs:subClassOf :Services .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/BGP
+:BGP rdf:type owl:Class ;
+     rdfs:subClassOf :Core_Protocols .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Back-End
+:Back-End rdf:type owl:Class ;
+          rdfs:subClassOf :Web_Development .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Big_Data_Analysis
+:Big_Data_Analysis rdf:type owl:Class ;
+                   rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/NoSQL_&_Big_Data> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Bitbucket
+:Bitbucket rdf:type owl:Class ;
+           rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/IDEs,_Tools> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Blackbox_Testing
+:Blackbox_Testing rdf:type owl:Class ;
+                  rdfs:subClassOf :Activities .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Bootstrap
+:Bootstrap rdf:type owl:Class ;
+           rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Styling,_Rendering> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Bug_Life_Cycle
+:Bug_Life_Cycle rdf:type owl:Class ;
+                rdfs:subClassOf :Activities .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Bug_Reporting
+:Bug_Reporting rdf:type owl:Class ;
+               rdfs:subClassOf :Activities .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Burp_Suite
+:Burp_Suite rdf:type owl:Class ;
+            rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Tools_&_Methods> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Business_Requirements_Document
+:Business_Requirements_Document rdf:type owl:Class ;
+                                rdfs:subClassOf :Tools_Doc .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/CMS
+:CMS rdf:type owl:Class ;
+     rdfs:subClassOf :Web_Development .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/CS
+:CS rdf:type owl:Class ;
+    rdfs:subClassOf :General_Languages .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/CSS
+:CSS rdf:type owl:Class ;
+     rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Styling,_Rendering> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Cassandra
+:Cassandra rdf:type owl:Class ;
+           rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/NoSQL_&_Big_Data> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Ceph
+:Ceph rdf:type owl:Class ;
+      rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Tools_Monitoring_&_Hosting> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Check_Point
+:Check_Point rdf:type owl:Class ;
+             rdfs:subClassOf :Infrastructure .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Clean_Architecture
+:Clean_Architecture rdf:type owl:Class ;
+                    rdfs:subClassOf :Software_Design .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Clickhouse
+:Clickhouse rdf:type owl:Class ;
+            rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/NoSQL_&_Big_Data> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Cloud_Database
+:Cloud_Database rdf:type owl:Class ;
+                rdfs:subClassOf :Services .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Cloud_Hosting
+:Cloud_Hosting rdf:type owl:Class ;
+               rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Tools_Monitoring_&_Hosting> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Cloud_Platforms
+:Cloud_Platforms rdf:type owl:Class ;
+                 rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Cloud_&_DevOps> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/CodeIgniter
+:CodeIgniter rdf:type owl:Class ;
+             rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Web_&_Server> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Confluence
+:Confluence rdf:type owl:Class ;
+            rdfs:subClassOf :Tools_PM .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Containerization
+:Containerization rdf:type owl:Class ;
+                  rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Cloud_&_DevOps> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Content_Systems
+:Content_Systems rdf:type owl:Class ;
+                 rdfs:subClassOf :CMS .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Core_Protocols
+:Core_Protocols rdf:type owl:Class ;
+                rdfs:subClassOf :Network_Technologies .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Cryptography
+:Cryptography rdf:type owl:Class ;
+              rdfs:subClassOf :Cybersecurity .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Cybersecurity
+:Cybersecurity rdf:type owl:Class ;
+               rdfs:subClassOf :Skills .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Cypress
+:Cypress rdf:type owl:Class ;
+         rdfs:subClassOf :Tools_Auto_Test .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/DNS
+:DNS rdf:type owl:Class ;
+     rdfs:subClassOf :Core_Protocols .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Dart
+:Dart rdf:type owl:Class ;
+      rdfs:subClassOf :General_Languages .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Data_Architecture
+:Data_Architecture rdf:type owl:Class ;
+                   rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Quality_&_Integration> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Data_Bricks
+:Data_Bricks rdf:type owl:Class ;
+             rdfs:subClassOf :ETL_Tools .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Data_Cleaning
+:Data_Cleaning rdf:type owl:Class ;
+               rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Quality_&_Integration> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Data_Collection
+:Data_Collection rdf:type owl:Class ;
+                 rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Quality_&_Integration> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Data_Engineering
+:Data_Engineering rdf:type owl:Class ;
+                  rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Data_&_Databases> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Data_Infrastructure
+:Data_Infrastructure rdf:type owl:Class ;
+                     rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Quality_&_Integration> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Data_Migration
+:Data_Migration rdf:type owl:Class ;
+                rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Quality_&_Integration> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Data_Modeling
+:Data_Modeling rdf:type owl:Class ;
+               rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Quality_&_Integration> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Data_Ops
+:Data_Ops rdf:type owl:Class ;
+          rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Data_&_Databases> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Data_Pipeline_Management
+:Data_Pipeline_Management rdf:type owl:Class ;
+                          rdfs:subClassOf :ETL_Tools .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Data_Quality_Assurance
+:Data_Quality_Assurance rdf:type owl:Class ;
+                        rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Quality_&_Integration> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Data_Science
+:Data_Science rdf:type owl:Class ;
+              rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Data_&_Databases> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Data_Visualization_and_Reporting
+:Data_Visualization_and_Reporting rdf:type owl:Class ;
+                                  rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Tools_&_Languages> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Datadog
+:Datadog rdf:type owl:Class ;
+         rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Tools_Monitoring_&_Hosting> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Debugging
+:Debugging rdf:type owl:Class ;
+           rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Web_Testing_&_Debug> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Deep_Learning
+:Deep_Learning rdf:type owl:Class ;
+               rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/ML_&_AI> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/DevOps
+:DevOps rdf:type owl:Class ;
+        rdfs:subClassOf :Tools_IaaS .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/DevSecOps
+:DevSecOps rdf:type owl:Class ;
+           rdfs:subClassOf :Tools_IaaS .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Dev_Tools
+:Dev_Tools rdf:type owl:Class ;
+           rdfs:subClassOf :Programming .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Django
+:Django rdf:type owl:Class ;
+        rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Web_&_Server> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Docker
+:Docker rdf:type owl:Class ;
+        rdfs:subClassOf :Tools_Container ,
+                        :Tools_IaaS .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Documentation
+:Documentation rdf:type owl:Class ;
+               rdfs:subClassOf :Software_Architecture .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Documentation_and_Best_Practices
+:Documentation_and_Best_Practices rdf:type owl:Class ;
+                                  rdfs:subClassOf :Tools_Doc .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Draw.io
+:Draw.io rdf:type owl:Class ;
+         rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/IDEs,_Tools> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/ELT
+:ELT rdf:type owl:Class ;
+     rdfs:subClassOf :ETL_Tools .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/ESP32
+:ESP32 rdf:type owl:Class ;
+       rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Embedded_&_Control> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/ETL
+:ETL rdf:type owl:Class ;
+     rdfs:subClassOf :ETL_Tools .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/ETL_Pipeline
+:ETL_Pipeline rdf:type owl:Class ;
+              rdfs:subClassOf :ETL_Tools .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/ETL_Tools
+:ETL_Tools rdf:type owl:Class ;
+           rdfs:subClassOf :Data_Engineering .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Eclipse
+:Eclipse rdf:type owl:Class ;
+         rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/IDEs,_Tools> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Event-Driven_Architecture
+:Event-Driven_Architecture rdf:type owl:Class ;
+                           rdfs:subClassOf :Software_Design .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Exploit_Development
+:Exploit_Development rdf:type owl:Class ;
+                     rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Tools_&_Methods> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Express
+:Express rdf:type owl:Class ;
+         rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Web_&_Server> ,
+                         <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Web_Servers_&_APIs> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Firebase
+:Firebase rdf:type owl:Class ;
+          rdfs:subClassOf :Services .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Flask
+:Flask rdf:type owl:Class ;
+       rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Web_&_Server> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Flutter
+:Flutter rdf:type owl:Class ;
+         rdfs:subClassOf :Mobile_Frameworks ,
+                         <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Platforms_&_Frameworks> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Front-End
+:Front-End rdf:type owl:Class ;
+           rdfs:subClassOf :Web_Development .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Frontend_Frameworks
+:Frontend_Frameworks rdf:type owl:Class ;
+                     rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Frameworks_&_Libraries> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Functional_Programming
+:Functional_Programming rdf:type owl:Class ;
+                        rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/OOP,_Functional_Programming> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Functional_Specification_Document
+:Functional_Specification_Document rdf:type owl:Class ;
+                                   rdfs:subClassOf :Tools_Doc .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Functional_Testing
+:Functional_Testing rdf:type owl:Class ;
+                    rdfs:subClassOf :Methodologies .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/General_Languages
+:General_Languages rdf:type owl:Class ;
+                   rdfs:subClassOf :Programming_Languages .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Git
+:Git rdf:type owl:Class ;
+     rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/IDEs,_Tools> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/GitHub
+:GitHub rdf:type owl:Class ;
+        rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/IDEs,_Tools> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/GitHub_Actions
+:GitHub_Actions rdf:type owl:Class ;
+                rdfs:subClassOf :Tools_IaaS .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/GitLab
+:GitLab rdf:type owl:Class ;
+        rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/IDEs,_Tools> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Git_Flow
+:Git_Flow rdf:type owl:Class ;
+          rdfs:subClassOf :Tools_IaaS ,
+                          <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/IDEs,_Tools> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Google_BigQuery
+:Google_BigQuery rdf:type owl:Class ;
+                 rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Tools_&_Languages> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Google_Cloud_Platform
+:Google_Cloud_Platform rdf:type owl:Class ;
+                       rdfs:subClassOf :Services .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Google_PubSub
+:Google_PubSub rdf:type owl:Class ;
+               rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Messaging_&_PubSub> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Grafana
+:Grafana rdf:type owl:Class ;
+         rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Tools_Monitoring_&_Hosting> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Greybox_Testing
+:Greybox_Testing rdf:type owl:Class ;
+                 rdfs:subClassOf :Activities .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/HMI_Programming
+:HMI_Programming rdf:type owl:Class ;
+                 rdfs:subClassOf :Tools_HMI .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/HTML
+:HTML rdf:type owl:Class ;
+      rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Styling,_Rendering> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Hardware
+:Hardware rdf:type owl:Class ;
+          rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Tools_&_Devices> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Hosting
+:Hosting rdf:type owl:Class ;
+         rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Tools_Monitoring_&_Hosting> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Hyper-V
+:Hyper-V rdf:type owl:Class ;
+         rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Tools_Monitoring_&_Hosting> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/IDS
+:IDS rdf:type owl:Class ;
+     rdfs:subClassOf :Infrastructure .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/IP_Networking
+:IP_Networking rdf:type owl:Class ;
+               rdfs:subClassOf :Infrastructure .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/ISO_27001
+:ISO_27001 rdf:type owl:Class ;
+           rdfs:subClassOf :Standards .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/IT_Project_Management
+:IT_Project_Management rdf:type owl:Class ;
+                       rdfs:subClassOf :Tools_PM .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Infrastructure
+:Infrastructure rdf:type owl:Class ;
+                rdfs:subClassOf :Network_Security .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Infrastructure_as_Code
+:Infrastructure_as_Code rdf:type owl:Class ;
+                        rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Cloud_&_DevOps> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Integration_Testing
+:Integration_Testing rdf:type owl:Class ;
+                     rdfs:subClassOf :Methodologies .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/IntelliJ
+:IntelliJ rdf:type owl:Class ;
+          rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/IDEs,_Tools> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Ionic_Framework
+:Ionic_Framework rdf:type owl:Class ;
+                 rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Platforms_&_Frameworks> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/JSON
+:JSON rdf:type owl:Class ;
+      rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/IDEs,_Tools> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Java
+:Java rdf:type owl:Class ;
+      rdfs:subClassOf :General_Languages .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/JavaScript
+:JavaScript rdf:type owl:Class ;
+            rdfs:subClassOf :General_Languages .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Jenkins
+:Jenkins rdf:type owl:Class ;
+         rdfs:subClassOf :Tools_IaaS .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Jetpack_Compose
+:Jetpack_Compose rdf:type owl:Class ;
+                 rdfs:subClassOf :Mobile_Frameworks .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Jira
+:Jira rdf:type owl:Class ;
+      rdfs:subClassOf :Tools_PM .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Job
+:Job rdf:type owl:Class .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Kafka
+:Kafka rdf:type owl:Class ;
+       rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Messaging_&_PubSub> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Kotlin
+:Kotlin rdf:type owl:Class ;
+        rdfs:subClassOf :General_Languages .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Kotlin_Android_SDK
+:Kotlin_Android_SDK rdf:type owl:Class ;
+                    rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Platforms_&_Frameworks> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Kubernetes
+:Kubernetes rdf:type owl:Class ;
+            rdfs:subClassOf :Tools_Container ,
+                            :Tools_IaaS .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/LAN
+:LAN rdf:type owl:Class ;
+     rdfs:subClassOf :Core_Protocols .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/LLM
+:LLM rdf:type owl:Class ;
+     rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/ML_&_AI> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/LTE
+:LTE rdf:type owl:Class ;
+     rdfs:subClassOf :Core_Protocols .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Laravel
+:Laravel rdf:type owl:Class ;
+         rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Web_&_Server> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Lumen
+:Lumen rdf:type owl:Class ;
+       rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Web_&_Server> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/MQTT
+:MQTT rdf:type owl:Class ;
+      rdfs:subClassOf :Core_Protocols ,
+                      <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Messaging_&_PubSub> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/MVC
+:MVC rdf:type owl:Class ;
+     rdfs:subClassOf :Software_Design .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/MVVM
+:MVVM rdf:type owl:Class ;
+      rdfs:subClassOf :Software_Design .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Manual_Testing
+:Manual_Testing rdf:type owl:Class ;
+                rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Testing_&_QA> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/MariaDB
+:MariaDB rdf:type owl:Class ;
+         rdfs:subClassOf :SQL-based_Systems .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Metabase
+:Metabase rdf:type owl:Class ;
+          rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Tools_&_Languages> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Methodologies
+:Methodologies rdf:type owl:Class ;
+               rdfs:subClassOf :Test_Lifecycle .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Microcontrollers
+:Microcontrollers rdf:type owl:Class ;
+                  rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Embedded_&_Control> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Microservices_Architecture
+:Microservices_Architecture rdf:type owl:Class ;
+                            rdfs:subClassOf :Software_Design .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Microsoft_SQL_Server
+:Microsoft_SQL_Server rdf:type owl:Class ;
+                      rdfs:subClassOf :SQL-based_Systems .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Mid_Match
+:Mid_Match rdf:type owl:Class ;
+           owl:equivalentClass [ owl:intersectionOf ( :UserJobMatch
+                                                      [ rdf:type owl:Restriction ;
+                                                        owl:onProperty :similarityScore ;
+                                                        owl:someValuesFrom [ rdf:type rdfs:Datatype ;
+                                                                             owl:onDatatype xsd:float ;
+                                                                             owl:withRestrictions ( [ xsd:minExclusive "0.25"^^xsd:float
+                                                                                                    ]
+                                                                                                    [ xsd:maxExclusive "0.75"^^xsd:float
+                                                                                                    ]
+                                                                                                  )
+                                                                           ]
+                                                      ]
+                                                    ) ;
+                                 rdf:type owl:Class
+                               ] ;
+           rdfs:subClassOf :UserJobMatch .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/MikroTik
+:MikroTik rdf:type owl:Class ;
+          rdfs:subClassOf :Core_Protocols .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Mobile_Development
+:Mobile_Development rdf:type owl:Class ;
+                    rdfs:subClassOf :Skills .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Mobile_Frameworks
+:Mobile_Frameworks rdf:type owl:Class ;
+                   rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Frameworks_&_Libraries> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Mobile_UI
+:Mobile_UI rdf:type owl:Class ;
+           rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/UI/UX_Mobile> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Mobile_UI_Design
+:Mobile_UI_Design rdf:type owl:Class ;
+                  rdfs:subClassOf :Mobile_UI .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Mobx
+:Mobx rdf:type owl:Class ;
+      rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Platforms_&_Frameworks> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/MongoDB
+:MongoDB rdf:type owl:Class ;
+         rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/NoSQL_&_Big_Data> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Monitoring_and_Maintenance
+:Monitoring_and_Maintenance rdf:type owl:Class ;
+                            rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Tools_Monitoring_&_Hosting> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/MySQL
+:MySQL rdf:type owl:Class ;
+       rdfs:subClassOf :SQL-based_Systems .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/NIST_CSF
+:NIST_CSF rdf:type owl:Class ;
+          rdfs:subClassOf :Standards .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/NLP
+:NLP rdf:type owl:Class ;
+     rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/ML_&_AI> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Nessus
+:Nessus rdf:type owl:Class ;
+        rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Tools_&_Methods> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Nest
+:Nest rdf:type owl:Class ;
+      rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Web_&_Server> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Network_Administration
+:Network_Administration rdf:type owl:Class ;
+                        rdfs:subClassOf :Hardware .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Network_Protocols
+:Network_Protocols rdf:type owl:Class ;
+                   rdfs:subClassOf :Infrastructure .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Network_Security
+:Network_Security rdf:type owl:Class ;
+                  rdfs:subClassOf :Cybersecurity .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Network_Technologies
+:Network_Technologies rdf:type owl:Class ;
+                      rdfs:subClassOf :Networking .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Networking
+:Networking rdf:type owl:Class ;
+            rdfs:subClassOf :Skills .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Neural_Networks
+:Neural_Networks rdf:type owl:Class ;
+                 rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/ML_&_AI> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Next
+:Next rdf:type owl:Class ;
+      rdfs:subClassOf :Frontend_Frameworks .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/NoSQL
+:NoSQL rdf:type owl:Class ;
+       rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/NoSQL_&_Big_Data> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Node.js
+:Node.js rdf:type owl:Class ;
+         rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Web_Servers_&_APIs> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Nuxt
+:Nuxt rdf:type owl:Class ;
+      rdfs:subClassOf :Frontend_Frameworks .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/ONT
+:ONT rdf:type owl:Class ;
+     rdfs:subClassOf :Hardware .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/ONU
+:ONU rdf:type owl:Class ;
+     rdfs:subClassOf :Hardware .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/OSPF
+:OSPF rdf:type owl:Class ;
+      rdfs:subClassOf :Core_Protocols .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/OWASP
+:OWASP rdf:type owl:Class ;
+       rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Tools_&_Methods> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Object-Oriented_Programming
+:Object-Oriented_Programming rdf:type owl:Class ;
+                             rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/OOP,_Functional_Programming> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Objective-C
+:Objective-C rdf:type owl:Class ;
+             rdfs:subClassOf :General_Languages ,
+                             <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Platforms_&_Frameworks> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/OpenAPI
+:OpenAPI rdf:type owl:Class ;
+         rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Web_Servers_&_APIs> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/OpnSense
+:OpnSense rdf:type owl:Class ;
+          rdfs:subClassOf :Core_Protocols .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Oracle_Database
+:Oracle_Database rdf:type owl:Class ;
+                 rdfs:subClassOf :SQL-based_Systems .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Others
+:Others rdf:type owl:Class ;
+        rdfs:subClassOf :Skills .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/PCB_Design
+:PCB_Design rdf:type owl:Class ;
+            rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Embedded_&_Control> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/PHP
+:PHP rdf:type owl:Class ;
+     rdfs:subClassOf :General_Languages .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/PLC_Programming
+:PLC_Programming rdf:type owl:Class ;
+                 rdfs:subClassOf :Tools_HMI .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Pandas
+:Pandas rdf:type owl:Class ;
+        rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Tools_&_Languages> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Pemrograman_OOP
+:Pemrograman_OOP rdf:type owl:Class ;
+                 rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/OOP,_Functional_Programming> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Pemrograman_Web
+:Pemrograman_Web rdf:type owl:Class ;
+                 rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/OOP,_Functional_Programming> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Penetration_Testing
+:Penetration_Testing rdf:type owl:Class ;
+                     rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Tools_&_Methods> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Perl
+:Perl rdf:type owl:Class ;
+      rdfs:subClassOf :General_Languages .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Playwright
+:Playwright rdf:type owl:Class ;
+            rdfs:subClassOf :Tools_Auto_Test .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Podman
+:Podman rdf:type owl:Class ;
+        rdfs:subClassOf :Tools_Container .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/PostgreSQL
+:PostgreSQL rdf:type owl:Class ;
+            rdfs:subClassOf :SQL-based_Systems .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Power_BI
+:Power_BI rdf:type owl:Class ;
+          rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Tools_&_Languages> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Practices
+:Practices rdf:type owl:Class ;
+           rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Systems_&_Patterns> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Predictive_Analytics
+:Predictive_Analytics rdf:type owl:Class ;
+                      rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Tools_&_Languages> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Programming
+:Programming rdf:type owl:Class ;
+             rdfs:subClassOf :Skills .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Programming_Concepts
+:Programming_Concepts rdf:type owl:Class ;
+                      rdfs:subClassOf :Programming .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Programming_Languages
+:Programming_Languages rdf:type owl:Class ;
+                       rdfs:subClassOf :Programming .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Project_Coordination
+:Project_Coordination rdf:type owl:Class ;
+                      rdfs:subClassOf :Tools_PM .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Project_Documentation
+:Project_Documentation rdf:type owl:Class ;
+                       rdfs:subClassOf :Tools_Doc .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Project_Planning
+:Project_Planning rdf:type owl:Class ;
+                  rdfs:subClassOf :Tools_PM .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Prometheus
+:Prometheus rdf:type owl:Class ;
+            rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Tools_Monitoring_&_Hosting> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Proxmox
+:Proxmox rdf:type owl:Class ;
+         rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Tools_Monitoring_&_Hosting> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/PyTorch
+:PyTorch rdf:type owl:Class ;
+         rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/ML_&_AI> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Python
+:Python rdf:type owl:Class ;
+        rdfs:subClassOf :General_Languages .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/QA_Automation
+:QA_Automation rdf:type owl:Class ;
+               rdfs:subClassOf :Tools_Auto_Test .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/QA_Testing
+:QA_Testing rdf:type owl:Class ;
+            rdfs:subClassOf :Tools_Auto_Test .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Qase.io
+:Qase.io rdf:type owl:Class ;
+         rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/IDEs,_Tools> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/R
+:R rdf:type owl:Class ;
+   rdfs:subClassOf :General_Languages .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/RDBMS
+:RDBMS rdf:type owl:Class ;
+       rdfs:subClassOf :SQL-based_Systems .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/RESTful_API
+:RESTful_API rdf:type owl:Class ;
+             rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Web_Servers_&_APIs> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/RSA
+:RSA rdf:type owl:Class ;
+     rdfs:subClassOf :Techniques .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/RabbitMQ
+:RabbitMQ rdf:type owl:Class ;
+          rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Messaging_&_PubSub> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Raspberry_Pi
+:Raspberry_Pi rdf:type owl:Class ;
+              rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Embedded_&_Control> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/React
+:React rdf:type owl:Class ;
+       rdfs:subClassOf :Frontend_Frameworks .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/React_Native
+:React_Native rdf:type owl:Class ;
+              rdfs:subClassOf :Mobile_Frameworks ,
+                              <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Platforms_&_Frameworks> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Redis
+:Redis rdf:type owl:Class ;
+       rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/NoSQL_&_Big_Data> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Redshift
+:Redshift rdf:type owl:Class ;
+          rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/NoSQL_&_Big_Data> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Relational_DB
+:Relational_DB rdf:type owl:Class ;
+               rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Data_&_Databases> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Repository_Management
+:Repository_Management rdf:type owl:Class ;
+                       rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/IDEs,_Tools> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Responsive_Web_Design
+:Responsive_Web_Design rdf:type owl:Class ;
+                       rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Styling,_Rendering> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Router
+:Router rdf:type owl:Class ;
+        rdfs:subClassOf :Hardware .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Routing
+:Routing rdf:type owl:Class ;
+         rdfs:subClassOf :Core_Protocols .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/SCSS
+:SCSS rdf:type owl:Class ;
+      rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Styling,_Rendering> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/SD-WAN
+:SD-WAN rdf:type owl:Class ;
+        rdfs:subClassOf :Core_Protocols .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/SIP
+:SIP rdf:type owl:Class ;
+     rdfs:subClassOf :Core_Protocols .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/SQL-based_Systems
+:SQL-based_Systems rdf:type owl:Class ;
+                   rdfs:subClassOf :Relational_DB .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/SS7
+:SS7 rdf:type owl:Class ;
+     rdfs:subClassOf :Core_Protocols .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/SSIS
+:SSIS rdf:type owl:Class ;
+      rdfs:subClassOf :SQL-based_Systems .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/STLC
+:STLC rdf:type owl:Class ;
+      rdfs:subClassOf :Methodologies .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Scala
+:Scala rdf:type owl:Class ;
+       rdfs:subClassOf :General_Languages .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Scikit-learn
+:Scikit-learn rdf:type owl:Class ;
+              rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Tools_&_Languages> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Security_Management
+:Security_Management rdf:type owl:Class ;
+                     rdfs:subClassOf :Standards .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Selenium
+:Selenium rdf:type owl:Class ;
+          rdfs:subClassOf :Tools_Auto_Test .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Sensors
+:Sensors rdf:type owl:Class ;
+         rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Embedded_&_Control> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Server_Management
+:Server_Management rdf:type owl:Class ;
+                   rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Tools_Monitoring_&_Hosting> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Services
+:Services rdf:type owl:Class ;
+          rdfs:subClassOf :Cloud_Platforms .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Skills
+:Skills rdf:type owl:Class .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Snowflake
+:Snowflake rdf:type owl:Class ;
+           rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/NoSQL_&_Big_Data> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Socket.IO
+:Socket.IO rdf:type owl:Class ;
+           rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Web_Servers_&_APIs> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Software_Architecture
+:Software_Architecture rdf:type owl:Class ;
+                       rdfs:subClassOf :Skills .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Software_Design
+:Software_Design rdf:type owl:Class ;
+                 rdfs:subClassOf :Architecture .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Solution_Architecture
+:Solution_Architecture rdf:type owl:Class ;
+                       rdfs:subClassOf :Practices .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Spring_Boot
+:Spring_Boot rdf:type owl:Class ;
+             rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Web_&_Server> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Standards
+:Standards rdf:type owl:Class ;
+           rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Compliance_&_Governance> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Strong_Match
+:Strong_Match rdf:type owl:Class ;
+              owl:equivalentClass [ owl:intersectionOf ( :UserJobMatch
+                                                         [ rdf:type owl:Restriction ;
+                                                           owl:onProperty :similarityScore ;
+                                                           owl:someValuesFrom [ rdf:type rdfs:Datatype ;
+                                                                                owl:onDatatype xsd:float ;
+                                                                                owl:withRestrictions ( [ xsd:minInclusive "0.75"^^xsd:float
+                                                                                                       ]
+                                                                                                     )
+                                                                              ]
+                                                         ]
+                                                       ) ;
+                                    rdf:type owl:Class
+                                  ] ;
+              rdfs:subClassOf :UserJobMatch .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Svelte
+:Svelte rdf:type owl:Class ;
+        rdfs:subClassOf :Frontend_Frameworks .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/SvelteKit
+:SvelteKit rdf:type owl:Class ;
+           rdfs:subClassOf :Frontend_Frameworks .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Swift
+:Swift rdf:type owl:Class ;
+       rdfs:subClassOf :General_Languages ,
+                       <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Platforms_&_Frameworks> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Switch
+:Switch rdf:type owl:Class ;
+        rdfs:subClassOf :Hardware .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Switching
+:Switching rdf:type owl:Class ;
+           rdfs:subClassOf :Core_Protocols .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/System_Configuration
+:System_Configuration rdf:type owl:Class ;
+                      rdfs:subClassOf :Practices .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/System_Deployment
+:System_Deployment rdf:type owl:Class ;
+                   rdfs:subClassOf :Practices .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/System_Design
+:System_Design rdf:type owl:Class ;
+               rdfs:subClassOf :Practices .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/System_Integration
+:System_Integration rdf:type owl:Class ;
+                    rdfs:subClassOf :Practices .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Tableau
+:Tableau rdf:type owl:Class ;
+         rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Tools_&_Languages> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/TailwindCSS
+:TailwindCSS rdf:type owl:Class ;
+             rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Styling,_Rendering> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Techniques
+:Techniques rdf:type owl:Class ;
+            rdfs:subClassOf :Cryptography .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/TensorFlow
+:TensorFlow rdf:type owl:Class ;
+            rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/ML_&_AI> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Terraform
+:Terraform rdf:type owl:Class ;
+           rdfs:subClassOf :Tools_IaaS .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Test_Lifecycle
+:Test_Lifecycle rdf:type owl:Class ;
+                rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Testing_&_QA> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Test_Scenario
+:Test_Scenario rdf:type owl:Class ;
+               rdfs:subClassOf :Activities .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Testing
+:Testing rdf:type owl:Class ;
+         rdfs:subClassOf :Web_Development .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Tools_Auto_Test
+:Tools_Auto_Test rdf:type owl:Class ;
+                 rdfs:subClassOf :Automation_Testing .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Tools_Container
+:Tools_Container rdf:type owl:Class ;
+                 rdfs:subClassOf :Containerization .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Tools_Doc
+:Tools_Doc rdf:type owl:Class ;
+           rdfs:subClassOf :Documentation .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Tools_HMI
+:Tools_HMI rdf:type owl:Class ;
+           rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/HMI_&_Programming> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Tools_IaaS
+:Tools_IaaS rdf:type owl:Class ;
+            rdfs:subClassOf :Infrastructure_as_Code .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Tools_PM
+:Tools_PM rdf:type owl:Class ;
+          rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Project_Management_(tech)> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Trello
+:Trello rdf:type owl:Class ;
+        rdfs:subClassOf :Tools_PM .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/TypeScript
+:TypeScript rdf:type owl:Class ;
+            rdfs:subClassOf :General_Languages .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/UI_Design
+:UI_Design rdf:type owl:Class ;
+           rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Styling,_Rendering> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/UIkit
+:UIkit rdf:type owl:Class ;
+       rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Styling,_Rendering> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/UML
+:UML rdf:type owl:Class ;
+     rdfs:subClassOf :Tools_Doc ,
+                     <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/IDEs,_Tools> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Usability_Testing
+:Usability_Testing rdf:type owl:Class ;
+                   rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Web_Testing_&_Debug> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/User
+:User rdf:type owl:Class .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/UserJobMatch
+:UserJobMatch rdf:type owl:Class .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/User_Acceptance_Testing
+:User_Acceptance_Testing rdf:type owl:Class ;
+                         rdfs:subClassOf :Tools_Doc .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/VB.NET
+:VB.NET rdf:type owl:Class ;
+        rdfs:subClassOf :General_Languages .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/VPN
+:VPN rdf:type owl:Class ;
+     rdfs:subClassOf :Infrastructure .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Visual_Studio
+:Visual_Studio rdf:type owl:Class ;
+               rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/IDEs,_Tools> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Vite
+:Vite rdf:type owl:Class ;
+      rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Build_&_Tools> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Vue
+:Vue rdf:type owl:Class ;
+     rdfs:subClassOf :Frontend_Frameworks .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Vulnerability_Assessment
+:Vulnerability_Assessment rdf:type owl:Class ;
+                          rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Tools_&_Methods> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Vulnerability_Research
+:Vulnerability_Research rdf:type owl:Class ;
+                        rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Tools_&_Methods> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Weak_Match
+:Weak_Match rdf:type owl:Class ;
+            owl:equivalentClass [ owl:intersectionOf ( :UserJobMatch
+                                                       [ rdf:type owl:Restriction ;
+                                                         owl:onProperty :similarityScore ;
+                                                         owl:someValuesFrom [ rdf:type rdfs:Datatype ;
+                                                                              owl:onDatatype xsd:float ;
+                                                                              owl:withRestrictions ( [ xsd:maxInclusive "0.25"^^xsd:float
+                                                                                                     ]
+                                                                                                   )
+                                                                            ]
+                                                       ]
+                                                     ) ;
+                                  rdf:type owl:Class
+                                ] ;
+            rdfs:subClassOf :UserJobMatch .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Web_Development
+:Web_Development rdf:type owl:Class ;
+                 rdfs:subClassOf :Skills .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Web_Testing
+:Web_Testing rdf:type owl:Class ;
+             rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Web_Testing_&_Debug> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Webpack
+:Webpack rdf:type owl:Class ;
+         rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Build_&_Tools> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Whitebox_Testing
+:Whitebox_Testing rdf:type owl:Class ;
+                  rdfs:subClassOf :Activities .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Wireshark
+:Wireshark rdf:type owl:Class ;
+           rdfs:subClassOf :Core_Protocols .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/WordPress_Development
+:WordPress_Development rdf:type owl:Class ;
+                       rdfs:subClassOf :Content_Systems .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/XML
+:XML rdf:type owl:Class ;
+     rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/IDEs,_Tools> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Xamarin
+:Xamarin rdf:type owl:Class ;
+         rdfs:subClassOf :Mobile_Frameworks .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/YAML
+:YAML rdf:type owl:Class ;
+      rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/IDEs,_Tools> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Zabbix
+:Zabbix rdf:type owl:Class ;
+        rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Tools_Monitoring_&_Hosting> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/iOS_Development
+:iOS_Development rdf:type owl:Class ;
+                 rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Platforms_&_Frameworks> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/.NET
+<http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/.NET> rdf:type owl:Class ;
+                                                                                     rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Web_&_Server> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/API_&_Messaging
+<http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/API_&_Messaging> rdf:type owl:Class ;
+                                                                                                rdfs:subClassOf :Others .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/BI_&_Analytics
+<http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/BI_&_Analytics> rdf:type owl:Class ;
+                                                                                               rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Data_&_Databases> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Build_&_Tools
+<http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Build_&_Tools> rdf:type owl:Class ;
+                                                                                              rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Web_Tools_&_Packages> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/C++
+<http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/C++> rdf:type owl:Class ;
+                                                                                    rdfs:subClassOf :General_Languages .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/CI/CI/CI_CD
+<http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/CI/CI/CI_CD> rdf:type owl:Class ;
+                                                                                            rdfs:subClassOf :Tools_IaaS .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Cloud_&_DevOps
+<http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Cloud_&_DevOps> rdf:type owl:Class ;
+                                                                                               rdfs:subClassOf :Skills .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Compliance_&_Governance
+<http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Compliance_&_Governance> rdf:type owl:Class ;
+                                                                                                        rdfs:subClassOf :Cybersecurity .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Data_&_Databases
+<http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Data_&_Databases> rdf:type owl:Class ;
+                                                                                                 rdfs:subClassOf :Skills .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Devices_&_Interfaces
+<http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Devices_&_Interfaces> rdf:type owl:Class ;
+                                                                                                     rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Hardware_&_Embedded> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/ETL/ELT_Pipeline
+<http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/ETL/ELT_Pipeline> rdf:type owl:Class ;
+                                                                                                 rdfs:subClassOf :ETL_Tools .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Embedded_&_Control
+<http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Embedded_&_Control> rdf:type owl:Class ;
+                                                                                                   rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Devices_&_Interfaces> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Frameworks_&_Libraries
+<http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Frameworks_&_Libraries> rdf:type owl:Class ;
+                                                                                                       rdfs:subClassOf :Programming .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Go_/Go
+<http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Go_/Go> rdf:type owl:Class ;
+                                                                                       rdfs:subClassOf :General_Languages .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/HMI_&_Programming
+<http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/HMI_&_Programming> rdf:type owl:Class ;
+                                                                                                  rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Hardware_&_Embedded> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Hardware_&_Embedded
+<http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Hardware_&_Embedded> rdf:type owl:Class ;
+                                                                                                    rdfs:subClassOf :Skills .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/IDEs,_Tools
+<http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/IDEs,_Tools> rdf:type owl:Class ;
+                                                                                            rdfs:subClassOf :Dev_Tools .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/ML_&_AI
+<http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/ML_&_AI> rdf:type owl:Class ;
+                                                                                        rdfs:subClassOf :Data_Science .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Messaging_&_PubSub
+<http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Messaging_&_PubSub> rdf:type owl:Class ;
+                                                                                                   rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/API_&_Messaging> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Monitoring_&_Hosting
+<http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Monitoring_&_Hosting> rdf:type owl:Class ;
+                                                                                                     rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Cloud_&_DevOps> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Native_&_Cross-platform
+<http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Native_&_Cross-platform> rdf:type owl:Class ;
+                                                                                                        rdfs:subClassOf :Mobile_Development .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/NoSQL_&_Big_Data
+<http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/NoSQL_&_Big_Data> rdf:type owl:Class ;
+                                                                                                 rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/NoSQL_&_Data_Infra> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/NoSQL_&_Data_Infra
+<http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/NoSQL_&_Data_Infra> rdf:type owl:Class ;
+                                                                                                   rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Data_&_Databases> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/OOP,_Functional_Programming
+<http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/OOP,_Functional_Programming> rdf:type owl:Class ;
+                                                                                                            rdfs:subClassOf :Programming_Concepts .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Package_Manager_(npm/Yarn
+<http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Package_Manager_(npm/Yarn> rdf:type owl:Class ;
+                                                                                                          rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Build_&_Tools> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Platforms_&_Frameworks
+<http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Platforms_&_Frameworks> rdf:type owl:Class ;
+                                                                                                       rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Native_&_Cross-platform> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Project_Management_(tech)
+<http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Project_Management_(tech)> rdf:type owl:Class ;
+                                                                                                          rdfs:subClassOf :Others .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Quality_&_Integration
+<http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Quality_&_Integration> rdf:type owl:Class ;
+                                                                                                      rdfs:subClassOf :Data_Ops .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/SIEM/SOAR_Platforms
+<http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/SIEM/SOAR_Platforms> rdf:type owl:Class ;
+                                                                                                    rdfs:subClassOf :Standards .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Sass/Less
+<http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Sass/Less> rdf:type owl:Class ;
+                                                                                          rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Styling,_Rendering> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Styling,_Rendering
+<http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Styling,_Rendering> rdf:type owl:Class ;
+                                                                                                   rdfs:subClassOf :Front-End .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Systems_&_Patterns
+<http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Systems_&_Patterns> rdf:type owl:Class ;
+                                                                                                   rdfs:subClassOf :Software_Architecture .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/TCP/IP
+<http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/TCP/IP> rdf:type owl:Class ;
+                                                                                       rdfs:subClassOf :Core_Protocols .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Testing_&_QA
+<http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Testing_&_QA> rdf:type owl:Class ;
+                                                                                             rdfs:subClassOf :Skills .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Tools_&_Devices
+<http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Tools_&_Devices> rdf:type owl:Class ;
+                                                                                                rdfs:subClassOf :Networking .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Tools_&_Languages
+<http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Tools_&_Languages> rdf:type owl:Class ;
+                                                                                                  rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/BI_&_Analytics> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Tools_&_Methods
+<http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Tools_&_Methods> rdf:type owl:Class ;
+                                                                                                rdfs:subClassOf :Application_Security .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Tools_Monitoring_&_Hosting
+<http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Tools_Monitoring_&_Hosting> rdf:type owl:Class ;
+                                                                                                           rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Monitoring_&_Hosting> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/UI/UX_Design
+<http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/UI/UX_Design> rdf:type owl:Class ;
+                                                                                             rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Styling,_Rendering> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/UI/UX_Mobile
+<http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/UI/UX_Mobile> rdf:type owl:Class ;
+                                                                                             rdfs:subClassOf :Mobile_Development .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Web_&_Server
+<http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Web_&_Server> rdf:type owl:Class ;
+                                                                                             rdfs:subClassOf <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Frameworks_&_Libraries> .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Web_Servers_&_APIs
+<http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Web_Servers_&_APIs> rdf:type owl:Class ;
+                                                                                                   rdfs:subClassOf :Back-End .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Web_Testing_&_Debug
+<http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Web_Testing_&_Debug> rdf:type owl:Class ;
+                                                                                                    rdfs:subClassOf :Testing .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Web_Tools_&_Packages
+<http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Web_Tools_&_Packages> rdf:type owl:Class ;
+                                                                                                     rdfs:subClassOf :Others .
+
+
+###  http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Whitebox_&_Blackbox_Testing
+<http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Whitebox_&_Blackbox_Testing> rdf:type owl:Class ;
+                                                                                                            rdfs:subClassOf :Methodologies .
+
+
+###  Generated by the OWL API (version 4.5.29.2024-05-13T12:11:03Z) https://github.com/owlcs/owlapi
