@@ -32,7 +32,7 @@ logs/
 *.log
 .DS_Store
 
-uploaded_files/profile_pictures/
+uploaded_files/profile_pictures/*
 
 # .dockerignore
 **/__pycache__

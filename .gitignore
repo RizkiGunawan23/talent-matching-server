@@ -86,7 +86,7 @@ media/
 *.ipr
 *.iws
 out/
-uploaded_files/profile_pictures
+uploaded_files/profile_pictures/*
 
 # Exclude temp/cache files within model
 talent_matching_ner_model
