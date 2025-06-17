@@ -21,25 +21,48 @@ Proyek ini adalah server API untuk aplikasi Talent Matching menggunakan **Django
 ```
 talent-matching-server/
 │── api/
+    │── helper/
+        │── ....
+    │── migrations/
+        │── ....
     │── serializers/
+        │── ....
+    │── services/
         │── ....
     │── views/
         │── ....
+    │── __init__.py
     │── admin.py
     │── apps.py
     │── models.py
+    │── constants.py
     │── tasks.py
     │── tests.py
     │── urls.py
+│── redis/
+    │── redis.conf
+│── talent_matching_ner_model/
+    │── ner
+        │── ....
+    │── transformer
+        │── ....
+    │── vocab
+        │── ....
+    │── config.cfg
+    │── meta.json
+    │── test.py
+    │── tokenizer
 │── talent_matching_server/
+    │── __init__.py
     │── asgi.py
     │── celery.py
     │── settings.py
     │── urls.py
     │── wsgi.py
-│── utils/
-    │── custom_jwt_authentication.py
-    │── exception_handler.py
+│── uploaded_files/
+    │── profile_pictures/
+        │── ....
+│── .dockerignore
 │── .env.example
 │── .gitignore
 │── docker-compose-dev.yml
@@ -55,7 +78,7 @@ talent-matching-server/
 Pastikan Anda sudah menginstal software berikut sebelum memulai:
 
 -   **Docker**: Untuk menjalankan aplikasi di atas container docker
--   **Python**: Versi 3.12 atau lebih baru
+-   **Python**: Maksimal versi 3.12.x
 -   **Pip**: Untuk mengelola dependensi Python
 -   **Neo4j Desktop**: Untuk monitoring data graf
 
