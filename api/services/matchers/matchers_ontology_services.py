@@ -2,25 +2,23 @@ import math
 import os
 import uuid
 
-from rdflib import RDF, Graph, Literal, Namespace, URIRef
+from rdflib import RDF, Graph, Literal, URIRef
 from rdflib.namespace import XSD
+
+from api.constants import TALENT_NAMESPACE
 
 
 def load_base_ontology():
     """Load the base ontology structure"""
-    TALENT = Namespace(
-        "http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/"
-    )
-
     ontology_path = os.path.join(os.path.dirname(__file__), "ontology.ttl")
     base_graph = Graph()
     base_graph.parse(ontology_path, format="turtle")
-    base_graph.bind("talent", TALENT)
+    base_graph.bind("talent", TALENT_NAMESPACE)
 
     return base_graph
 
 
-def import_all_jobs_to_ontology(graph, TALENT_NAMESPACE, jobs_data):
+def import_all_jobs_to_ontology(graph, jobs_data):
     """
     Import all jobs into the ontology graph and map missing skills.
     """
@@ -106,27 +104,14 @@ def import_all_jobs_to_ontology(graph, TALENT_NAMESPACE, jobs_data):
 
         jobs_processed += 1
 
-        # Progress indicator
-        if jobs_processed % 500 == 0:
-            print(f"   Processed {jobs_processed} jobs...")
-
-    print(f"✅ Jobs import completed:")
-    print(f"   Total jobs processed: {jobs_processed}")
-    print(f"   Jobs with skills: {jobs_with_skills}")
-    print(f"   Jobs with missing skills: {len(missing_skills_map)}")
-
     return graph, missing_skills_map
 
 
-def import_all_users_to_ontology(graph, TALENT_NAMESPACE, users_data):
+def import_all_users_to_ontology(graph, users_data):
     """Import ALL users to ontology"""
     # Handle empty or None users_data
     if not users_data:
-        print("👥 No users to import (empty data)")
-        print("   ⚠️  User data is empty - skipping user import")
         return graph
-
-    print(f"👥 Importing {len(users_data)} users to ontology...")
 
     # Get all skills for matching
     all_skills_query = """
@@ -192,16 +177,10 @@ def import_all_users_to_ontology(graph, TALENT_NAMESPACE, users_data):
 
         total_skills_added += user_skills_added
 
-    print(f"✅ Users import completed:")
-    print(f"   Total users processed: {len(users_data)}")
-    print(f"   Total skills added: {total_skills_added}")
-
     return graph
 
 
-def build_temp_graph_for_user(
-    base_graph, jobs_data, user_email, user_skills, TALENT_NAMESPACE
-):
+def build_temp_graph_for_user(base_graph, jobs_data, user_email, user_skills):
     """Build temporary graph dengan ALL jobs + specific user only"""
     # Start dengan base ontology
     temp_graph = Graph()
@@ -210,17 +189,17 @@ def build_temp_graph_for_user(
     temp_graph.bind("talent", TALENT_NAMESPACE)
 
     # Add ALL jobs
-    temp_graph = import_all_jobs_to_temp_graph(temp_graph, jobs_data, TALENT_NAMESPACE)
+    temp_graph = import_all_jobs_to_temp_graph(temp_graph, jobs_data)
 
     # Add ONLY this specific user
     temp_graph, user_uri = import_specific_user_to_temp_graph(
-        temp_graph, user_email, user_skills, TALENT_NAMESPACE
+        temp_graph, user_email, user_skills
     )
 
     return temp_graph, user_uri
 
 
-def import_all_jobs_to_temp_graph(graph, jobs_data, TALENT_NAMESPACE):
+def import_all_jobs_to_temp_graph(graph, jobs_data):
     all_skills_query = """
     SELECT ?skill
     WHERE {
@@ -282,16 +261,11 @@ def import_all_jobs_to_temp_graph(graph, jobs_data, TALENT_NAMESPACE):
 
         jobs_added += 1
 
-    print(f"   ✅ Added {jobs_added} jobs to temporary graph")
     return graph
 
 
-def import_specific_user_to_temp_graph(
-    graph, user_email, user_skills, TALENT_NAMESPACE
-):
+def import_specific_user_to_temp_graph(graph, user_email, user_skills):
     """Import specific user ke temporary graph"""
-    print(f"   👤 Adding user {user_email} to temporary graph...")
-
     # Get skill mappings
     all_skills_query = """
     SELECT ?skill
@@ -337,7 +311,6 @@ def import_specific_user_to_temp_graph(
             graph.add((user_uri, TALENT_NAMESPACE["HAS_SKILL"], original_uri))
             skills_added += 1
 
-    print(f"   ✅ Added user with {skills_added} skills")
     return graph, user_uri
 
 
@@ -351,11 +324,6 @@ def calculate_user_job_similarity_for_specific_user(graph, user_uri):
     """
     jobs = [row[0] for row in graph.query(jobs_query)]
 
-    print(
-        "[DEBUG] user_uri saat calculate user job similarity for specific user:",
-        user_uri,
-    )
-
     # Get user skills
     user_skills_query = f"""
     SELECT ?skill
@@ -366,10 +334,7 @@ def calculate_user_job_similarity_for_specific_user(graph, user_uri):
     user_skills = [row[0] for row in graph.query(user_skills_query)]
 
     if not user_skills:
-        print(f"   ⚠️ No skills found for user")
         return []
-
-    print(f"   User has {len(user_skills)} skills, checking against {len(jobs)} jobs")
 
     match_results = []
     for job_uri in jobs:
@@ -402,8 +367,11 @@ def calculate_user_job_similarity_for_specific_user(graph, user_uri):
             skill_similarities.append(max_skill_similarity)
 
         # Calculate overall similarity
+        skill_similarities = sorted(skill_similarities, reverse=True)
         if skill_similarities:
-            overall_similarity = sum(skill_similarities) / len(skill_similarities)
+            overall_similarity = sum(skill_similarities[0 : len(job_skills)]) / len(
+                job_skills
+            )
             if overall_similarity > 0:
                 match_results.append(
                     {
@@ -413,18 +381,13 @@ def calculate_user_job_similarity_for_specific_user(graph, user_uri):
                     }
                 )
 
-    print(f"   ✅ Found {len(match_results)} matches")
     return match_results
 
 
-def extract_categorized_matches_for_user(graph, user_uri, TALENT_NAMESPACE):
+def extract_categorized_matches_for_user(graph, user_uri):
     """
     Extract categorized matches untuk specific user setelah dynamic categorization
     """
-    print("   📊 Extracting categorized matches for user...")
-
-    print("[DEBUG] user_uri saat extract categorized matches for user:", user_uri)
-
     categorized_matches = []
 
     # Query untuk mendapatkan semua matches yang sudah dikategorisasi untuk user ini
@@ -451,32 +414,11 @@ def extract_categorized_matches_for_user(graph, user_uri, TALENT_NAMESPACE):
             }
         )
 
-    print(f"   ✅ Extracted {len(categorized_matches)} categorized matches")
-
-    # Debug: Show sample job_uri format
-    if categorized_matches:
-        sample_job_uri = categorized_matches[0]["job_uri"]
-        sample_identifier = sample_job_uri.split("/")[-1] if sample_job_uri else ""
-        print(f"   🔍 Sample job_uri: {sample_job_uri}")
-        print(f"   🔍 Sample identifier: {sample_identifier}")
-
-    # Show categorization distribution
-    category_counts = {}
-    for match in categorized_matches:
-        category = match["category"]
-        category_counts[category] = category_counts.get(category, 0) + 1
-
-    print(f"   📈 Category distribution:")
-    for category, count in category_counts.items():
-        print(f"     {category}: {count}")
-
     return categorized_matches
 
 
-def add_user_job_matches_to_ontology(graph, TALENT_NAMESPACE, match_results):
+def add_user_job_matches_to_ontology(graph, match_results):
     """Add UserJobMatch instances ke graph"""
-    print("   🔗 Adding UserJobMatch instances...")
-
     for match in match_results:
         match_id = str(uuid.uuid4())
         match_uri = TALENT_NAMESPACE[f"UserJobMatch_{match_id}"]
@@ -579,8 +521,6 @@ def calculate_all_user_job_similarities(graph):
     processed_combinations = 0
 
     for user_uri, email in users:
-        print(f"\n   Processing user: {email}")
-
         user_skills_query = f"""
         SELECT ?skill
         WHERE {{
@@ -641,61 +581,136 @@ def calculate_all_user_job_similarities(graph):
 
             processed_combinations += 1
 
-            # # Progress indicator
-            # if processed_combinations % 1000 == 0:
-            #     print(f"     Processed {processed_combinations} combinations...")
-
     return match_results
 
 
 def extract_equivalent_class_rules_from_ontology(graph):
     """Extract equivalent class rules for UserJobMatch subclasses from ontology"""
-    print("📋 Extracting equivalent class rules from ontology...")
+    rules = {}
 
-    # Query untuk mencari equivalent class expressions untuk Strong_Match, Mid_Match, Weak_Match
+    # Query untuk mengambil equivalent class definitions yang lebih kompleks
     equivalent_rules_query = """
-    SELECT ?class ?restriction ?property ?operator ?value
+    PREFIX owl: <http://www.w3.org/2002/07/owl#>
+    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX : <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/>
+    
+    SELECT ?class ?restriction ?property ?datatype ?minValue ?maxValue ?minInclusive ?maxInclusive ?minExclusive ?maxExclusive
     WHERE {
-        ?class owl:equivalentClass ?restriction .
-        ?restriction owl:onProperty ?property .
+        ?class owl:equivalentClass ?equivalentClass .
+        ?equivalentClass owl:intersectionOf ?intersection .
         
-        # Try to extract different types of restrictions
-        OPTIONAL { ?restriction owl:hasValue ?value }
-        OPTIONAL { ?restriction owl:minInclusive ?minValue }
-        OPTIONAL { ?restriction owl:maxInclusive ?maxValue }
-        OPTIONAL { ?restriction owl:minExclusive ?minExclusive }
-        OPTIONAL { ?restriction owl:maxExclusive ?maxExclusive }
+        # Navigate through the intersection list
+        ?intersection rdf:rest*/rdf:first ?restriction .
+        
+        # Filter for restriction nodes
+        FILTER(isBlank(?restriction))
+        
+        ?restriction owl:onProperty ?property .
+        ?restriction owl:someValuesFrom ?valueRestriction .
+        
+        # Get datatype restriction details
+        ?valueRestriction owl:onDatatype ?datatype .
+        ?valueRestriction owl:withRestrictions ?restrictionList .
+        
+        # Navigate through restriction list
+        ?restrictionList rdf:rest*/rdf:first ?individualRestriction .
+        
+        OPTIONAL { ?individualRestriction xsd:minInclusive ?minInclusive }
+        OPTIONAL { ?individualRestriction xsd:maxInclusive ?maxInclusive }
+        OPTIONAL { ?individualRestriction xsd:minExclusive ?minExclusive }
+        OPTIONAL { ?individualRestriction xsd:maxExclusive ?maxExclusive }
         
         FILTER(
-            ?class = <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Strong_Match> ||
-            ?class = <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Mid_Match> ||
-            ?class = <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Weak_Match>
+            ?class = :Strong_Match ||
+            ?class = :Mid_Match ||
+            ?class = :Weak_Match
         )
+        
+        FILTER(?property = :similarityScore)
     }
     """
 
-    rules = {}
-    equivalent_results = list(graph.query(equivalent_rules_query))
+    try:
+        results = list(graph.query(equivalent_rules_query))
+        print(f"   Found {len(results)} equivalent class restriction details")
 
-    if equivalent_results:
-        print(f"   Found {len(equivalent_results)} equivalent class expressions")
-
-        for row in equivalent_results:
+        # Group results by class
+        class_restrictions = {}
+        for row in results:
             class_uri = str(row[0])
             class_name = class_uri.split("/")[-1]
 
-            # Parse the restriction
-            property_uri = str(row[2]) if row[2] else None
+            if class_name not in class_restrictions:
+                class_restrictions[class_name] = []
 
-            if property_uri and "similarityScore" in property_uri:
-                print(f"   Found rule for {class_name}")
-                # Add to rules - will be implemented based on actual ontology structure
+            class_restrictions[class_name].append(
+                {
+                    "minInclusive": float(row[6]) if row[6] else None,
+                    "maxInclusive": float(row[7]) if row[7] else None,
+                    "minExclusive": float(row[8]) if row[8] else None,
+                    "maxExclusive": float(row[9]) if row[9] else None,
+                }
+            )
 
-    else:
-        print("   No equivalent class expressions found, using default rules")
+        # Convert to rules format
+        for class_name, restrictions in class_restrictions.items():
+            if class_name == "Strong_Match":
+                # Find minInclusive value (should be 0.75)
+                for restriction in restrictions:
+                    if restriction["minInclusive"] is not None:
+                        rules["Strong_Match"] = {
+                            "property": "similarityScore",
+                            "operator": ">=",
+                            "threshold": restriction["minInclusive"],
+                        }
+                        print(
+                            f"   Extracted Strong_Match rule: >= {restriction['minInclusive']}"
+                        )
+                        break
 
-    # Fallback ke rules default jika tidak ada di ontology
+            elif class_name == "Mid_Match":
+                # Find range values (should be 0.25 < x < 0.75)
+                min_val = None
+                max_val = None
+                for restriction in restrictions:
+                    if restriction["minExclusive"] is not None:
+                        min_val = restriction["minExclusive"]
+                    if restriction["maxExclusive"] is not None:
+                        max_val = restriction["maxExclusive"]
+
+                if min_val is not None and max_val is not None:
+                    rules["Mid_Match"] = {
+                        "property": "similarityScore",
+                        "operator": "range",
+                        "min_threshold": min_val,
+                        "max_threshold": max_val,
+                    }
+                    print(f"   Extracted Mid_Match rule: {min_val} < x < {max_val}")
+
+            elif class_name == "Weak_Match":
+                # Find maxInclusive value (should be 0.25)
+                for restriction in restrictions:
+                    if restriction["maxInclusive"] is not None:
+                        rules["Weak_Match"] = {
+                            "property": "similarityScore",
+                            "operator": "<=",
+                            "threshold": restriction["maxInclusive"],
+                        }
+                        print(
+                            f"   Extracted Weak_Match rule: <= {restriction['maxInclusive']}"
+                        )
+                        break
+
+        print(f"   Successfully extracted {len(rules)} rules from ontology")
+
+    except Exception as e:
+        print(f"   Error extracting rules from ontology: {e}")
+        print("   Falling back to simple threshold rules")
+
+    # Fallback ke rules default jika tidak ada di ontology atau error
     if not rules:
+        print("   No rules found in ontology, using simple threshold rules")
         rules = create_simple_threshold_rules()
 
     return rules
@@ -703,8 +718,6 @@ def extract_equivalent_class_rules_from_ontology(graph):
 
 def create_simple_threshold_rules():
     """Create simple threshold-based rules (fallback)"""
-    print("   Creating simple threshold-based rules...")
-
     return {
         "Strong_Match": {
             "property": "similarityScore",
@@ -725,10 +738,8 @@ def create_simple_threshold_rules():
     }
 
 
-def apply_dynamic_categorization(graph, TALENT_NAMESPACE, rules):
+def apply_dynamic_categorization(graph, rules):
     """Apply categorization based on rules extracted from ontology"""
-    print("🧠 Applying dynamic categorization based on ontology rules...")
-
     # Get all UserJobMatch with similarity scores
     matches_query = """
     SELECT ?match ?similarity
@@ -739,10 +750,8 @@ def apply_dynamic_categorization(graph, TALENT_NAMESPACE, rules):
     """
 
     matches = list(graph.query(matches_query))
-    print(f"   Found {len(matches)} UserJobMatch instances to categorize")
 
     if len(matches) == 0:
-        print("   ⚠️ No UserJobMatch instances found!")
         return graph
 
     categorization_counts = {"Strong_Match": 0, "Mid_Match": 0, "Weak_Match": 0}
@@ -771,15 +780,6 @@ def apply_dynamic_categorization(graph, TALENT_NAMESPACE, rules):
                 categorization_counts[category] += 1
                 break  # Stop after first match
 
-    total_categorized = sum(categorization_counts.values())
-
-    print(f"✅ Dynamic categorization completed:")
-    print(f"   Strong matches: {categorization_counts['Strong_Match']}")
-    print(f"   Mid matches: {categorization_counts['Mid_Match']}")
-    print(f"   Weak matches: {categorization_counts['Weak_Match']}")
-    print(f"   Total categorized: {total_categorized}")
-    print(f"   Categorization rate: {(total_categorized/len(matches)*100):.1f}%")
-
     return graph
 
 
@@ -789,111 +789,26 @@ def evaluate_rule(score, rule):
 
     if operator == ">=":
         return score >= rule["threshold"]
-    elif operator == "<":
-        return score < rule["threshold"]
-    elif operator == "range":
-        return rule["min_threshold"] <= score < rule["max_threshold"]
     elif operator == "<=":
         return score <= rule["threshold"]
+    elif operator == "<":
+        return score < rule["threshold"]
     elif operator == ">":
         return score > rule["threshold"]
+    elif operator == "range":
+        return rule["min_threshold"] < score < rule["max_threshold"]
+    elif operator == "range_inclusive":
+        return rule["min_threshold"] <= score <= rule["max_threshold"]
 
     return False
 
 
-def apply_dynamic_categorization_pipeline(graph, TALENT_NAMESPACE):
+def apply_dynamic_categorization_pipeline(graph):
     """Simple pipeline to extract rules and apply them"""
-    print("\n🔧 Starting Dynamic Categorization Pipeline...")
-
     # Step 1: Extract rules from ontology equivalent classes
     rules = extract_equivalent_class_rules_from_ontology(graph)
 
-    print(f"   Extracted rules:")
-    for category, rule in rules.items():
-        if rule["operator"] == "range":
-            print(
-                f"     {category}: {rule['min_threshold']} <= similarity < {rule['max_threshold']}"
-            )
-        else:
-            print(f"     {category}: similarity {rule['operator']} {rule['threshold']}")
-
     # Step 2: Apply categorization using extracted rules
-    graph = apply_dynamic_categorization(graph, TALENT_NAMESPACE, rules)
+    graph = apply_dynamic_categorization(graph, rules)
 
     return graph
-
-
-def save_final_ontology(graph, output_path):
-    """Save the final ontology with all matches and categorizations"""
-    print(f"💾 Saving final ontology to {output_path}...")
-
-    try:
-        graph.serialize(destination=output_path, format="turtle")
-
-        # Show final statistics
-        total_triples = len(graph)
-
-        # Count entities
-        users_query = """
-        SELECT (COUNT(?user) AS ?count)
-        WHERE {
-            ?user rdf:type <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/User> .
-        }
-        """
-        user_count = int(list(graph.query(users_query))[0][0])
-
-        jobs_query = """
-        SELECT (COUNT(?job) AS ?count)
-        WHERE {
-            ?job rdf:type <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Job> .
-        }
-        """
-        job_count = int(list(graph.query(jobs_query))[0][0])
-
-        matches_query = """
-        SELECT (COUNT(?match) AS ?count)
-        WHERE {
-            ?match rdf:type <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/UserJobMatch> .
-        }
-        """
-        match_count = int(list(graph.query(matches_query))[0][0])
-
-        # Count categorized matches
-        strong_query = """
-        SELECT (COUNT(?match) AS ?count)
-        WHERE {
-            ?match rdf:type <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Strong_Match> .
-        }
-        """
-        strong_count = int(list(graph.query(strong_query))[0][0])
-
-        mid_query = """
-        SELECT (COUNT(?match) AS ?count)
-        WHERE {
-            ?match rdf:type <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Mid_Match> .
-        }
-        """
-        mid_count = int(list(graph.query(mid_query))[0][0])
-
-        weak_query = """
-        SELECT (COUNT(?match) AS ?count)
-        WHERE {
-            ?match rdf:type <http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/Weak_Match> .
-        }
-        """
-        weak_count = int(list(graph.query(weak_query))[0][0])
-
-        print(f"✅ Final ontology saved successfully!")
-        print(f"📊 Final Statistics:")
-        print(f"   Total triples: {total_triples:,}")
-        print(f"   Users: {user_count}")
-        print(f"   Jobs: {job_count}")
-        print(f"   Total matches: {match_count}")
-        print(f"   Strong matches: {strong_count}")
-        print(f"   Mid matches: {mid_count}")
-        print(f"   Weak matches: {weak_count}")
-        print(f"   Categorized total: {strong_count + mid_count + weak_count}")
-
-    except Exception as e:
-        print(f"❌ Error saving ontology: {e}")
-        raise

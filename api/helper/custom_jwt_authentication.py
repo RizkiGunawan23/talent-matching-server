@@ -20,7 +20,7 @@ class Neo4jJWTAuthentication(JWTAuthentication):
         user_id_claim = api_settings.USER_ID_CLAIM
 
         if user_id_claim not in validated_token:
-            raise InvalidToken(f"Token contained no recognizable {user_id_claim}")
+            raise InvalidToken()
 
         user_id = validated_token[user_id_claim]
 
@@ -28,4 +28,4 @@ class Neo4jJWTAuthentication(JWTAuthentication):
             user = User.nodes.get(uid=user_id)
             return user
         except Exception:
-            raise AuthenticationFailed("User not found", code="user_not_found")
+            raise AuthenticationFailed()

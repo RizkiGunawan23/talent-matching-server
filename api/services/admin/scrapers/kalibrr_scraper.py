@@ -9,7 +9,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
-from api.services.scrapers.helper import (
+from api.services.admin.scrapers.helper import (
     add_cookie_safely,
     close_driver,
     get_driver,

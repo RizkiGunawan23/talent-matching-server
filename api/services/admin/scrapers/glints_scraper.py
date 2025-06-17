@@ -8,7 +8,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
-from api.services.scrapers.helper import (
+from api.services.admin.scrapers.helper import (
     close_driver,
     get_driver,
     is_task_cancelled,

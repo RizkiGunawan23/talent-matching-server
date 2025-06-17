@@ -1,12 +1,14 @@
-from api.services.scrapers.glints_scraper import scrape_glints_jobs
-from api.services.scrapers.helper import is_task_cancelled
-from api.services.scrapers.kalibrr_scraper import scrape_kalibrr_jobs
-from api.services.scrapers.ner_functions import (
+from api.services.admin.scrapers.glints_scraper import scrape_glints_jobs
+from api.services.admin.scrapers.helper import is_task_cancelled
+from api.services.admin.scrapers.kalibrr_scraper import scrape_kalibrr_jobs
+from api.services.admin.scrapers.ner_functions import (
     load_ner_model,
     process_job_data_with_ner,
 )
-from api.services.scrapers.normalize_glints_data import normalize_glints_job_data
-from api.services.scrapers.normalize_kalibrr_data import normalize_kalibrr_job_data
+from api.services.admin.scrapers.normalize_glints_data import normalize_glints_job_data
+from api.services.admin.scrapers.normalize_kalibrr_data import (
+    normalize_kalibrr_job_data,
+)
 
 
 def scrape_all_websites(task_id: str, update_state_func=None):

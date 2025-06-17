@@ -1,12 +1,10 @@
-import datetime
-
 from celery import shared_task
 from django.utils import timezone
 from neomodel import db
 
 from api.models import ScrapingTask
-from api.services.matchers.matchers_functions import matching_after_scraping
-from api.services.scrapers.main_scraper import scrape_all_websites
+from api.services.admin.scrapers.main_scraper import scrape_all_websites
+from api.services.matchers.matchers_services import matching_after_scraping
 
 
 @shared_task(bind=True)

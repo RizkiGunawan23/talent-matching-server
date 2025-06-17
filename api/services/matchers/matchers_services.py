@@ -1,15 +1,12 @@
-from rdflib import Namespace
-
+from api.models import Maintenance
 from api.services.matchers.helper import is_task_cancelled, update_task_progress
-from api.services.matchers.neo4j_functions import (
-    create_calculated_user,
+from api.services.matchers.matchers_neo4j_services import (
     get_jobs_from_neo4j,
     get_users_from_neo4j,
     import_and_clean_neo4j_with_enrichment,
-    set_maintenance,
     update_neo4j_for_specific_user,
 )
-from api.services.matchers.ontology_functions import (
+from api.services.matchers.matchers_ontology_services import (
     add_user_job_matches_to_ontology,
     apply_dynamic_categorization_pipeline,
     build_temp_graph_for_user,
@@ -23,12 +20,8 @@ from api.services.matchers.ontology_functions import (
 
 
 def matching_after_scraping(task_id, update_state_func=None, jobs_data=[]):
-    TALENT = Namespace(
-        "http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/"
-    )
-
     try:
-        set_maintenance(is_maintenance=True)
+        Maintenance.set_maintenance(True)
 
         if is_task_cancelled(task_id):
             return
@@ -57,7 +50,7 @@ def matching_after_scraping(task_id, update_state_func=None, jobs_data=[]):
         users_count = len(users_data)
 
         main_graph, missing_skills_map = import_all_jobs_to_ontology(
-            main_graph, TALENT, jobs_data
+            main_graph, jobs_data
         )
 
         if is_task_cancelled(task_id):
@@ -71,7 +64,7 @@ def matching_after_scraping(task_id, update_state_func=None, jobs_data=[]):
                 update_state_func,
             )
 
-        main_graph = import_all_users_to_ontology(main_graph, TALENT, users_data)
+        main_graph = import_all_users_to_ontology(main_graph, users_data)
 
         if is_task_cancelled(task_id):
             return
@@ -90,9 +83,7 @@ def matching_after_scraping(task_id, update_state_func=None, jobs_data=[]):
             if is_task_cancelled(task_id):
                 return
 
-            main_graph = add_user_job_matches_to_ontology(
-                main_graph, TALENT, match_results
-            )
+            main_graph = add_user_job_matches_to_ontology(main_graph, match_results)
 
             if is_task_cancelled(task_id):
                 return
@@ -105,7 +96,7 @@ def matching_after_scraping(task_id, update_state_func=None, jobs_data=[]):
                     update_state_func,
                 )
 
-            main_graph = apply_dynamic_categorization_pipeline(main_graph, TALENT)
+            main_graph = apply_dynamic_categorization_pipeline(main_graph)
 
             if is_task_cancelled(task_id):
                 return
@@ -119,51 +110,8 @@ def matching_after_scraping(task_id, update_state_func=None, jobs_data=[]):
             update_state_func=update_state_func,
         )
 
-        print("\n✅ Matching completed successfully.")
-
     except Exception as e:
-        print(f"\n❌ Error during processing: {e}")
-
-
-def create_user_and_calculate_matches(new_user_data):
-    from rdflib import Namespace
-
-    TALENT = Namespace(
-        "http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/"
-    )
-
-    user_email = new_user_data["email"]
-    user_skills = new_user_data["skills"]
-
-    base_graph = load_base_ontology()
-
-    jobs_data = get_jobs_from_neo4j()
-
-    temp_graph, user_uri = build_temp_graph_for_user(
-        base_graph, jobs_data, user_email, user_skills, TALENT
-    )
-
-    new_matches = calculate_user_job_similarity_for_specific_user(temp_graph, user_uri)
-
-    temp_graph = add_user_job_matches_to_ontology(temp_graph, TALENT, new_matches)
-
-    temp_graph = apply_dynamic_categorization_pipeline(temp_graph, TALENT)
-
-    categorized_matches = extract_categorized_matches_for_user(
-        temp_graph, user_uri, TALENT
-    )
-
-    created_user = create_calculated_user(new_user_data, categorized_matches)
-
-    return {
-        "uid": created_user["uid"],
-        "name": created_user["name"],
-        "email": created_user["email"],
-        "password": created_user["password"],
-        "profile_image": created_user["profile_image"],
-        "role": created_user["role"],
-        "skills": created_user["skills"],
-    }
+        Maintenance.set_maintenance(False)
 
 
 def update_user_skills_and_recalculate_matches(user_email, new_skills):
@@ -171,26 +119,20 @@ def update_user_skills_and_recalculate_matches(user_email, new_skills):
     Update user skills dan recalculate matches hanya untuk user tersebut
     tanpa mengganggu matches user lain
     """
-    TALENT = Namespace(
-        "http://www.semanticweb.org/kota203/ontologies/2025/3/talent-matching-ontology/"
-    )
-
     base_graph = load_base_ontology()
 
     jobs_data = get_jobs_from_neo4j()
 
     temp_graph, user_uri = build_temp_graph_for_user(
-        base_graph, jobs_data, user_email, new_skills, TALENT
+        base_graph, jobs_data, user_email, new_skills
     )
 
     new_matches = calculate_user_job_similarity_for_specific_user(temp_graph, user_uri)
 
-    temp_graph = add_user_job_matches_to_ontology(temp_graph, TALENT, new_matches)
+    temp_graph = add_user_job_matches_to_ontology(temp_graph, new_matches)
 
-    temp_graph = apply_dynamic_categorization_pipeline(temp_graph, TALENT)
+    temp_graph = apply_dynamic_categorization_pipeline(temp_graph)
 
-    categorized_matches = extract_categorized_matches_for_user(
-        temp_graph, user_uri, TALENT
-    )
+    categorized_matches = extract_categorized_matches_for_user(temp_graph, user_uri)
 
     update_neo4j_for_specific_user(user_email, new_skills, categorized_matches)

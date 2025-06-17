@@ -114,7 +114,7 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "api.helper.custom_jwt_authentication.Neo4jJWTAuthentication",
     ],
-    "EXCEPTION_HANDLER": "api.helper.exception_handler.custom_exception_handler",
+    "EXCEPTION_HANDLER": "api.helper.custom_exception_handler.custom_exception_handler",
 }
 
 ROOT_URLCONF = "talent_matching_server.urls"
