@@ -88,29 +88,3 @@ def matching_after_scraping(task_id, update_state_func=None, jobs_data=[]):
         Maintenance.set_maintenance(False)
     except Exception as e:
         Maintenance.set_maintenance(False)
-
-
-def update_user_and_matches(user_data, new_skills):
-    """
-    Update user skills dan recalculate matches hanya untuk user tersebut
-    tanpa mengganggu matches user lain
-    """
-    user_email = user_data.get("email")
-
-    base_graph = load_base_ontology()
-
-    jobs_data = get_jobs_from_neo4j()
-
-    temp_graph, user_uri = build_temp_graph_for_user(
-        base_graph, jobs_data, user_email, new_skills
-    )
-
-    new_matches = calculate_user_job_similarity_for_specific_user(temp_graph, user_uri)
-
-    temp_graph = add_user_job_matches_to_ontology(temp_graph, new_matches)
-
-    temp_graph = apply_dynamic_categorization_pipeline(temp_graph)
-
-    categorized_matches = extract_categorized_matches_for_user(temp_graph, user_uri)
-
-    update_neo4j_for_specific_user(user_data, new_skills, categorized_matches)
