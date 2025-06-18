@@ -12,6 +12,7 @@ from api.services.admin.scrapers.helper import (
     close_driver,
     get_driver,
     is_task_cancelled,
+    random_sleep,
     update_task_progress,
 )
 
@@ -23,7 +24,7 @@ def authenticate_to_glints(task_id: str) -> tuple:
     try:
         # Buka halaman login
         driver.get("https://glints.com/id/login")
-        time.sleep(random.uniform(2, 4))
+        random_sleep(2, 3)
 
         if is_task_cancelled(task_id):
             return None, None
@@ -70,25 +71,22 @@ def authenticate_to_glints(task_id: str) -> tuple:
 
         # Ambil cookies
         cookies = driver.get_cookies()
-        close_driver(driver)
 
         return cookies, None
-
     except Exception as e:
         error_msg = f"Error saat authenticate_to_glints: {str(e)}"
-        close_driver(driver)
+        print(f"[GLINTS_AUTH_ERROR] {error_msg}")
         return None, error_msg
+    finally:
+        close_driver(driver)
 
 
 # ===== URL COLLECTION FUNCTIONS =====
 
 
-def get_max_page_number(driver, task_id: str, update_progress_func=None) -> int:
+def get_max_page_number(driver, task_id: str) -> int:
     """Mendapatkan jumlah maksimal halaman"""
     try:
-        if update_progress_func:
-            update_progress_func(task_id, "GETTING_GLINTS_MAX_PAGE_NUMBER", {})
-
         if is_task_cancelled(task_id):
             return 0
 
@@ -113,21 +111,16 @@ def get_max_page_number(driver, task_id: str, update_progress_func=None) -> int:
 
         return max_page
     except Exception as e:
+        print(f"[GLINTS_MAX_PAGE_ERROR] Failed to get max page number: {str(e)}")
         return 1
 
 
-def collect_job_urls(
-    driver, max_page: int, task_id: str, update_progress_func=None
-) -> list[str]:
+def collect_job_urls(driver, max_page: int, task_id: str) -> list[str]:
     """Mengumpulkan semua URL pekerjaan"""
     job_urls = []
-    progress_data = {}
 
-    if update_progress_func:
-        update_progress_func(task_id, "COLLECTING_GLINTS_JOB_URLS", progress_data)
-
-    # for page in range(1, max_page + 1):
-    for page in range(1, 2):
+    for page in range(1, max_page + 1):
+        # for page in range(1, 2):  # Limit to 1 page for testing
         try:
             if is_task_cancelled(task_id):
                 break
@@ -137,7 +130,7 @@ def collect_job_urls(
 
             driver.get(url)
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-            time.sleep(random.uniform(3, 5))
+            random_sleep(2, 3)
 
             if is_task_cancelled(task_id):
                 break
@@ -154,14 +147,11 @@ def collect_job_urls(
             for job_title_tag in job_title_tags:
                 job_urls.append(job_title_tag.get_attribute("href"))
 
-            # Update progress
-            if update_progress_func:
-                update_progress_func(
-                    task_id, "COLLECTING_GLINTS_JOB_URLS", progress_data
-                )
-
         except Exception as e:
-            pass
+            print(
+                f"[GLINTS_URL_COLLECTION_ERROR] Error collecting URLs from page {page}: {str(e)}"
+            )
+            continue
 
     if is_task_cancelled(task_id):
         return []
@@ -188,7 +178,7 @@ def extract_company_logo(driver, task_id) -> str | None:
         urls = [item.strip().split(" ") for item in srcset.split(",")]
         url_dict = {int(size[:-1]): url for url, size in urls}
         return url_dict[max(url_dict.keys())]
-    except Exception as e:
+    except Exception:
         return "https://img.icons8.com/?size=720&id=53373&format=png&color=000000"
 
 
@@ -207,7 +197,7 @@ def extract_job_title(driver, task_id) -> str | None:
             )
         )
         return title_tag.get_attribute("textContent").strip()
-    except Exception as e:
+    except Exception:
         return None
 
 
@@ -226,7 +216,7 @@ def extract_company_name(driver, task_id) -> str | None:
             )
         )
         return company_tag.get_attribute("textContent").strip()
-    except Exception as e:
+    except Exception:
         return None
 
 
@@ -248,7 +238,7 @@ def extract_location(driver, task_id) -> dict[str, str | None] | None:
             )
         )
         location["subdistrict"] = subdistrict_tag.get_attribute("textContent").strip()
-    except Exception as e:
+    except Exception:
         pass
 
     if is_task_cancelled(task_id):
@@ -265,7 +255,7 @@ def extract_location(driver, task_id) -> dict[str, str | None] | None:
             )
         )
         location["city"] = city_tag.get_attribute("textContent").strip()
-    except Exception as e:
+    except Exception:
         pass
 
     if is_task_cancelled(task_id):
@@ -282,7 +272,7 @@ def extract_location(driver, task_id) -> dict[str, str | None] | None:
             )
         )
         location["province"] = province_tag.get_attribute("textContent").strip()
-    except Exception as e:
+    except Exception:
         pass
 
     return location
@@ -320,7 +310,7 @@ def extract_salary(driver, task_id) -> str | None:
             )
             salary = salary_tag.get_attribute("textContent").strip()
             return salary if len(re.findall(r"[\d\.]+", salary)) > 0 else None
-        except Exception as e:
+        except Exception:
             return None
 
 
@@ -346,7 +336,7 @@ def extract_employment_details(driver, task_id) -> dict[str, str | None] | None:
             parts = details_text.split(" · ")
             result["employment_type"] = parts[0]
             result["work_setup"] = parts[1]
-    except Exception as e:
+    except Exception:
         pass
 
     return result
@@ -367,7 +357,7 @@ def extract_education(driver, task_id) -> str | None:
             )
         )
         return education_tag.get_attribute("textContent").strip()
-    except Exception as e:
+    except Exception:
         return None
 
 
@@ -387,7 +377,7 @@ def extract_experience(driver, task_id) -> str | None:
         )
         experience = experience_tag.get_attribute("textContent").strip()
         return experience if "pengalaman" in experience.lower() else None
-    except Exception as e:
+    except Exception:
         return None
 
 
@@ -406,10 +396,9 @@ def extract_skills(driver, task_id) -> list[str] | None:
             )
         )
 
-        time.sleep(random.uniform(2, 3))
         skill_tags = skills_container.find_elements(By.TAG_NAME, "label")
         return [tag.get_attribute("textContent").strip() for tag in skill_tags]
-    except Exception as e:
+    except Exception:
         return []
 
 
@@ -428,99 +417,95 @@ def extract_description(driver, task_id) -> str | None:
             )
         )
         return description_container.get_attribute("innerHTML")
-    except Exception as e:
+    except Exception:
         return None
 
 
 def extract_job_details(driver, job_url: str, task_id: str) -> dict[str, any] | None:
     """Ekstrak semua detail pekerjaan dari URL"""
-    print(f"Scraping detail for: {job_url}")
-
     if is_task_cancelled(task_id):
         return None
+    try:
+        driver.get(job_url)
+        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        random_sleep(1, 2)
 
-    driver.get(job_url)
-    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-    time.sleep(random.uniform(2, 3))
+        if is_task_cancelled(task_id):
+            return None
 
-    # Check if task is cancelled after page load
-    if is_task_cancelled(task_id):
+        img_url = extract_company_logo(driver, task_id)
+
+        if is_task_cancelled(task_id):
+            return None
+
+        title = extract_job_title(driver, task_id)
+
+        if is_task_cancelled(task_id):
+            return None
+
+        company_name = extract_company_name(driver, task_id)
+
+        if is_task_cancelled(task_id):
+            return None
+
+        location = extract_location(driver, task_id)
+
+        if is_task_cancelled(task_id):
+            return None
+
+        salary = extract_salary(driver, task_id)
+
+        if is_task_cancelled(task_id):
+            return None
+
+        employment_details = extract_employment_details(driver, task_id)
+
+        if is_task_cancelled(task_id):
+            return None
+
+        education = extract_education(driver, task_id)
+
+        if is_task_cancelled(task_id):
+            return None
+
+        experience = extract_experience(driver, task_id)
+
+        if is_task_cancelled(task_id):
+            return None
+
+        skills = extract_skills(driver, task_id)
+
+        if is_task_cancelled(task_id):
+            return None
+
+        description = extract_description(driver, task_id)
+
+        if is_task_cancelled(task_id):
+            return None
+
+        # Gabungkan hasil
+        return {
+            "job_url": job_url,
+            "image_url": img_url,
+            "job_title": title,
+            "company_name": company_name,
+            "subdistrict": location["subdistrict"],
+            "city": location["city"],
+            "province": location["province"],
+            "salary": salary,
+            "employment_type": employment_details["employment_type"],
+            "work_setup": employment_details["work_setup"],
+            "minimum_education": education,
+            "minimum_experience": experience,
+            "required_skills": skills,
+            "job_description": description,
+            "scraped_at": datetime.datetime.now().isoformat(),
+        }
+    except Exception as e:
+        print(
+            f"[GLINTS_JOB_DETAILS_ERROR] Failed to extract job details from {job_url}: {str(e)}"
+        )
         return None
-
-    # Ekstrak semua komponen
-    img_url = extract_company_logo(driver, task_id)
-
-    # Check cancellation after logo extraction
-    if is_task_cancelled(task_id):
-        return None
-
-    title = extract_job_title(driver, task_id)
-
-    # Check cancellation after title extraction
-    if is_task_cancelled(task_id):
-        return None
-
-    company_name = extract_company_name(driver, task_id)
-
-    if is_task_cancelled(task_id):
-        return None
-
-    location = extract_location(driver, task_id)
-
-    # Check cancellation after basic info extraction
-    if is_task_cancelled(task_id):
-        return None
-
-    salary = extract_salary(driver, task_id)
-
-    if is_task_cancelled(task_id):
-        return None
-
-    employment_details = extract_employment_details(driver, task_id)
-
-    if is_task_cancelled(task_id):
-        return None
-
-    education = extract_education(driver, task_id)
-
-    if is_task_cancelled(task_id):
-        return None
-
-    experience = extract_experience(driver, task_id)
-
-    # Check cancellation before skills and description (heavy operations)
-    if is_task_cancelled(task_id):
-        return None
-
-    skills = extract_skills(driver, task_id)
-
-    # Final check before description
-    if is_task_cancelled(task_id):
-        return None
-
-    description = extract_description(driver, task_id)
-
-    if is_task_cancelled(task_id):
-        return {}
-
-    # Gabungkan hasil
-    return {
-        "job_url": job_url,
-        "image_url": img_url,
-        "job_title": title,
-        "company_name": company_name,
-        "subdistrict": location["subdistrict"],
-        "city": location["city"],
-        "province": location["province"],
-        "salary": salary,
-        "employment_type": employment_details["employment_type"],
-        "work_setup": employment_details["work_setup"],
-        "minimum_education": education,
-        "minimum_experience": experience,
-        "required_skills": skills,
-        "job_description": description,
-        "scraped_at": datetime.datetime.now().isoformat(),
-    }
 
 
 def scrape_glints_jobs(
@@ -530,7 +515,7 @@ def scrape_glints_jobs(
     progress_data = {}
 
     if is_task_cancelled(task_id):
-        return [], None
+        return []
 
     # 1. Login dan dapatkan cookies
     update_task_progress(
@@ -539,13 +524,17 @@ def scrape_glints_jobs(
     cookies, auth_error = authenticate_to_glints(task_id)
 
     if auth_error or not cookies:
-        return [], None
+        print(f"[GLINTS_MAIN_ERROR] Authentication error: {auth_error}")
+        return []
 
     if is_task_cancelled(task_id):
-        return [], None
+        return []
 
     # 2. Inisialisasi driver baru dengan cookies
     driver = get_driver()
+    if driver is None:
+        print("[GLINTS_MAIN_ERROR] Failed to create driver for main scraping")
+        return []
     try:
         update_task_progress(
             task_id, "SET_COOKIES_TO_GLINTS", progress_data, update_state_func
@@ -557,38 +546,44 @@ def scrape_glints_jobs(
             try:
                 driver.add_cookie(cookie)
             except Exception as e:
-                pass
+                print(f"[GLINTS_COOKIE_ERROR] Failed to add cookie: {str(e)}")
 
         if is_task_cancelled(task_id):
-            return [], None
+            return []
 
         # Refresh dan navigasi
         driver.refresh()
-        time.sleep(random.uniform(3, 5))
+        random_sleep(2, 3)
         driver.get("https://glints.com/id/job-category/computer-technology")
 
+        update_task_progress(
+            task_id, "GET_GLINTS_MAX_PAGE", progress_data, update_state_func
+        )
+
         if is_task_cancelled(task_id):
-            close_driver(driver)
-            return [], None
+            return []
 
         # 3. Dapatkan jumlah halaman
-        max_page = get_max_page_number(driver, task_id, update_task_progress)
+        max_page = get_max_page_number(driver, task_id)
+
+        update_task_progress(
+            task_id, "COLLECT_GLINTS_JOB_URLS", progress_data, update_state_func
+        )
 
         if is_task_cancelled(task_id):
-            close_driver(driver)
-            return [], None
+            return []
 
         # 4. Kumpulkan semua URL pekerjaan
-        job_urls = collect_job_urls(driver, max_page, task_id, update_task_progress)
+        job_urls = collect_job_urls(driver, max_page, task_id)
 
         if is_task_cancelled(task_id):
-            close_driver(driver)
-            return [], None
+            return []
 
         # 5. Scrape detail dari setiap URL
         progress_data = {
             "scraped_jobs": 0,
         }
+
         update_task_progress(
             task_id,
             "SCRAPING_COLLECTED_GLINTS_JOB_DETAIL",
@@ -597,22 +592,21 @@ def scrape_glints_jobs(
         )
 
         job_data = []
-        for i, job_url in enumerate(job_urls[0:10]):
+        for i, job_url in enumerate(job_urls[:10]):
             if is_task_cancelled(task_id):
                 break
 
             try:
-                # Pass task_id to extract_job_details for cancellation checks
                 job_detail = extract_job_details(driver, job_url, task_id)
 
-                # Check if job_detail is None (cancelled during extraction)
                 if job_detail is None:
-                    print(f"Scraping dibatalkan untuk {job_url}")
-                    break
+                    print(
+                        f"[GLINTS_JOB_SKIP] Skipping job {i+1}/{len(job_urls[:10])}: No details extracted"
+                    )
+                    continue
 
                 job_data.append(job_detail)
 
-                # Update progress
                 progress_data["scraped_jobs"] = len(job_data)
                 update_task_progress(
                     task_id,
@@ -622,11 +616,16 @@ def scrape_glints_jobs(
                 )
 
             except Exception as e:
-                pass
+                print(
+                    f"[GLINTS_JOB_ERROR] Error processing job {i+1}/{len(job_urls[:10])} ({job_url}): {str(e)}"
+                )
+                continue
 
-        return job_data, len(job_urls)
+        return job_data
 
     except Exception as e:
-        return [], None
+        print(f"[GLINTS_MAIN_ERROR] Fatal error in Glints scraping: {str(e)}")
+        return []
     finally:
-        close_driver(driver)
+        if driver:
+            close_driver(driver)

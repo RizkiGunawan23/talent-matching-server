@@ -1,6 +1,10 @@
+import json
+
 from celery.result import AsyncResult
 from django.core.cache import cache
 from django.utils import timezone
+from django.utils.dateparse import parse_datetime
+from django.utils.timezone import is_aware, make_aware
 from neomodel import db
 from rest_framework import status
 from rest_framework.exceptions import APIException
@@ -20,10 +24,6 @@ def start_scraping_task(user: User) -> None:
         .first_or_none()
     )
 
-    raise APIException(
-        detail=f"Scraping sedang dalam status {scraping_task.status}, silakan tunggu hingga selesai atau cancel dahulu",
-        code=status.HTTP_400_BAD_REQUEST,
-    )
     if scraping_task:
         raise APIException(
             detail=f"Scraping sedang dalam status {scraping_task.status}, silakan tunggu hingga selesai atau cancel dahulu",
@@ -69,7 +69,7 @@ def cancel_scraping_task() -> None:
         scraping_task.message = "Task dibatalkan oleh admin"
         scraping_task.save()
         db.commit()
-    except Exception as e:
+    except Exception:
         db.rollback()
         raise APIException(
             detail=f"Terjadi kesalahan server, tidak bisa membatalkan scraping",
@@ -82,7 +82,7 @@ def cancel_scraping_task() -> None:
     result.forget()
 
 
-def get_scraping_task_status(user: User) -> None:
+def scraping_task_status(user: User) -> dict[str, int | str | None]:
     """
     Mendapatkan status dari task scraping yang sedang berjalan.
     """
@@ -107,19 +107,16 @@ def get_scraping_task_status(user: User) -> None:
 
     data = None
 
-    if task_status == "SUCCESS":
-        db.begin()
-        try:
-            scraping_task.status = "FINISHED"
-            scraping_task.message = "Task selesai"
-            if not scraping_task.finishedAt:
-                scraping_task.finishedAt = timezone.now()
-            scraping_task.save()
-            db.commit()
-        except Exception as e:
-            db.rollback()
-            return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    if task_status == "FAILURE":
+        cache.delete(f"scraping_progress_{scraping_task.uid}")
+        result = AsyncResult(scraping_task.uid)
+        result.forget()
+        raise APIException(
+            detail="Scraping task gagal, silakan coba lagi",
+            code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
 
+    if task_status == "SUCCESS":
         data = result.result
         if isinstance(data, str):
             try:
@@ -127,26 +124,13 @@ def get_scraping_task_status(user: User) -> None:
             except json.JSONDecodeError:
                 data = []
 
-        # Handle Celery task failure
-    elif task_status == "FAILURE":
-        db.begin()
-        try:
-            scraping_task.status = "ERROR"
-            error_message = (
-                str(result.info) if result.info else "Unknown error occurred"
-            )
-            scraping_task.message = f"Task failed: {error_message}"
-            if not scraping_task.finishedAt:
-                scraping_task.finishedAt = timezone.now()
-            scraping_task.save()
-            db.commit()
-        except Exception as e:
-            db.rollback()
-            return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
     current_time = timezone.now()
-    started_at = scraping_task.startedAt
-    finished_at = scraping_task.finishedAt
+    started_at = (
+        parse_datetime(scraping_task.startedAt) if scraping_task.startedAt else None
+    )
+    finished_at = (
+        parse_datetime(scraping_task.finishedAt) if scraping_task.finishedAt else None
+    )
 
     # Make sure both datetimes have the same timezone awareness
     if not is_aware(started_at):
@@ -156,18 +140,14 @@ def get_scraping_task_status(user: User) -> None:
         if not is_aware(finished_at):
             finished_at = make_aware(finished_at)
         time_spent_seconds = (finished_at - started_at).total_seconds()
-        print(f"masuk ke finished_at: {time_spent_seconds}")
     else:
         time_spent_seconds = (current_time - started_at).total_seconds()
-        print(f"masuk ke not finished_at: {time_spent_seconds}")
 
-    return Response(
-        {
-            "task_id": task_id,
-            "status": task_status,
-            "scraped_jobs": scraped_jobs or None,
-            "started_at": scraping_task.startedAt.isoformat(),
-            "time_spent": time_spent_seconds,
-            "result": data or None,
-        }
-    )
+    return {
+        "task_id": task_id,
+        "status": task_status,
+        "scraped_jobs": scraped_jobs or None,
+        "started_at": started_at.isoformat() if started_at else None,
+        "time_spent": time_spent_seconds,
+        "result": data or None,
+    }

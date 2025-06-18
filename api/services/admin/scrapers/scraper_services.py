@@ -1,7 +1,7 @@
 from api.services.admin.scrapers.glints_scraper import scrape_glints_jobs
 from api.services.admin.scrapers.helper import is_task_cancelled
 from api.services.admin.scrapers.kalibrr_scraper import scrape_kalibrr_jobs
-from api.services.admin.scrapers.ner_functions import (
+from api.services.admin.scrapers.ner_services import (
     load_ner_model,
     process_job_data_with_ner,
 )
@@ -14,9 +14,10 @@ from api.services.admin.scrapers.normalize_kalibrr_data import (
 def scrape_all_websites(task_id: str, update_state_func=None):
     try:
         """Main function untuk scraping dan skill extraction"""
-        print("Starting scraping process with NER skill extraction...")
-
         # Load NER model
+        if update_state_func:
+            update_state_func(task_id, "LOADING_NER_MODEL", {})
+
         ner_model = load_ner_model()
 
         # Initialize job data list
@@ -27,32 +28,38 @@ def scrape_all_websites(task_id: str, update_state_func=None):
         scraped_jobs = 0
 
         # Scrape job data from Glints
-        print("Scraping Glints...")
         if update_state_func:
             update_state_func(task_id, "SCRAPING_GLINTS", {})
 
-        glints_job_data, total_glints_jobs = scrape_glints_jobs(
-            task_id, update_state_func
-        )
+        glints_job_data = scrape_glints_jobs(task_id, update_state_func)
+
+        if is_task_cancelled(task_id):
+            return []
 
         glints_job_data = normalize_glints_job_data(glints_job_data)
+
+        if is_task_cancelled(task_id):
+            return []
 
         scraped_jobs += len(glints_job_data)
 
         all_job_data["glints"] = glints_job_data
 
         # Scrape job data from Kalibrr
-        print("Scraping Kalibrr...")
         if update_state_func:
             update_state_func(
                 task_id, "SCRAPING_KALIBRR", {"scraped_jobs": scraped_jobs}
             )
 
-        kalibrr_job_data, total_kalibrr_jobs = scrape_kalibrr_jobs(
-            task_id, update_state_func, scraped_jobs
-        )
+        kalibrr_job_data = scrape_kalibrr_jobs(task_id, update_state_func, scraped_jobs)
+
+        if is_task_cancelled(task_id):
+            return []
 
         kalibrr_job_data = normalize_kalibrr_job_data(kalibrr_job_data)
+
+        if is_task_cancelled(task_id):
+            return []
 
         scraped_jobs += len(kalibrr_job_data)
 
@@ -62,18 +69,18 @@ def scrape_all_websites(task_id: str, update_state_func=None):
             return []
 
         if not ner_model:
-            print("NER model not loaded. Returning raw scraped data...")
             final_job_data = []
-
             final_job_data.extend(glints_job_data if glints_job_data else [])
             final_job_data.extend(kalibrr_job_data if kalibrr_job_data else [])
             return final_job_data
 
-        print(f"Processing {scraped_jobs} jobs with NER...")
         if update_state_func:
             update_state_func(
                 task_id, "PROCESSING_JOB_WITH_NER", {"scraped_jobs": scraped_jobs}
             )
+
+        if is_task_cancelled(task_id):
+            return []
 
         post_processed_jobs = process_job_data_with_ner(all_job_data, ner_model)
 
@@ -88,14 +95,10 @@ def scrape_all_websites(task_id: str, update_state_func=None):
                 {"total_jobs": len(post_processed_jobs)},
             )
 
-        print(
-            f"Scraping and NER processing complete. Total jobs: {len(post_processed_jobs)}"
-        )
-        print(f"- Glints: {len(glints_job_data) if glints_job_data else 0} jobs")
-        print(f"- Kalibrr: {len(kalibrr_job_data) if kalibrr_job_data else 0} jobs")
+        if is_task_cancelled(task_id):
+            return []
 
         return post_processed_jobs
-
     except Exception as e:
         print(f"Error during scraping process: {e}")
-        return []
+        raise e

@@ -350,7 +350,7 @@
         "HCL BigFix": ["hcl bigfix"],
         "HMI Programming": ["hmi programming"],
         "HRIS Database Management": ["hris database management"],
-        "HTML5": ["html", "html5", "hypertext markup language"],
+        "HTML": ["html", "html5", "hypertext markup language"],
         "Hibernate Framework": ["hibernate", "hibernate framework"],
         "Hono": [
             "Hono",

@@ -6,6 +6,7 @@ from rest_framework.viewsets import ViewSet
 
 from api.services.admin.admin_scraping_services import (
     cancel_scraping_task,
+    scraping_task_status,
     start_scraping_task,
 )
 
@@ -19,7 +20,13 @@ class AdminScrapingView(ViewSet):
         permission_classes=[IsAuthenticated, IsAdminUser],
     )
     def status(self, request):
-        return Response({"message": "Scraping status retrieved successfully."})
+        responseData = scraping_task_status(request.user)
+        return Response(
+            {
+                "message": "Scraping status retrieved successfully",
+                "data": responseData,
+            }
+        )
 
     @action(
         methods=["post"],
@@ -29,8 +36,7 @@ class AdminScrapingView(ViewSet):
         permission_classes=[IsAuthenticated, IsAdminUser],
     )
     def start_scraping(self, request):
-        user = request.user
-        start_scraping_task(user)
+        start_scraping_task(request.user)
         return Response(
             {"message": "Scraping job sedang berjalan di background"},
             status=status.HTTP_202_ACCEPTED,

@@ -45,8 +45,11 @@ class AuthenticationView(ViewSet):
         """
         Endpoint for user sign-in.
         """
-        authenticate_user(request.data)
+        responseData = authenticate_user(request.data)
         return Response(
-            {"message": "Login berhasil"},
+            {
+                "message": "Login berhasil",
+                "data": responseData,
+            },
             status=status.HTTP_200_OK,
         )

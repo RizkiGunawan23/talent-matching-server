@@ -1,5 +1,5 @@
 from api.models import Maintenance
-from api.services.matchers.helper import is_task_cancelled, update_task_progress
+from api.services.matchers.helper import update_task_progress
 from api.services.matchers.matchers_neo4j_services import (
     get_jobs_from_neo4j,
     get_users_from_neo4j,
@@ -23,18 +23,9 @@ def matching_after_scraping(task_id, update_state_func=None, jobs_data=[]):
     try:
         Maintenance.set_maintenance(True)
 
-        if is_task_cancelled(task_id):
-            return
-
         main_graph = load_base_ontology()
 
-        if is_task_cancelled(task_id):
-            return
-
         users_data = get_users_from_neo4j()
-
-        if is_task_cancelled(task_id):
-            return
 
         if update_state_func:
             update_task_progress(
@@ -53,9 +44,6 @@ def matching_after_scraping(task_id, update_state_func=None, jobs_data=[]):
             main_graph, jobs_data
         )
 
-        if is_task_cancelled(task_id):
-            return
-
         if update_state_func:
             update_task_progress(
                 task_id,
@@ -65,9 +53,6 @@ def matching_after_scraping(task_id, update_state_func=None, jobs_data=[]):
             )
 
         main_graph = import_all_users_to_ontology(main_graph, users_data)
-
-        if is_task_cancelled(task_id):
-            return
 
         if users_count > 0:
             if update_state_func:
@@ -80,13 +65,7 @@ def matching_after_scraping(task_id, update_state_func=None, jobs_data=[]):
 
             match_results = calculate_all_user_job_similarities(main_graph)
 
-            if is_task_cancelled(task_id):
-                return
-
             main_graph = add_user_job_matches_to_ontology(main_graph, match_results)
-
-            if is_task_cancelled(task_id):
-                return
 
             if update_state_func:
                 update_task_progress(
@@ -98,9 +77,6 @@ def matching_after_scraping(task_id, update_state_func=None, jobs_data=[]):
 
             main_graph = apply_dynamic_categorization_pipeline(main_graph)
 
-            if is_task_cancelled(task_id):
-                return
-
         import_and_clean_neo4j_with_enrichment(
             main_graph,
             users_data=users_data,
@@ -109,7 +85,7 @@ def matching_after_scraping(task_id, update_state_func=None, jobs_data=[]):
             task_id=task_id,
             update_state_func=update_state_func,
         )
-
+        Maintenance.set_maintenance(False)
     except Exception as e:
         Maintenance.set_maintenance(False)
 

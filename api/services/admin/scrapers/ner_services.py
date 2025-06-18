@@ -9,21 +9,14 @@ from bs4 import BeautifulSoup
 def load_ner_model():
     """Load spaCy NER model untuk skill extraction"""
     try:
-        # Path ke model NER yang sudah dilatih
         model_path = "/app/talent_matching_ner_model"
-        # base_dir = os.path.dirname(os.path.abspath(__file__))
-        # model_path = os.path.join(base_dir, "..", "..", "talent_matching_ner_model")
-        # model_path = os.path.abspath(model_path)
 
-        print(f"[DEBUG] Loading custom NER model from: {model_path}")
         if not os.path.exists(model_path):
-            print(f"[ERROR] Model path does not exist: {model_path}")
             return None
 
         ner_model = spacy.load(model_path)
         return ner_model
     except Exception as e:
-        print(f"[ERROR] Error loading NER model: {e}")
         return None
 
 
@@ -69,9 +62,7 @@ def extract_entities_from_text(text: str, ner_model) -> dict[str, set[str]]:
                 entities["experience"].add(entity_text)
 
         return entities
-
-    except Exception as e:
-        print(f"Error extracting entities from text: {e}")
+    except Exception:
         return {
             "hardskills": set(),
             "softskills": set(),
@@ -142,8 +133,7 @@ def load_skills_dictionary():
         with open(dict_path, "r", encoding="utf-8") as f:
             skills_dict = json.load(f)
         return skills_dict
-    except Exception as e:
-        print(f"[ERROR] Error loading skills dictionary: {e}")
+    except Exception:
         return {}
 
 
@@ -156,7 +146,7 @@ def map_skill_to_main_keyword(skill: str, skills_dict: dict) -> str:
                 v.lower() for v in variants
             ]:
                 return main_keyword
-    return skill  # Jika tidak ada di kamus, pakai seadanya
+    return skill
 
 
 def process_glints_job(
@@ -173,7 +163,6 @@ def process_glints_job(
         description_entities = extract_entities_from_text(description, ner_model)
         hardskills_from_desc = description_entities["hardskills"]
 
-        # Jangan pakai .lower() di sini!
         all_hardskills = set(filtered_skills)
         all_hardskills.update(hardskills_from_desc)
 
@@ -183,9 +172,7 @@ def process_glints_job(
         job["required_skills"] = list(mapped_skills)
 
         return job
-
-    except Exception as e:
-        print(f"Error processing Glints job {job.get('job_title', 'Unknown')}: {e}")
+    except Exception:
         return job
 
 
@@ -213,9 +200,7 @@ def process_kalibrr_job(job: dict[str, any], ner_model) -> dict[str, any]:
         job["maximum_experience"] = exp_result["maximum_experience"]
 
         return job
-
-    except Exception as e:
-        print(f"Error processing Kalibrr job {job.get('job_title', 'Unknown')}: {e}")
+    except Exception:
         return job
 
 
@@ -234,11 +219,7 @@ def process_job_data_with_ner(
                 processed_job = process_glints_job(job, ner_model)
                 processed_jobs.append(processed_job)
 
-            except Exception as e:
-                print(
-                    f"Error processing job {job.get('job_url', 'Unknown')} from Glints: {e}"
-                )
-                # Tetap tambahkan job meskipun ada error
+            except Exception:
                 processed_jobs.append(processed_job)
 
     if kalibrr_data:
@@ -247,11 +228,7 @@ def process_job_data_with_ner(
                 processed_job = process_kalibrr_job(job, ner_model)
                 processed_jobs.append(processed_job)
 
-            except Exception as e:
-                print(
-                    f"Error processing job {job.get('job_url', 'Unknown')} from Kalibrr: {e}"
-                )
-                # Tetap tambahkan job meskipun ada error
+            except Exception:
                 processed_jobs.append(job)
 
     return processed_jobs

@@ -14,6 +14,7 @@ from api.services.admin.scrapers.helper import (
     close_driver,
     get_driver,
     is_task_cancelled,
+    random_sleep,
     update_task_progress,
 )
 
@@ -24,16 +25,16 @@ def authenticate_to_kalibrr(task_id: str) -> tuple:
 
     if driver is None:
         error_msg = "Failed to create Chrome driver"
-        return None, None, error_msg
+        print(f"[KALIBRR_AUTH_ERROR] {error_msg}")
+        return None, error_msg
 
     try:
         driver.get("https://www.kalibrr.com/login")
         driver.refresh()
-        time.sleep(random.uniform(2, 4))
+        random_sleep(2, 3)
 
         if is_task_cancelled(task_id):
-            close_driver(driver)
-            return None, None, "Task cancelled"
+            return None, "Task cancelled"
 
         WebDriverWait(driver, 20).until(
             EC.presence_of_element_located((By.ID, "login-email"))
@@ -49,91 +50,39 @@ def authenticate_to_kalibrr(task_id: str) -> tuple:
         password_field.send_keys("scrapingkalibrr123")
 
         if is_task_cancelled(task_id):
-            close_driver(driver)
-            return None, None, "Task cancelled"
+            return None, "Task cancelled"
 
         # Submit login
         submit_button = driver.find_element(By.XPATH, "//button[@type='submit']")
         submit_button.click()
-        time.sleep(random.uniform(5, 8))
+
+        random_sleep(2, 3)
 
         if is_task_cancelled(task_id):
-            close_driver(driver)
-            return None, None, "Task cancelled"
+            return None, "Task cancelled"
 
         driver.get(
             "https://jobseeker.kalibrr.com/job-board/i/it-and-software/1?sort=Freshness"
         )
-        time.sleep(random.uniform(3, 5))
+
+        random_sleep(2, 3)
 
         if is_task_cancelled(task_id):
-            close_driver(driver)
-            return None, None, "Task cancelled"
+            return None, "Task cancelled"
 
-        # Ambil cookies untuk backup (optional)
-        cookies = driver.get_cookies()
-
-        # JANGAN close driver - return driver yang sudah authenticated
-        return driver, cookies, None
+        return driver, None
 
     except Exception as e:
-        close_driver(driver)
-        return None, None, error_msg
-
-
-def create_authenticated_session(cookies: list[dict], task_id: str):
-    """Membuat session baru dengan cookies yang sudah authenticated"""
-    if is_task_cancelled(task_id):
-        return None
-
-    driver = get_driver()
-    if driver is None:
-        return None
-
-    try:
-        # Buka halaman jobseeker terlebih dahulu
-        driver.get("https://jobseeker.kalibrr.com/")
-        time.sleep(2)
-
-        # Tambahkan cookies dengan aman
-        success_count = 0
-        for cookie in cookies:
-            # Filter cookies yang relevan dengan jobseeker.kalibrr.com
-            if "domain" in cookie:
-                if "kalibrr.com" in cookie["domain"]:
-                    if add_cookie_safely(driver, cookie):
-                        success_count += 1
-            else:
-                if add_cookie_safely(driver, cookie):
-                    success_count += 1
-
-        # Refresh halaman untuk menerapkan cookies
-        driver.refresh()
-        time.sleep(3)
-
-        return driver
-
-    except Exception as e:
-        close_driver(driver)
-        return None
+        print(f"[KALIBRR_AUTH_ERROR] Authentication failed: {str(e)}")
+        return None, error_msg
 
 
 # ===== URL COLLECTION FUNCTIONS =====
 
 
-def get_max_page_number(
-    driver,
-    task_id: str,
-    update_progress_func=None,
-    progress_data: dict[str, any] = {"scraped_jobs": 0},
-) -> int:
+def get_max_page_number(driver, task_id: str) -> int:
     """Mendapatkan jumlah maksimal halaman"""
     try:
-        if update_progress_func:
-            update_progress_func(
-                task_id, "GETTING_KALIBRR_MAX_PAGE_NUMBER", progress_data
-            )
-
         if is_task_cancelled(task_id):
             return 0
 
@@ -173,6 +122,7 @@ def get_max_page_number(
 
         return max_page
     except Exception as e:
+        print(f"[KALIBRR_MAX_PAGE_ERROR] Failed to get max page number: {str(e)}")
         return 1
 
 
@@ -180,18 +130,13 @@ def collect_job_urls(
     driver,
     max_page: int,
     task_id: str,
-    update_progress_func=None,
-    progress_data: dict[str, any] = {"scraped_jobs": 0},
 ) -> list[str]:
     """Mengumpulkan semua URL pekerjaan"""
     job_urls = []
     seen_urls = set()
 
-    if update_progress_func:
-        update_progress_func(task_id, "COLLECTING_KALIBRR_JOB_URLS", progress_data)
-
-    # for page in range(1, max_page + 1):
-    for page in range(1, 2):
+    for page in range(1, max_page + 1):
+        # for page in range(1, 2):
         try:
             if is_task_cancelled(task_id):
                 break
@@ -200,7 +145,7 @@ def collect_job_urls(
 
             driver.get(url)
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-            time.sleep(random.uniform(3, 5))
+            random_sleep(2, 3)
 
             if is_task_cancelled(task_id):
                 break
@@ -230,14 +175,11 @@ def collect_job_urls(
                         seen_urls.add(clean_url)
                         page_urls.add(clean_url)
 
-            # Update progress
-            if update_progress_func:
-                update_progress_func(
-                    task_id, "COLLECTING_KALIBRR_JOB_URLS", progress_data
-                )
-
         except Exception as e:
-            pass
+            print(
+                f"[KALIBRR_URL_COLLECTION_ERROR] Error collecting URLs from page {page}: {str(e)}"
+            )
+            continue
 
     if is_task_cancelled(task_id):
         return []
@@ -260,10 +202,9 @@ def extract_company_logo(driver, task_id) -> str | None:
             )
         )
 
-        src = img_tag.get_attribute("src")
-        return src
+        return img_tag.get_attribute("src")
 
-    except Exception as e:
+    except Exception:
         return "https://img.icons8.com/?size=720&id=53373&format=png&color=000000"
 
 
@@ -281,9 +222,8 @@ def extract_job_title(driver, task_id) -> str | None:
                 )
             )
         )
-        title = title_tag.get_attribute("textContent").strip()
-        return title
-    except Exception as e:
+        return title_tag.get_attribute("textContent").strip()
+    except Exception:
         return None
 
 
@@ -301,10 +241,8 @@ def extract_company_name(driver, task_id) -> str | None:
                 )
             )
         )
-        company_name = company_tag.get_attribute("textContent").strip()
-
-        return company_name
-    except Exception as e:
+        return company_tag.get_attribute("textContent").strip()
+    except Exception:
         return None
 
 
@@ -332,7 +270,7 @@ def extract_location(driver, task_id) -> dict[str, str | None] | None:
         )
 
         location["city"] = city_span.text.strip()
-    except Exception as e:
+    except Exception:
         pass
 
     if is_task_cancelled(task_id):
@@ -371,10 +309,7 @@ def extract_salary(driver, task_id) -> str | None:
         else:
             return None
 
-    except Exception as e:
-        if is_task_cancelled(task_id):
-            return None
-
+    except Exception:
         return None
 
 
@@ -402,7 +337,7 @@ def extract_employment_details(driver, task_id) -> dict[str, str | None] | None:
                 By.XPATH, ".//a[contains(@href, '/job-board/t/')]"
             )
             result["employment_type"] = employment_type_element.text.strip()
-        except Exception as e:
+        except Exception:
             pass
 
         # Ekstrak work setup (Hibrida, Jarak jauh, dll.)
@@ -417,12 +352,11 @@ def extract_employment_details(driver, task_id) -> dict[str, str | None] | None:
                 else ""
             )
             result["work_setup"] = work_setup_text
-        except Exception as e:
+        except Exception:
             pass
 
         return result
-
-    except Exception as e:
+    except Exception:
         return result
 
 
@@ -440,9 +374,7 @@ def extract_education(driver, task_id) -> str | None:
                 )
             )
         )
-        education_text = education_tag.get_attribute("textContent").strip()
-
-        return education_text
+        return education_tag.get_attribute("textContent").strip()
     except Exception as e:
         return None
 
@@ -476,7 +408,7 @@ def extract_description(driver, task_id) -> str | None:
             )
             description_parts.append(f"<h2>Deskripsi Pekerjaan</h2>")
             description_parts.append(job_desc_content.get_attribute("innerHTML"))
-        except Exception as e:
+        except Exception:
             pass
 
         # Ekstrak "Kualifikasi Minimum"
@@ -490,7 +422,7 @@ def extract_description(driver, task_id) -> str | None:
             )
             description_parts.append(f"<h2>Kualifikasi Minimum</h2>")
             description_parts.append(qual_content.get_attribute("innerHTML"))
-        except Exception as e:
+        except Exception:
             pass
 
         # Gabungkan semua bagian
@@ -500,86 +432,84 @@ def extract_description(driver, task_id) -> str | None:
         else:
             return None
 
-    except Exception as e:
+    except Exception:
         return None
 
 
-def extract_job_details(
-    driver,
-    job_url: str,
-    task_id: str,
-) -> dict[str, any] | None:
+def extract_job_details(driver, job_url: str, task_id: str) -> dict[str, any] | None:
     """Ekstrak semua detail pekerjaan dari URL"""
-    print(f"Scraping detail for: {job_url}")
-
     if is_task_cancelled(task_id):
         return None
 
-    driver.get(job_url)
-    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-    time.sleep(random.uniform(2, 3))
+    try:
+        driver.get(job_url)
+        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        random_sleep(1, 2)
 
-    if is_task_cancelled(task_id):
+        if is_task_cancelled(task_id):
+            return None
+
+        img_url = extract_company_logo(driver, task_id)
+
+        if is_task_cancelled(task_id):
+            return None
+
+        title = extract_job_title(driver, task_id)
+
+        if is_task_cancelled(task_id):
+            return None
+
+        company_name = extract_company_name(driver, task_id)
+
+        if is_task_cancelled(task_id):
+            return None
+
+        location = extract_location(driver, task_id)
+
+        if is_task_cancelled(task_id):
+            return None
+
+        salary = extract_salary(driver, task_id)
+
+        if is_task_cancelled(task_id):
+            return None
+
+        employment_details = extract_employment_details(driver, task_id)
+
+        if is_task_cancelled(task_id):
+            return None
+
+        education = extract_education(driver, task_id)
+
+        if is_task_cancelled(task_id):
+            return None
+
+        description = extract_description(driver, task_id)
+
+        if is_task_cancelled(task_id):
+            return {}
+
+        # Gabungkan hasil
+        return {
+            "job_url": job_url,
+            "image_url": img_url,
+            "job_title": title,
+            "company_name": company_name,
+            "subdistrict": None,
+            "city": location["city"],
+            "province": None,
+            "salary": salary,
+            "employment_type": employment_details["employment_type"],
+            "work_setup": employment_details["work_setup"],
+            "minimum_education": education,
+            "minimum_experience": None,
+            "required_skills": None,
+            "job_description": description,
+            "scraped_at": datetime.datetime.now().isoformat(),
+        }
+    except Exception as e:
+        print(f"[KALIBRR_JOB_DETAIL_ERROR] Error extracting job details: {str(e)}")
         return None
-
-    img_url = extract_company_logo(driver, task_id)
-
-    if is_task_cancelled(task_id):
-        return None
-
-    title = extract_job_title(driver, task_id)
-
-    if is_task_cancelled(task_id):
-        return None
-
-    company_name = extract_company_name(driver, task_id)
-
-    if is_task_cancelled(task_id):
-        return None
-
-    location = extract_location(driver, task_id)
-
-    if is_task_cancelled(task_id):
-        return None
-
-    salary = extract_salary(driver, task_id)
-
-    if is_task_cancelled(task_id):
-        return None
-
-    employment_details = extract_employment_details(driver, task_id)
-
-    if is_task_cancelled(task_id):
-        return None
-
-    education = extract_education(driver, task_id)
-
-    if is_task_cancelled(task_id):
-        return None
-
-    description = extract_description(driver, task_id)
-
-    if is_task_cancelled(task_id):
-        return {}
-
-    # Gabungkan hasil
-    return {
-        "job_url": job_url,
-        "image_url": img_url,
-        "job_title": title,
-        "company_name": company_name,
-        "subdistrict": None,
-        "city": location["city"],
-        "province": None,
-        "salary": salary,
-        "employment_type": employment_details["employment_type"],
-        "work_setup": employment_details["work_setup"],
-        "minimum_education": education,
-        "minimum_experience": None,
-        "required_skills": None,
-        "job_description": description,
-        "scraped_at": datetime.datetime.now().isoformat(),
-    }
 
 
 def scrape_kalibrr_jobs(
@@ -591,42 +521,43 @@ def scrape_kalibrr_jobs(
     progress_data = {"scraped_jobs": scraped_jobs}
 
     if is_task_cancelled(task_id):
-        return [], None
+        return []
 
     # 1. Login dan dapatkan cookies
     update_task_progress(
         task_id, "GETTING_KALIBRR_AUTH_DATA", progress_data, update_state_func
     )
-    driver, cookies, auth_error = authenticate_to_kalibrr(task_id)
+    driver, auth_error = authenticate_to_kalibrr(task_id)
 
-    if auth_error or not cookies:
-        return [], None
+    if auth_error:
+        return []
 
     if is_task_cancelled(task_id):
-        return [], None
+        return []
 
     try:
         if is_task_cancelled(task_id):
-            close_driver(driver)
-            return [], None
+            return []
+
+        update_task_progress(
+            task_id, "GET_KALIBRR_MAX_PAGE", progress_data, update_state_func
+        )
 
         # 3. Dapatkan jumlah halaman
-        max_page = get_max_page_number(
-            driver, task_id, update_task_progress, progress_data
+        max_page = get_max_page_number(driver, task_id)
+
+        update_task_progress(
+            task_id, "COLLECT_KALIBRR_JOB_URLS", progress_data, update_state_func
         )
 
         if is_task_cancelled(task_id):
-            close_driver(driver)
-            return [], None
+            return []
 
         # 4. Kumpulkan semua URL pekerjaan
-        job_urls = collect_job_urls(
-            driver, max_page, task_id, update_task_progress, progress_data
-        )
+        job_urls = collect_job_urls(driver, max_page, task_id)
 
         if is_task_cancelled(task_id):
-            close_driver(driver)
-            return [], None
+            return []
 
         # 5. Scrape detail dari setiap URL
         update_task_progress(
@@ -642,17 +573,16 @@ def scrape_kalibrr_jobs(
                 break
 
             try:
-                # Pass task_id to extract_job_details for cancellation checks
                 job_detail = extract_job_details(driver, job_url, task_id)
 
-                # Check if job_detail is None (cancelled during extraction)
                 if job_detail is None:
-                    print(f"Scraping dibatalkan untuk {job_url}")
+                    print(
+                        f"[KALIBRR_JOB_SKIP] Skipping job {i+1}/{len(job_urls[:10])}: No details extracted"
+                    )
                     break
 
                 job_data.append(job_detail)
 
-                # Update progress
                 progress_data["scraped_jobs"] += 1
                 update_task_progress(
                     task_id,
@@ -662,15 +592,19 @@ def scrape_kalibrr_jobs(
                 )
 
             except Exception as e:
-                pass
+                print(
+                    f"[KALIBRR_JOB_ERROR] Error processing job {i+1}/{len(job_urls[:10])} ({job_url}): {str(e)}"
+                )
+                continue
 
         if is_task_cancelled(task_id):
-            close_driver(driver)
-            return [], None
+            return []
 
-        return job_data, len(job_urls)
+        return job_data
 
     except Exception as e:
-        return [], None
+        print(f"[KALIBRR_MAIN_ERROR] Fatal error in Kalibrr scraping: {str(e)}")
+        return []
     finally:
-        close_driver(driver)
+        if driver:
+            close_driver(driver)

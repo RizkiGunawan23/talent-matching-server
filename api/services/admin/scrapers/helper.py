@@ -89,3 +89,12 @@ def update_task_progress(
     cache.set(f"scraping_progress_{task_id}", progress_data, timeout=None)
     if update_state_func:
         update_state_func(state=state, meta=progress_data)
+
+
+def random_sleep(min_seconds: int = 1, max_seconds: int = 3) -> None:
+    """Sleep for a random duration between min_seconds and max_seconds"""
+    import random
+    import time
+
+    sleep_time = random.uniform(min_seconds, max_seconds)
+    time.sleep(sleep_time)
