@@ -137,9 +137,11 @@ class UserJobMatch(StructuredNode):
     # Strong, Mid, Weak
     matchType = StringProperty(required=True)
     user_match = RelationshipTo(
-        "User", "USER_MATCH", cardinality=One, model=StructuredRel
+        "User", "USER_MATCH", cardinality=ZeroOrOne, model=StructuredRel
     )
-    job_match = RelationshipTo("Job", "JOB_MATCH", cardinality=One, model=StructuredRel)
+    job_match = RelationshipTo(
+        "Job", "JOB_MATCH", cardinality=ZeroOrOne, model=StructuredRel
+    )
 
 
 class Skill(StructuredNode):
@@ -160,7 +162,7 @@ class ScrapingTask(StructuredNode):
     triggered_by = RelationshipTo(
         "User",
         "TRIGGERED_BY",
-        cardinality=One,
+        cardinality=ZeroOrOne,
         model=StructuredRel,
     )
     has_process = RelationshipTo(

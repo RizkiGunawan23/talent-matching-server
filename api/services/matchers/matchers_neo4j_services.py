@@ -592,7 +592,7 @@ def import_and_clean_neo4j_with_enrichment(
         print("[MAIN_IMPORT_INFO] Starting import and clean process")
 
         # Step 1: Backup existing data (no transaction needed)
-        from api.services.matchers.SafeNeo4jBackupRestore import (
+        from api.services.matchers.matchers_neo4j_backup_restore_services import (
             perform_full_dynamic_backup,
         )
 
@@ -661,7 +661,7 @@ def import_and_clean_neo4j_with_enrichment(
         # Step 4: Restore backup data with enrichment (has internal transaction)
         try:
             print("[MAIN_IMPORT_INFO] Starting backup restore with enrichment")
-            from api.services.matchers.SafeNeo4jBackupRestore import (
+            from api.services.matchers.matchers_neo4j_backup_restore_services import (
                 perform_full_dynamic_restore_with_enrichment,
             )
 

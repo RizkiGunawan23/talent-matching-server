@@ -1,4 +1,3 @@
-from neomodel import db
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
@@ -7,7 +6,6 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
-from api.models import Job
 from api.services.authentication_services import (
     authenticate_user,
     register_user_and_match,
@@ -27,7 +25,7 @@ class AuthenticationView(ViewSet):
         """
         Endpoint for registering a new user.
         """
-        register_user_and_match(request.data, request.FILES)
+        register_user_and_match(request.data)
 
         return Response(
             {"message": "Register berhasil"},

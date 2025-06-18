@@ -238,6 +238,14 @@
         "Data Visualization and Reporting": [
             "data visualization and reporting"
         ],
+        "Data Warehouse": [
+            "data warehouse",
+            "data warehouses",
+            "data warehousing",
+            "datawarehousing",
+            "datawarehouse",
+            "datawarehouses"
+        ],
         "Database": ["database", "databases", "db"],
         "Database Administration": ["database administration"],
         "Database Security": ["database security"],
@@ -258,6 +266,7 @@
         ],
         "DevOps": ["devops", "dev ops"],
         "DevSecOps": ["devsecops", "dev sec ops"],
+        "DHCP": ["dhcp", "dynamic host configuration protocol"],
         "Django": ["django"],
         "Docker": ["docker"],
         "Draw.io": ["draw.io"]
@@ -329,7 +338,7 @@
             "gitlab ci",
             "gitlab cd"
         ],
-        "Go": ["go", "go / golang", "golang"],
+        "Go": ["go", "go / golang", "golang", "Go /Go"],
         "Google Analytics": ["google analytics"],
         "Google BigQuery": ["google bigquery"],
         "Google Cloud Platform": ["google cloud platform", "gcp"],
@@ -526,7 +535,9 @@
         "Odoo": ["odoo", "odoo coding"],
         "OpenAPI": ["openapi"],
         "Oracle": ["oracle", "oracle database"],
-        "Oracle Database": ["oracle database"]
+        "Oracle Database": ["oracle database"],
+        "Oracle Data Guard": ["oracle data guard", "data guard"],
+        "Oracle RAC": ["oracle rac", "oracle real application cluster"]
     },
     "P": {
         "PABX": ["pabx", "private automatic branch exchange"],
@@ -658,7 +669,7 @@
         "SonarQube": ["sonarqube", "sonar qube", "sonarkube", "sonar kube"],
         "Splunk": ["splunk"],
         "Spreadsheet": ["spreadsheet"],
-        "Spring Framework": [
+        "Spring Boot": [
             "java spring boot",
             "spring",
             "spring boot",
@@ -771,6 +782,7 @@
             "waterfall methodology",
             "waterfall metodologi"
         ],
+        "Webhook": ["webhook", "webhooks"],
         "Web Design": ["web design"],
         "Web Development": ["web development"],
         "Web Hosting": ["web hosting"],

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 
-class SignUpSerializer(serializers.Serializer):
+class RegisterSerializer(serializers.Serializer):
     email = serializers.EmailField(
         required=True,
         error_messages={
@@ -53,7 +53,7 @@ class SignUpSerializer(serializers.Serializer):
     )
 
 
-class SignInSerializer(serializers.Serializer):
+class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField(
         required=True,
         error_messages={

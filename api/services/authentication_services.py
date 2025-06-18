@@ -3,15 +3,14 @@ import uuid
 
 from django.contrib.auth.hashers import check_password, make_password
 from django.utils.datastructures import MultiValueDict
-from neomodel import db
 from rest_framework import status
 from rest_framework.exceptions import APIException
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from api.models import User
 from api.serializers.authentication_serializers import (
-    SignInSerializer,
-    SignUpSerializer,
+    LoginSerializer,
+    RegisterSerializer,
 )
 from api.services.matchers.matchers_neo4j_services import (
     create_calculated_user,
@@ -53,12 +52,10 @@ def get_token(user: User) -> dict[str, str]:
     }
 
 
-def register_user_and_match(
-    request_data: dict[str, any], files: MultiValueDict
-) -> dict[str, str] | None:
+def register_user_and_match(request_data: dict[str, any]) -> dict[str, str] | None:
     uid = str(uuid.uuid4())
 
-    serializer = SignUpSerializer(data=request_data)
+    serializer = RegisterSerializer(data=request_data)
     serializer.is_valid(raise_exception=True)
     attrs = serializer.validated_data
     attrs["uid"] = uid
@@ -122,7 +119,7 @@ def authenticate_user(request_data: dict[str, str]) -> dict[str, str] | None:
     """
     Authenticate user and return JWT tokens.
     """
-    serializer = SignInSerializer(data=request_data)
+    serializer = LoginSerializer(data=request_data)
     serializer.is_valid(raise_exception=True)
     attrs = serializer.validated_data
 

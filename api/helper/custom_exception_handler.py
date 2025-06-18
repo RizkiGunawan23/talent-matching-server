@@ -14,7 +14,12 @@ def custom_exception_handler(exc, context):
     response = exception_handler(exc, context)
 
     if isinstance(exc, APIException):
-        return Response({"message": exc.detail}, status=exc.get_codes())
+        codes = exc.get_codes()
+        if isinstance(codes, int) and (100 <= codes <= 599):
+            status_code = codes
+        else:
+            status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        return Response({"message": exc.detail}, status=status_code)
 
     if isinstance(exc, NotAuthenticated):
         return Response(

@@ -8,7 +8,6 @@ from api.services.admin.admin_matching_services import (
     scraping_task_status,
     start_matching_scraped_job_data,
 )
-from api.services.matchers.matchers_services import matching_after_scraping
 
 
 class AdminMatchingView(ViewSet):
