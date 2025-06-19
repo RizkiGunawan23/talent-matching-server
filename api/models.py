@@ -109,7 +109,7 @@ class Job(StructuredNode):
     )
 
     @staticmethod
-    def all_with_skills() -> list[dict["Job", list["Skill"]]]:
+    def all_with_skills() -> list[dict[str, "Job | list[Skill]"]]:
         """
         Fetch all jobs beserta list of Skill object (bukan string), hasil sudah digroup per job.
         """
