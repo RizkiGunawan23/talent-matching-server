@@ -143,63 +143,67 @@ def _cleanup_job_relationships(job: Job) -> dict[str, int]:
     try:
         # 1. Handle Skills relationships
         connected_skills = list(job.skills.all())
-        job.skills.disconnect_all()
-        cleanup_stats["skills_disconnected"] = len(connected_skills)
+        if connected_skills:
+            job.skills.disconnect_all()
+            cleanup_stats["skills_disconnected"] = len(connected_skills)
 
-        # Check for orphaned skills and delete them
-        for skill in connected_skills:
-            # Check if this skill is still connected to any other job
-            other_jobs_count = len(skill.job_set.all())  # Jobs that require this skill
-            if other_jobs_count == 0:
-                # Also check if any user has this skill
-                users_with_skill_count = len(
-                    skill.user_set.all()
-                )  # Users who have this skill
-                if users_with_skill_count == 0:
-                    skill.delete()
-                    cleanup_stats["orphaned_skills_deleted"] += 1
+            # Check for orphaned skills and delete them
+            for skill in connected_skills:
+                try:
+                    # Check if this skill is still connected to any other job
+                    remaining_jobs = skill.job_set.all()
+                    if len(remaining_jobs) == 0:
+                        # Also check if any user has this skill
+                        users_with_skill = skill.user_set.all()
+                        if len(users_with_skill) == 0:
+                            skill.delete()
+                            cleanup_stats["orphaned_skills_deleted"] += 1
+                except Exception as e:
+                    print(
+                        f"[CLEANUP_WARNING] Error checking skill {skill.name}: {str(e)}"
+                    )
 
         # 2. Handle AdditionalSkills relationships
-        connected_additional_skills = list(job.additional_skills.all())
-        job.additional_skills.disconnect_all()
-        cleanup_stats["additional_skills_disconnected"] = len(
-            connected_additional_skills
-        )
+        try:
+            connected_additional_skills = list(job.additional_skills.all())
+            if connected_additional_skills:
+                job.additional_skills.disconnect_all()
+                cleanup_stats["additional_skills_disconnected"] = len(
+                    connected_additional_skills
+                )
 
-        # Check for orphaned additional skills and delete them
-        for additional_skill in connected_additional_skills:
-            # Check if this additional skill is still connected to any other job
-            other_jobs_count = len(additional_skill.job_set.all())
-            if other_jobs_count == 0:
-                additional_skill.delete()
-                cleanup_stats["orphaned_additional_skills_deleted"] += 1
+                # Check for orphaned additional skills and delete them
+                for additional_skill in connected_additional_skills:
+                    try:
+                        remaining_jobs = additional_skill.job_set.all()
+                        if len(remaining_jobs) == 0:
+                            additional_skill.delete()
+                            cleanup_stats["orphaned_additional_skills_deleted"] += 1
+                    except Exception as e:
+                        print(
+                            f"[CLEANUP_WARNING] Error checking additional skill: {str(e)}"
+                        )
+        except AttributeError:
+            # If additional_skills relationship doesn't exist, skip
+            print("[CLEANUP_INFO] No additional_skills relationship found")
 
         # 3. Handle UserJobMatch relationships
-        # Find all UserJobMatch nodes connected to this job
-        user_job_matches = UserJobMatch.nodes.all()
-        matches_to_delete = []
-
-        for match in user_job_matches:
-            # Check if this match is connected to our job
-            connected_jobs = list(match.job_match.all())
-            for connected_job in connected_jobs:
-                if connected_job.jobUrl == job.jobUrl:
-                    matches_to_delete.append(match)
-                    break
-
-        # Delete the UserJobMatch nodes
-        for match in matches_to_delete:
-            # Disconnect relationships first
-            match.user_match.disconnect_all()
-            match.job_match.disconnect_all()
-            match.delete()
-            cleanup_stats["user_job_matches_deleted"] += 1
-
-        # 4. Handle user bookmarks (HAS_BOOKMARKED relationship)
-        # Get all users who bookmarked this job
         from neomodel import db
 
-        # Query to find and remove bookmarks
+        # More efficient approach using Cypher query
+        match_delete_query = """
+        MATCH (m:UserJobMatch)-[:JOB_MATCH]->(j:Job {jobUrl: $job_url})
+        OPTIONAL MATCH (m)-[r1:USER_MATCH]->(u:User)
+        OPTIONAL MATCH (m)-[r2:JOB_MATCH]->(j2:Job)
+        DELETE r1, r2, m
+        RETURN count(m) as deleted_matches
+        """
+
+        results, meta = db.cypher_query(match_delete_query, {"job_url": job.jobUrl})
+        if results:
+            cleanup_stats["user_job_matches_deleted"] = results[0][0]
+
+        # 4. Handle user bookmarks (HAS_BOOKMARKED relationship)
         bookmark_query = """
         MATCH (u:User)-[r:HAS_BOOKMARKED]->(j:Job {jobUrl: $job_url})
         DELETE r
@@ -211,7 +215,6 @@ def _cleanup_job_relationships(job: Job) -> dict[str, int]:
             cleanup_stats["bookmarks_removed"] = results[0][0]
 
         # 5. Handle user reports (HAS_REPORTED relationship)
-        # Query to find and remove reports
         report_query = """
         MATCH (u:User)-[r:HAS_REPORTED]->(j:Job {jobUrl: $job_url})
         DELETE r
