@@ -19,8 +19,6 @@ var/
 *.egg-info/
 .installed.cfg
 *.egg
-.env
-.env/
 .venv
 .venv/
 ENV/
@@ -39,12 +37,10 @@ uploaded_files/profile_pictures/*
 **/*.pyc
 .git
 .gitignore
-.env*
 .DS_Store
 *.log
 *.sqlite3
 venv
-env
 .venv
 .idea
 .vscode

@@ -12,7 +12,9 @@ from api.serializers.authentication_serializers import (
     LoginSerializer,
     RegisterSerializer,
 )
-from api.serializers.job_seeker.profile.change_password_serializers import ChangePasswordSerializer
+from api.serializers.job_seeker.profile.change_password_serializers import (
+    ChangePasswordSerializer,
+)
 from api.services.matchers.matchers_neo4j_services import (
     create_calculated_user,
     get_jobs_from_neo4j,
@@ -51,6 +53,7 @@ def get_token(user: User) -> dict[str, str]:
         "access": str(refresh.access_token),
         "user": user_data,
     }
+
 
 def check_email_availability(email: str) -> dict[str, any]:
     """

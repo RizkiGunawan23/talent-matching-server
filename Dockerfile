@@ -33,6 +33,8 @@ COPY --from=base /venv /venv
 ENV PATH="/venv/bin:$PATH"
 WORKDIR /app
 
+COPY gcp-service-account.json /app/gcp-service-account.json
+
 RUN mkdir -p /app/uploaded_files
 RUN addgroup --system django && adduser --system --ingroup django django
 
@@ -45,13 +47,13 @@ RUN chown -R django:django /app
 EXPOSE 8000
 USER django
 
-CMD ["gunicorn", "--workers=1", "--threads=1", "--bind", "0.0.0.0:8000", "talent_matching_server.wsgi:application"]
-
 # Celery stage
 FROM base AS celery
 COPY --from=base /venv /venv
 ENV PATH="/venv/bin:$PATH"
 WORKDIR /app
+
+COPY gcp-service-account.json /app/gcp-service-account.json
 
 RUN mkdir -p /app/uploaded_files
 RUN addgroup --system celery && adduser --system --ingroup celery celery
@@ -63,5 +65,3 @@ COPY ./manage.py /app/
 RUN chown -R celery:celery /app
 
 USER celery
-
-CMD ["celery", "-A", "talent_matching_server", "worker", "--loglevel=info"]

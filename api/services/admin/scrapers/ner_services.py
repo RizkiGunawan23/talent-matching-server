@@ -4,19 +4,40 @@ import re
 
 import spacy
 from bs4 import BeautifulSoup
+from google.cloud import storage
+
+
+def download_model_from_gcs():
+    """Download model dari GCS jika belum ada"""
+    model_path = "/app/talent_matching_ner_model"
+
+    if os.path.exists(model_path):
+        print("Model sudah ada, skip download")
+        return model_path
+
+    print("Downloading model dari GCS...")
+    client = storage.Client()
+    bucket = client.bucket("talent-matching-bucket")
+
+    # Download semua files dalam model folder
+    blobs = bucket.list_blobs(prefix="talent_matching_ner_model/")
+    for blob in blobs:
+        local_path = f"/app/{blob.name}"
+        os.makedirs(os.path.dirname(local_path), exist_ok=True)
+        blob.download_to_filename(local_path)
+
+    print("Model berhasil didownload!")
+    return model_path
 
 
 def load_ner_model():
-    """Load spaCy NER model untuk skill extraction"""
+    """Load spaCy NER model dengan auto-download"""
     try:
-        model_path = "/app/talent_matching_ner_model"
-
-        if not os.path.exists(model_path):
-            return None
-
+        model_path = download_model_from_gcs()
         ner_model = spacy.load(model_path)
         return ner_model
     except Exception as e:
+        print(f"Error loading model: {e}")
         return None
 
 
@@ -33,7 +54,6 @@ def extract_entities_from_text(text: str, ner_model) -> dict[str, set[str]]:
     if not text or not ner_model:
         return {
             "hardskills": set(),
-            "softskills": set(),
             "experience": set(),
         }
 
@@ -47,7 +67,6 @@ def extract_entities_from_text(text: str, ner_model) -> dict[str, set[str]]:
         # Categorize entities berdasarkan label
         entities = {
             "hardskills": set(),
-            "softskills": set(),
             "experience": set(),
         }
 
@@ -56,8 +75,6 @@ def extract_entities_from_text(text: str, ner_model) -> dict[str, set[str]]:
 
             if ent.label_ == "HARDSKILL":
                 entities["hardskills"].add(entity_text)
-            elif ent.label_ == "SOFTSKILL":
-                entities["softskills"].add(entity_text)
             elif ent.label_ == "EXPERIENCE":
                 entities["experience"].add(entity_text)
 
@@ -65,7 +82,6 @@ def extract_entities_from_text(text: str, ner_model) -> dict[str, set[str]]:
     except Exception:
         return {
             "hardskills": set(),
-            "softskills": set(),
             "experience": set(),
         }
 
@@ -80,12 +96,12 @@ def filter_softskills_from_skills(skills: list[str], ner_model) -> list[str]:
     entities = extract_entities_from_text(skills_text, ner_model)
 
     # Filter out softskills
-    softskills = entities["softskills"]
-    filtered_skills = []
+    detected_hardskills = entities.get("hardskills", set())
 
+    filtered_skills = []
     for skill in skills:
         skill_lower = skill.strip().lower()
-        if skill_lower not in softskills:
+        if skill_lower in detected_hardskills:
             filtered_skills.append(skill)
 
     return filtered_skills

@@ -1,19 +1,38 @@
 services:
     django:
-        build: .
+        build:
+            context: .
+            dockerfile: Dockerfile
+            target: django
         container_name: talent-matching-django
         depends_on:
             - redis
         env_file: .env
         environment:
+            - NEO4J_BOLT_URL=${NEO4J_BOLT_URL:-bolt://neo4j:neo4j123@34.101.147.141:7687} # Fix ke GCP
+            - REDIS_URL=redis://redis:6379
             - ENVIRONMENT=production
+            - GOOGLE_APPLICATION_CREDENTIALS=/app/gcp-service-account.json
         ports:
             - "8000:8000"
         volumes:
+            - ./talent_matching_ner_model:/app/talent_matching_ner_model
+            - ./uploaded_files:/app/uploaded_files
+            - ./gcp-service-account.json:/app/gcp-service-account.json:ro
         restart: always
+        command: gunicorn --workers=2 --threads=2 --bind 0.0.0.0:8000 talent_matching_server.wsgi:application
+        deploy:
+            resources:
+                limits:
+                    memory: 4G
+                reservations:
+                    memory: 2G
 
     celery:
-        build: .
+        build:
+            context: .
+            dockerfile: Dockerfile
+            target: celery
         container_name: talent-matching-celery
         depends_on:
             - redis
@@ -21,22 +40,41 @@ services:
         env_file: .env
         environment:
             - HOME=/tmp
+            - NEO4J_BOLT_URL=${NEO4J_BOLT_URL:-bolt://neo4j:neo4j123@34.101.147.141:7687}
+            - REDIS_URL=redis://redis:6379
             - ENVIRONMENT=production
-        command: celery -A talent_matching_server worker --loglevel=info
-        shm_size: "1gb"
+            - GOOGLE_APPLICATION_CREDENTIALS=/app/gcp-service-account.json
+        command: celery -A talent_matching_server worker --loglevel=info --concurrency=2
+        shm_size: "2gb"
         volumes:
+            - ./uploaded_files:/app/uploaded_files
+            - ./gcp-service-account.json:/app/gcp-service-account.json:ro
         restart: always
+        deploy:
+            resources:
+                limits:
+                    memory: 6G
+                reservations:
+                    memory: 3G
 
     redis:
         image: redis:alpine
         container_name: talent-matching-redis
-        ports:
-            - "6379:6379"
+        expose:
+            - "6379"
         volumes:
             - redis_data:/data
             - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
         command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
-        restart: always
+        deploy:
+            resources:
+                limits:
+                    memory: 1G
+                reservations:
+                    memory: 512M
 
 volumes:
+    uploaded_files:
+        driver: local
     redis_data:
+        driver: local

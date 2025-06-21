@@ -13,14 +13,16 @@ services:
             - redis
         env_file: .env
         environment:
-            - NEO4J_URI=${NEO4J_URI:-bolt://host.docker.internal:7689}
+            - NEO4J_BOLT_URL=${NEO4J_BOLT_URL:-bolt://neo4j:neo4j123@34.101.147.141:7687}
             - REDIS_URL=redis://redis:6379
             - ENVIRONMENT=development
+            - GOOGLE_APPLICATION_CREDENTIALS=/app/gcp-service-account.json
         ports:
             - "8000:8000"
         volumes:
             - ./talent_matching_ner_model:/app/talent_matching_ner_model
             - ./uploaded_files:/app/uploaded_files
+            - ./gcp-service-account.json:/app/gcp-service-account.json:ro
         restart: always
         develop:
             watch:
@@ -56,14 +58,15 @@ services:
         env_file: .env
         environment:
             - HOME=/tmp
-            - NEO4J_BOLT_URL=${NEO4J_BOLT_URL:-bolt://host.docker.internal:7689}
+            - NEO4J_BOLT_URL=${NEO4J_BOLT_URL:-bolt://neo4j:neo4j123@34.101.147.141:7687}
             - REDIS_URL=redis://redis:6379
             - ENVIRONMENT=development
+            - GOOGLE_APPLICATION_CREDENTIALS=/app/gcp-service-account.json
         command: watchmedo auto-restart --directory=/app --pattern="*.py" --recursive -- celery -A talent_matching_server worker --loglevel=info --pool=solo
         shm_size: "1gb"
         volumes:
             - ./uploaded_files:/app/uploaded_files
-            - ./talent_matching_ner_model:/app/talent_matching_ner_model
+            - ./gcp-service-account.json:/app/gcp-service-account.json:ro
         restart: always
         develop:
             watch:

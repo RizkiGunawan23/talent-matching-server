@@ -60,6 +60,7 @@ MIDDLEWARE = [
 ]
 
 CSRF_TRUSTED_ORIGINS = [
+    "*",
     "http://localhost:5173",
     "http://127.0.0.1:5173",
 ]
@@ -167,20 +168,21 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-NEOMODEL_NEO4J_BOLT_URL = os.getenv(
-    "NEO4J_BOLT_URL", "bolt://neo4j:12345678@host.docker.internal:7687"
+GCS_BUCKET_NAME = os.getenv("GCS_BUCKET_NAME", "talent-matching-bucket")
+GOOGLE_APPLICATION_CREDENTIALS = os.getenv(
+    "GOOGLE_APPLICATION_CREDENTIALS", "/app/gcp-service-account.json"
 )
-config.DATABASE_URL = NEOMODEL_NEO4J_BOLT_URL
 
-REDIS_URL = os.getenv(
-    "REDIS_URL", "redis://redis:6379/0"
-)  # Pastikan fallback ke localhost
-print(f"🔗 Using REDIS_URL: {REDIS_URL}")
+# config.DATABASE_URL = os.getenv(
+#     "NEO4J_BOLT_URL", "bolt://neo4j:neo4j123@34.101.147.141:7687"
+# )
+config.DATABASE_URL = "bolt://neo4j:neo4j123@34.101.147.141:7687"
+
 
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": REDIS_URL,
+        "LOCATION": os.getenv("REDIS_URL", "redis://redis:6379/0"),
     }
 }
 
@@ -191,9 +193,6 @@ CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 CELERY_REDIS_HOST = os.getenv("CELERY_REDIS_HOST", "redis")
 CELERY_REDIS_PORT = int(os.getenv("CELERY_REDIS_PORT", "6379"))
 CELERY_REDIS_DB = int(os.getenv("CELERY_REDIS_DB", "0"))
-
-print(f"⚡ Celery Broker: {CELERY_BROKER_URL}")
-print(f"📦 Cache Location: {CACHES['default']['LOCATION']}")
 
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"

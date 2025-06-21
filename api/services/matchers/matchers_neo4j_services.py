@@ -649,6 +649,9 @@ def import_and_clean_neo4j_with_enrichment(
             convert_match_labels_to_property()
             print("[MAIN_IMPORT_INFO] Data processing completed")
 
+            db.cypher_query("MATCH (n) WHERE size(labels(n)) = 0 DETACH DELETE n")
+            print("[MAIN_IMPORT_INFO] Deleted nodes without label")
+
             # Commit main transaction
             db.commit()
             print("[MAIN_IMPORT_SUCCESS] Main import transaction committed")

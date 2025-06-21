@@ -93,6 +93,7 @@ talent_matching_ner_model
 
 # Direktori lengkap
 /talent_matching_ner_model/
+gcp-service-account.json
 
 # Isi direktori
 talent_matching_ner_model/**

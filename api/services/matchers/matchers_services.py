@@ -1,18 +1,13 @@
 from api.models import Maintenance
 from api.services.matchers.helper import update_task_progress
 from api.services.matchers.matchers_neo4j_services import (
-    get_jobs_from_neo4j,
     get_users_from_neo4j,
     import_and_clean_neo4j_with_enrichment,
-    update_neo4j_for_specific_user,
 )
 from api.services.matchers.matchers_ontology_services import (
     add_user_job_matches_to_ontology,
     apply_dynamic_categorization_pipeline,
-    build_temp_graph_for_user,
     calculate_all_user_job_similarities,
-    calculate_user_job_similarity_for_specific_user,
-    extract_categorized_matches_for_user,
     import_all_jobs_to_ontology,
     import_all_users_to_ontology,
     load_base_ontology,
