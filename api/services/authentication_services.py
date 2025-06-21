@@ -12,6 +12,7 @@ from api.serializers.authentication_serializers import (
     LoginSerializer,
     RegisterSerializer,
 )
+from api.serializers.job_seeker.profile.change_password_serializers import ChangePasswordSerializer
 from api.services.matchers.matchers_neo4j_services import (
     create_calculated_user,
     get_jobs_from_neo4j,
@@ -50,6 +51,31 @@ def get_token(user: User) -> dict[str, str]:
         "access": str(refresh.access_token),
         "user": user_data,
     }
+
+def check_email_availability(email: str) -> dict[str, any]:
+    """
+    Check if email is available for registration.
+    Returns availability status and appropriate message.
+    """
+    if not email:
+        raise APIException(
+            detail="Email is required",
+            code=status.HTTP_400_BAD_REQUEST,
+        )
+
+    user = User.get_by_email(email=email)
+
+    if user:
+        return {
+            "available": False,
+            "message": "Email address is already registered",
+            "status_code": status.HTTP_400_BAD_REQUEST,
+        }
+    else:
+        return {
+            "available": True,
+            "message": "Email address is available",
+        }
 
 
 def register_user_and_match(request_data: dict[str, any]) -> dict[str, str] | None:

@@ -8,6 +8,7 @@ from rest_framework.viewsets import ViewSet
 
 from api.services.authentication_services import (
     authenticate_user,
+    check_email_availability,
     register_user_and_match,
 )
 
@@ -51,3 +52,27 @@ class AuthenticationView(ViewSet):
             },
             status=status.HTTP_200_OK,
         )
+    
+    @action(
+        methods=["post"],
+        detail=False,
+        url_path="check-email",
+        url_name="auth-check-email",
+        permission_classes=[AllowAny],
+        parser_classes=[MultiPartParser, FormParser, JSONParser], 
+    )
+    def check_email(self, request: Request) -> Response:
+        """
+        Endpoint for checking email availability.
+        """
+        email = request.data.get("email")
+        result = check_email_availability(email)
+
+        return Response(
+            {
+                "available": result["available"],
+                "message": result["message"]
+            },
+            status=status.HTTP_200_OK,
+        )
+
