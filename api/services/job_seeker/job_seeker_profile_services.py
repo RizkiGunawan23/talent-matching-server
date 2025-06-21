@@ -1,9 +1,14 @@
 import os
 
+from django.conf import settings
+from django.http import FileResponse
 from rest_framework import status
 from rest_framework.exceptions import APIException
+from rest_framework.response import Response
 
 from api.models import User
+from django.contrib.auth.hashers import check_password, make_password
+from api.serializers.job_seeker.profile.change_password_serializers import ChangePasswordSerializer
 from api.serializers.job_seeker.profile.job_seeker_profile_serializers import (
     EditProfileSerializer,
 )
@@ -128,3 +133,59 @@ def change_profile_and_match(pk, request_data: dict[str, any]) -> dict[str, str]
         "profile_image": f"http://localhost:8000/api/profile/image/{user_email}/",
         "skills": new_skills,
     }
+
+
+def get_profile_picture(email):
+    """
+    Get user profile picture by email
+    """
+    print(f"Fetching profile picture for email: {email}")
+    user = User.get_by_email(email=email)
+    print(f"User found: {user}")
+    if user is None or not user.profilePicture:
+        raise APIException(
+            detail="Gambar profil tidak ditemukan",
+            code=status.HTTP_404_NOT_FOUND,
+        )
+
+    # Check if file exists
+    if not os.path.exists(user.profilePicture):
+        raise APIException(
+            detail="File gambar profil tidak ditemukan",
+            code=status.HTTP_404_NOT_FOUND,
+        )
+
+    return user.profilePicture
+
+def change_password(request_data: dict[str, str], user_email: str) -> dict[str, str]:
+    """
+    Change user password.
+    """
+    serializer = ChangePasswordSerializer(data=request_data, context={'email': user_email})
+    
+    if serializer.is_valid():
+        # Save new password
+        new_password = serializer.validated_data['new_password']
+        hashed_password = make_password(new_password)
+        user_data = getattr(serializer, 'user_data', None)
+
+        if user_data:
+            try:
+                user_data.password = hashed_password
+                user_data.save()
+                return {"message": "Password berhasil diubah"}
+            except Exception:
+                raise APIException(
+                    detail="Gagal mengubah password. Silakan coba lagi.",
+                    code=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
+        else:
+            raise APIException(
+                detail="User data tidak ditemukan.",
+                code=status.HTTP_400_BAD_REQUEST
+            )
+    else:
+        raise APIException(
+            detail=serializer.errors,
+            code=status.HTTP_400_BAD_REQUEST
+        )
