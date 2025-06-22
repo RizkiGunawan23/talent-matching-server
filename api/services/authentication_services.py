@@ -43,7 +43,7 @@ def get_token(user: User) -> dict[str, str]:
     }
 
     if user.profilePicture:
-        profile_picture_url = f"http://localhost:8000/api/profile/image/{user.email}/"
+        profile_picture_url = f"http://localhost:8000/api/job-seeker/profile/image/{user.email}/"
         user_data["profile_picture_url"] = profile_picture_url
 
     return {
@@ -139,6 +139,11 @@ def register_user_and_match(request_data: dict[str, any]) -> dict[str, str] | No
         with open(filepath, "wb") as destination:
             for chunk in profile_picture.chunks():
                 destination.write(chunk)
+    
+    user = User.get_by_email(email=user_email)
+    print(f"User registered: {user}")
+    response_data = get_token(user)
+    return response_data
 
 
 def authenticate_user(request_data: dict[str, str]) -> dict[str, str] | None:

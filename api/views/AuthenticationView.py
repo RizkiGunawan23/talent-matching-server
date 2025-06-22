@@ -26,10 +26,13 @@ class AuthenticationView(ViewSet):
         """
         Endpoint for registering a new user.
         """
-        register_user_and_match(request.data)
+        responseData = register_user_and_match(request.data)
 
         return Response(
-            {"message": "Register berhasil"},
+            {
+                "message": "Register Berhasil",
+                "data": responseData,
+            },
             status=status.HTTP_201_CREATED,
         )
 

@@ -41,7 +41,7 @@ def get_profile_info(user_uid) -> dict[str, str] | None:
     # Generate profile image URL
     profile_image_url = None
     if user.profilePicture:
-        profile_image_url = f"http://localhost:8000/api/profile/image/{user.email}/"
+        profile_image_url = f"http://localhost:8000/api/job-seeker/profile/image/{user.email}/"
 
     return {
         "name": user.name,
